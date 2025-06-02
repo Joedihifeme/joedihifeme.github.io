@@ -1,0 +1,358 @@
+{
+  "creatures": [
+    {
+      "name": "Baby Monkey",
+      "attack": 1,
+      "health": 4,
+      "gold": "4",
+      "type": "n",
+      "keywords": ""
+    },
+    {
+      "name": "Monkey Builder",
+      "attack": 1,
+      "health": 4,
+      "gold": "4",
+      "type": "n",
+      "keywords": ""
+    },
+    {
+      "name": "Chimpanzee",
+      "attack": 2,
+      "health": 4,
+      "gold": "6",
+      "type": "n",
+      "keywords": "R"
+    },
+    {
+      "name": "Survivor Hyena",
+      "attack": 2,
+      "health": 6,
+      "gold": "7",
+      "type": "n",
+      "keywords": "S"
+    },
+    {
+      "name": "Baby Hyena",
+      "attack": 2,
+      "health": 2,
+      "gold": "4",
+      "type": "n",
+      "keywords": "S"
+    },
+    {
+      "name": "Hyena Warrior",
+      "attack": 2,
+      "health": 4,
+      "gold": "6",
+      "type": "n",
+      "keywords": "S L1"
+    },
+    {
+      "name": "Lost Rhino",
+      "attack": 2,
+      "health": 4,
+      "gold": "3",
+      "type": "n",
+      "keywords": ""
+    },
+    {
+      "name": "Benevolent Hippo",
+      "attack": 1,
+      "health": 6,
+      "gold": "4",
+      "type": "n",
+      "keywords": ""
+    },
+    {
+      "name": "Bee-utiful Bee",
+      "attack": 2,
+      "health": 7,
+      "gold": "15",
+      "type": "l",
+      "keywords": "I"
+    },
+    {
+      "name": "Baby Giraffe",
+      "attack": 1,
+      "health": 4,
+      "gold": "3",
+      "type": "n",
+      "keywords": "R"
+    },
+    {
+      "name": "Vulture",
+      "attack": 1,
+      "health": 6,
+      "gold": "3",
+      "type": "n",
+      "keywords": ""
+    },
+    {
+      "name": "Baby Vulture",
+      "attack": 1,
+      "health": 2,
+      "gold": "4",
+      "type": "n",
+      "keywords": ""
+    },
+    {
+      "name": "Woodpecker",
+      "attack": 2,
+      "health": 4,
+      "gold": "6",
+      "type": "n",
+      "keywords": "H"
+    },
+    {
+      "name": "Falcon",
+      "attack": 2,
+      "health": 4,
+      "gold": "5",
+      "type": "n",
+      "keywords": "F I"
+    },
+    {
+      "name": "Alchemist Lizard",
+      "attack": 2,
+      "health": 3,
+      "gold": "4",
+      "type": "n",
+      "keywords": ""
+    },
+    {
+      "name": "Porcupine",
+      "attack": 1,
+      "health": 4,
+      "gold": "6",
+      "type": "n",
+      "keywords": "W3 D"
+    },
+    {
+      "name": "Baby Porcupine",
+      "attack": 1,
+      "health": 2,
+      "gold": "4",
+      "type": "n",
+      "keywords": "W2 S"
+    },
+    {
+      "name": "Porcupine Bomber",
+      "attack": 3,
+      "health": 5,
+      "gold": "5",
+      "type": "n",
+      "keywords": ""
+    },
+    {
+      "name": "Porcupine Lunatic",
+      "attack": 1,
+      "health": 6,
+      "gold": "5",
+      "type": "n",
+      "keywords": "D"
+    },
+    {
+      "name": "Snapping Turtle",
+      "attack": 0,
+      "health": 3,
+      "gold": "4",
+      "type": "n",
+      "keywords": "V2 L1"
+    },
+    {
+      "name": "Turtle Mother",
+      "attack": 0,
+      "health": 7,
+      "gold": "6",
+      "type": "n",
+      "keywords": "L2 D"
+    },
+    {
+      "name": "Raptor",
+      "attack": 3,
+      "health": 6,
+      "gold": "9",
+      "type": "n",
+      "keywords": "H I"
+    },
+    {
+      "name": "Buffalo",
+      "attack": 1,
+      "health": 6,
+      "gold": "5",
+      "type": "n",
+      "keywords": ""
+    },
+    {
+      "name": "Crocodile",
+      "attack": 3,
+      "health": 5,
+      "gold": "7",
+      "type": "n",
+      "keywords": "C"
+    },
+    {
+      "name": "Alligator",
+      "attack": 2,
+      "health": 2,
+      "gold": "6",
+      "type": "n",
+      "keywords": "C D"
+    },
+    {
+      "name": "Leech",
+      "attack": 1,
+      "health": 3,
+      "gold": "3",
+      "type": "n",
+      "keywords": "L1"
+    },
+    {
+      "name": "Elephant",
+      "attack": 3,
+      "health": 6,
+      "gold": "6",
+      "type": "n",
+      "keywords": "T R"
+    },
+    {
+      "name": "Viper Babies",
+      "attack": 1,
+      "health": 3,
+      "gold": "4",
+      "type": "n",
+      "keywords": "V1"
+    },
+    {
+      "name": "Ankylosaurous",
+      "attack": 5,
+      "health": 10,
+      "gold": "9",
+      "type": "n",
+      "keywords": "I"
+    }
+  ],
+  "consumables": [
+    {
+      "name": "Blood Moon",
+      "gold": "6",
+      "ability": "All cards in your hand are also hyena cards",
+      "implemented": "n"
+    },
+    {
+      "name": "Strategic Capture",
+      "gold": "5",
+      "ability": "Your opponent reveals their hand and you discard a card from their hand",
+      "implemented": "n"
+    },
+    {
+      "name": "Summon",
+      "gold": "3",
+      "ability": "Search your deck for a card, reveal it and put it into your hand. Then, lose 3 health",
+      "implemented": "n"
+    },
+    {
+      "name": "Imminent Threat",
+      "gold": "7",
+      "ability": "Target creature gets +2/+4 and (I) and hexproof",
+      "implemented": "n"
+    },
+    {
+      "name": "Clone",
+      "gold": "x",
+      "ability": "Clone a card on the battlefield and pay the same manna cost as the original",
+      "implemented": "n"
+    },
+    {
+      "name": "Strengthen",
+      "gold": "3",
+      "ability": "Give (W)2 to target creature or give it 6HP",
+      "implemented": "n"
+    },
+    {
+      "name": "Thieve",
+      "gold": "x",
+      "ability": "Discard x cards from your hand and gain x gold",
+      "implemented": "n"
+    },
+    {
+      "name": "Royalty",
+      "gold": "2",
+      "ability": "Counter target card or all other consumables cost 1 mana less to cast",
+      "implemented": "n"
+    },
+    {
+      "name": "Annoy",
+      "gold": "5",
+      "ability": "This card can be played on your opponent's turns. If you play this right after a consumble is cast, that consumable does nothing and goes to the discard pile",
+      "implemented": "n"
+    }
+  ],
+  "doubleConsumables": [
+    {
+      "name": "Protect",
+      "gold1": "4",
+      "ability1": "During your opponent's turn, your cards will take 2 less damage",
+      "gold2": "x",
+      "ability2": "Target",
+      "implemented": "n"
+    },
+    {
+      "name": "Growth",
+      "gold1": "2",
+      "ability1": "When played give +1/+2 to one of your creatures",
+      "gold2": "4",
+      "ability2": "Give +2/+4 to target creature",
+      "implemented": "n"
+    },
+    {
+      "name": "Weight",
+      "gold1": "2",
+      "ability1": "Give target creature (T)",
+      "gold2": "3x",
+      "ability2": "Target creaure takes 2x less damage from larger creatures permanently",
+      "implemented": "n"
+    },
+    {
+      "name": "Destruction",
+      "gold1": "3",
+      "ability1": "Destroy target creature",
+      "gold2": "5",
+      "ability2": "Destroy target structure",
+      "implemented": "n"
+    },
+    {
+      "name": "Squish",
+      "gold1": "3",
+      "ability1": "Target opponent's creatures gets -2/-4",
+      "gold2": "8",
+      "ability2": "Target opponent's creature gets -5/-10",
+      "implemented": "n"
+    },
+    {
+      "name": "Delve",
+      "gold1": "3",
+      "ability1": "Draw 3 cards",
+      "gold2": "10",
+      "ability2": "Look at your entire deck and arrange it in any way",
+      "implemented": "n"
+    },
+    {
+      "name": "Speed up",
+      "gold1": "4",
+      "ability1": "Give target creature (F)",
+      "gold2": "5",
+      "ability2": "All cards that attack this turn gets +1 attack",
+      "implemented": "n"
+    },
+    {
+      "name": "Allegiance",
+      "gold1": "4",
+      "ability1": "Reset Haste",
+      "gold2": "4",
+      "ability2": "Remove all poison and hyena wither counters",
+      "implemented": "n"
+    }
+  ]
+}
