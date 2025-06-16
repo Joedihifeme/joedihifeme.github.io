@@ -46,7 +46,7 @@
       "health": 4,
       "gold": "6",
       "type": "n",
-      "keywords": "S L1"
+      "keywords": "S,L1"
     },
     {
       "name": "Lost Rhino",
@@ -110,7 +110,7 @@
       "health": 4,
       "gold": "5",
       "type": "n",
-      "keywords": "F I"
+      "keywords": "F,I"
     },
     {
       "name": "Alchemist Lizard",
@@ -126,7 +126,7 @@
       "health": 4,
       "gold": "6",
       "type": "n",
-      "keywords": "W3 D"
+      "keywords": "W3,D"
     },
     {
       "name": "Baby Porcupine",
@@ -134,7 +134,7 @@
       "health": 2,
       "gold": "4",
       "type": "n",
-      "keywords": "W2 S"
+      "keywords": "W2,S"
     },
     {
       "name": "Porcupine Bomber",
@@ -158,7 +158,7 @@
       "health": 3,
       "gold": "4",
       "type": "n",
-      "keywords": "V2 L1"
+      "keywords": "V2,L1"
     },
     {
       "name": "Turtle Mother",
@@ -166,7 +166,7 @@
       "health": 7,
       "gold": "6",
       "type": "n",
-      "keywords": "L2 D"
+      "keywords": "L2,D"
     },
     {
       "name": "Raptor",
@@ -174,7 +174,7 @@
       "health": 6,
       "gold": "9",
       "type": "n",
-      "keywords": "H I"
+      "keywords": "H,I"
     },
     {
       "name": "Buffalo",
@@ -198,7 +198,7 @@
       "health": 2,
       "gold": "6",
       "type": "n",
-      "keywords": "C D"
+      "keywords": "C,D"
     },
     {
       "name": "Leech",
@@ -214,7 +214,7 @@
       "health": 6,
       "gold": "6",
       "type": "n",
-      "keywords": "T R"
+      "keywords": "T,R"
     },
     {
       "name": "Viper Babies",
