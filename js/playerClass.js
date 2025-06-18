@@ -240,6 +240,15 @@ class Player {
       card.tapHandler = card.tap.bind(card);
       card.span.onclick = card.tapHandler;
       card.span.style.borderColor = "blue";
+
+      if (card instanceof Creature) {
+        if (card.checkKeyword("H") && card.firstTurn) {
+          card.attack *= 2;
+          card.updateSpan();
+          display(`${this.name} is using Haste!`);
+          setTimeout(() => {display(`${this.name} to move`)}, 1500);
+        } 
+      }
     }
   }
 
@@ -284,9 +293,17 @@ class Player {
       }
     }
 
+    this.board.forEach(section => {
+      section.forEach(creature => {
+        creature.firstTurn = false;
+      });
+    });
+
     this.disable();
-    this.opponent.enable();
-    this.opponent.startTurnRoutine();
+    setTimeout(() => {
+      this.opponent.enable();
+      this.opponent.startTurnRoutine();
+    }, 1000);
   }
 }
 

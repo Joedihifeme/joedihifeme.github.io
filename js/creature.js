@@ -166,10 +166,19 @@ class Creature extends Card {
 		} else if (target instanceof Player) {
 			target.div.update();
 		}
+
+		if (this.checkKeyword("H") && this.firstTurn) {
+			this.attack /= 2;
+			this.updateSpan();
+		}
 	}
 
 	changeTarget() {
 		this.target = this.OWNER.opponent;
+	}
+
+	checkKeyword(keyword) {
+		return this.keywords.includes(keyword) ? true:false;
 	}
 
 	goAttack() {
