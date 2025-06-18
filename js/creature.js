@@ -177,19 +177,34 @@ class Creature extends Card {
 		this.target = this.OWNER.opponent;
 	}
 
+	//returns true or false
 	checkKeyword(keyword) {
+		if (this.keywords === null) {
+			return false;
+		}
+
 		return this.keywords.includes(keyword) ? true:false;
 	}
 
 	goAttack() {
 		let target;
+		let firstStrike = this.checkKeyword("F");
 
 		if (this.target instanceof Creature) {
 			target = this.target;
 		} else if (this.target instanceof Player) {
-			if (this.target.board[0].length > 0) {
+			const reachCreature = this.target.board[0].find(creature => {
+				return creature.checkKeyword("R");
+			});
+
+			if ((this.target.board[0].length > 0) && (!firstStrike)) {
+				//no first strike creautre
 				target = this.target.board[0][0];
+			} else if ((reachCreature !== undefined) && (firstStrike)) {
+				//first strike creature, but reach is on the board
+				target = reachCreature;
 			} else {
+				//first strike bypassing blockers, or no blockers at all
 				target = this.target;
 			}
 		}
