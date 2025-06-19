@@ -134,7 +134,7 @@ function display(text) {
   document.getElementById("text-space").innerHTML = text;
 }
 
-function setupGame(players, creatures, gameDiv) {
+function setupGame(players, gameDiv) {
   buildInterface(players, gameDiv);
 
   //players draw a starting 6

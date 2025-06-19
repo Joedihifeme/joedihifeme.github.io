@@ -1,6 +1,6 @@
 import Card from "./card.js"
 import Player from "./playerClass.js";
-import { display } from "./runner.js";
+import { display } from "./functions.js";
 
 class Creature extends Card {
 	keywordArr = [
@@ -185,7 +185,6 @@ class Creature extends Card {
 
 		return this.keywords.includes(keyword) ? true:false;
 	}
-
 	goAttack() {
 		let target;
 		let firstStrike = this.checkKeyword("F");
@@ -224,6 +223,7 @@ class Creature extends Card {
 		
 		return false;
 	}
+	
 }
 
 export default Creature

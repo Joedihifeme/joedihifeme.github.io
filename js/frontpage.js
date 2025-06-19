@@ -1,6 +1,6 @@
 import Creature from "./creature.js"
 import Player from "./playerClass.js"
-import { setupGame } from "./runner.js";
+import { setupGame } from "./functions.js";
 
 const creatures = [];
 const players = [];
@@ -104,7 +104,7 @@ function assignCards(players, creatures) {
           } else {
             div.remove();
             creatures.forEach(creature => { creature.span.removeEventListener("click", chooseCard); });
-            setupGame(players, creatures, gameDiv);
+            setupGame(players, gameDiv);
           };
         }
       }
