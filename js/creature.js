@@ -35,7 +35,8 @@ class Creature extends Card {
 		this.blocking = false;
 		this.tapped = false;
 		this.target = null;
-		this.poison = [0, undefined]; //this.poison[0] is counter; this.poison[1] is player responsible
+		this.poison = {damage: 0, player: undefined}; //called poison to differentiate from venom method
+		//the object has a player property in case the poisoned creature has ward
 
 		this.updateSpan();
 	}
@@ -170,6 +171,7 @@ class Creature extends Card {
 		if (target instanceof Creature) {
 			target.updateSpan();
 			this.lifelink();
+			this.venom(target);
 		} else if (target instanceof Player) {
 			target.div.update();
 		}
@@ -216,6 +218,34 @@ class Creature extends Card {
 			display(`${this.name} is using lifelink!`)
 			this.health += this.getKeywordX("L");
 			this.updateSpan();
+		}
+	}
+
+	venom(target) {
+		if (this.checkKeyword("V")) {
+			let venomCounter = this.getKeywordX("V");
+
+			if (venomCounter > target.poison.damage) {
+				target.poison.damage = venomCounter;
+				target.poison.player = this.OWNER.opponent; //for future use (adding more players)
+				display(`${this.name} has used venom! 
+								${target.name} will now suffer a venom counter of ${venomCounter}`);
+
+				target.span.style.outline = "3px solid green";
+			}
+		}
+	}
+
+	sufferVenom() {
+		if (this.poison.damage > 0) {
+			this.health -= this.poison.damage;
+			this.updateSpan();
+
+			if (this.deathCheck()) {
+				this.span.style.outline = "none";
+				this.poison.damage = 0;
+				this.poison.player = undefined;
+			}
 		}
 	}
 

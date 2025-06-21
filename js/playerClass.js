@@ -78,6 +78,14 @@ class Player {
     return this._div;
   }
 
+  forEachOnBoard(func) {
+    this.board.forEach(section => {
+      section.forEach(creature => {
+        func(creature);
+      });
+    });
+  }
+
   enable(element="all") {
     if (element === "all" || element === "end turn") {
       this.div.endTurn.disabled = false;
@@ -183,6 +191,10 @@ class Player {
   }
 
   startTurnRoutine() {
+    if (this.turn > 0) {
+      this.forEachOnBoard(creature => { creature.sufferVenom(); });
+    }
+
     this.adder += 1;
     this.turn += 1;
     this.addGold(3 + this.adder);
@@ -275,7 +287,7 @@ class Player {
 
     if (card.checkKeyword("C")) {
       if (enemyBoard.length > 0) {
-        if (enemyBoard.every(creature => {return creature.checkKeyword("I");})) {
+        if (enemyBoard.every(creature => { return creature.checkKeyword("I"); })) {
           display(
             `${card.name} is using Creature Removal but all enemy creatures are Indestructible!`
           )
@@ -287,7 +299,7 @@ class Player {
         );
 
         this.opponent.disable("board");
-        enemyBoard.forEach(creature => {
+        this.opponent.forEachOnBoard(creature => {
           if (!creature.checkKeyword("I")) {
             creature.removeHandler = () => {
               creature.OWNER.discard(creature);
@@ -297,13 +309,11 @@ class Player {
                 delete creature.removeHandler;
               }
 
-              creature.OWNER.board.forEach(section => {
-                section.forEach(creature => {
-                  if (creature.removeHandler) {
-                    creature.span.onclick = null;
-                    delete creature.removeHandler;
-                  }
-                });
+              creature.OWNER.forEachOnBoard(creature => {
+                if (creature.removeHandler) {
+                  creature.span.onclick = null;
+                  delete creature.removeHandler;
+                }
               });
 
               display(`${this.name} to move.`);
@@ -366,11 +376,7 @@ class Player {
       }
     }
 
-    this.board.forEach(section => {
-      section.forEach(creature => {
-        creature.firstTurn = false;
-      });
-    });
+    this.forEachOnBoard(creature => { creature.firstTurn = false; })
 
     this.disable();
     setTimeout(() => {
