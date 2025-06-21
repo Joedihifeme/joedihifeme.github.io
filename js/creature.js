@@ -107,18 +107,8 @@ class Creature extends Card {
 			delete this.tapHandler;
 		}
 
-		display(`${this.OWNER.name}, click on what you want to target. (A player or a creature)`);
-		this.OWNER.opponent.targetHandler = function () {
-			this.assignTarget(this.OWNER.opponent);
-		}.bind(this);
-		this.OWNER.opponent.div.h2.parentNode.onclick = this.OWNER.opponent.targetHandler;
+		this.setTarget();
 
-		for (let section of this.OWNER.opponent.board) {
-			for (let creature of section) {
-				creature.targetHandler = function () { this.assignTarget(creature); }.bind(this);
-				creature.span.onclick = creature.targetHandler;
-			}
-		}
 		this.blockHandler = this.block.bind(this);
 		this.span.onclick = this.blockHandler;
 	}
@@ -136,6 +126,21 @@ class Creature extends Card {
 		this.target = null;
 	}
 
+	setTarget() {
+		display(`${this.OWNER.name}, click on what you want to target. (A player or a creature)`);
+		this.OWNER.opponent.targetHandler = function () {
+			this.assignTarget(this.OWNER.opponent);
+		}.bind(this);
+		this.OWNER.opponent.div.h2.parentNode.onclick = this.OWNER.opponent.targetHandler;
+
+		for (let section of this.OWNER.opponent.board) {
+			for (let creature of section) {
+				creature.targetHandler = function () { this.assignTarget(creature); }.bind(this);
+				creature.span.onclick = creature.targetHandler;
+			}
+		}
+	}
+
 	assignTarget(target) {
 		this.target = target;
 		display(`Target set to ${target.name}`);
@@ -145,7 +150,7 @@ class Creature extends Card {
 
 	removeTargetHandlers() {
 		if (this.OWNER.opponent.targetHandler) {
-			this.OWNER.opponent.div.h2.onclick = null;
+			this.OWNER.opponent.div.h2.parentNode.onclick = null;
 			delete this.OWNER.opponent.targetHandler;
 		}
 
@@ -185,6 +190,7 @@ class Creature extends Card {
 
 		return this.keywords.includes(keyword) ? true:false;
 	}
+
 	goAttack() {
 		let target;
 		let firstStrike = this.checkKeyword("F");

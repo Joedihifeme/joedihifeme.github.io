@@ -231,19 +231,25 @@ class Player {
       }
       this.spendGold(card.cost);
       this.hand.splice(index, 1);
-      this.board[0].push(card);
       card.span.remove();
       this.div.board.appendChild(card.span);
-      if (card.playHandler) {
-        card.span.onclick = null;
-        delete card.playHandler;
-      }
-      card.tapHandler = card.tap.bind(card);
-      card.span.onclick = card.tapHandler;
-      card.span.style.borderColor = "blue";
 
-      if (card instanceof Creature) {
-        this.keywordsOnPlay(card); 
+      if (card.checkKeyword("S")) {
+        this.stamina(card);
+      } else {
+        this.board[0].push(card);
+
+        if (card.playHandler) {
+          card.span.onclick = null;
+          delete card.playHandler;
+        }
+        card.tapHandler = card.tap.bind(card);
+        card.span.onclick = card.tapHandler;
+        card.span.style.borderColor = "blue";
+
+        if (card instanceof Creature) {
+          this.keywordsOnPlay(card); 
+        }
       }
     }
   }
@@ -253,6 +259,7 @@ class Player {
     this.creatureRemovalAndIndestructible(card);
   }
 
+  //keyword on play
   haste(card) {
     if (card.checkKeyword("H") && card.firstTurn) {
       card.attack *= 2;
@@ -262,6 +269,7 @@ class Player {
     }
   }
 
+  //keyword on play
   creatureRemovalAndIndestructible(card) {
     const enemyBoard = this.opponent.board.flat();
 
@@ -308,16 +316,25 @@ class Player {
     }
   }
 
+  stamina(card) {
+    this.board.forEach(section => { section.push(card); });
+    card.span.style.borderColor = "purple";
+    display(`${card.name} is using stamina!`);
+    setTimeout(() => { card.setTarget(); }, 1500);
+  }
+
   discard(card) {
     for (let section of this.board) {
       if (section.includes(card)) {
         section.splice(section.indexOf(card), 1);
-        this.discards.push(card);
-        card.discard();
-        this.div.update();
-        this.div.discardModalCardSpace.appendChild(card.span);
       }
     }
+
+    //this block is outside of the loop as a stamina creature will appear in each section of the board
+    this.discards.push(card);
+    card.discard();
+    this.div.update();
+    this.div.discardModalCardSpace.appendChild(card.span);
   }
 
   reviveCard(card, paid=false) {

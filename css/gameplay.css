@@ -1,9 +1,14 @@
+h2 {
+  text-align: center;
+  margin: 5px;
+}
+
 span {
-  padding: 5%
+  padding: 0.5% 5%;
 }
 
 .player {
-  margin: 20px;
+  margin: 12.5px;
   display: flex;
   flex-direction: column;
 }
@@ -20,7 +25,7 @@ span {
 
 .draw-pile, .discards {
   position: static;
-  padding: 5% 
+  padding: 2% 
 }
 
 .draw-pile {

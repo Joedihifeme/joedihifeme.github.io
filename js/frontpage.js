@@ -74,6 +74,7 @@ function askForName(inputBox, text, div) {
 
 function assignCards(players, creatures) {
   const div = document.createElement("div");
+  div.setAttribute("class", "card-choice-div");
   gameDiv.appendChild(div);
   const text = document.createElement("p");
   div.appendChild(text);
