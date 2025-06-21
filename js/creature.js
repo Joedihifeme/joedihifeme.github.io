@@ -7,6 +7,7 @@ class Creature extends Card {
 		null, "H", "(H)", "F", "(F)", "R", "(R)", "C", "(C)", "I", "(I)", "T", "(T)", 
 		"L", "(L)", "W", "(W)", "V", "(V)", "D", "(D)", "S", "(S)", "G", "(G)"
 	];
+	numberedKeywords = ["L", "W", "V", "G"];
 
 	constructor(name, attack, health, cost, type, keywords=null) {
 		super(name, cost);
@@ -168,6 +169,7 @@ class Creature extends Card {
 		target.health -= this.attack;
 		if (target instanceof Creature) {
 			target.updateSpan();
+			this.lifelink();
 		} else if (target instanceof Player) {
 			target.div.update();
 		}
@@ -188,7 +190,33 @@ class Creature extends Card {
 			return false;
 		}
 
-		return this.keywords.includes(keyword) ? true:false;
+		if (!this.numberedKeywords.includes(keyword)) {
+			return this.keywords.includes(keyword);
+		} else {
+			return this.keywords.some(element => { return element[0] === keyword; });
+		}
+	}
+
+	getKeywordX(keyword) {
+		if (!this.numberedKeywords.includes(keyword)) {
+			throw new Error(`"${keyword}" is not a numbered keyword`);
+		}
+
+		for (let element of this.keywords) {
+			if (element[0] === keyword) {
+				return Number(element[1]);
+			}
+		}
+
+		throw new Error(`"${keyword}" not in this.keywords`);
+	}
+
+	lifelink() {
+		if (this.checkKeyword("L")) {
+			display(`${this.name} is using lifelink!`)
+			this.health += this.getKeywordX("L");
+			this.updateSpan();
+		}
 	}
 
 	goAttack() {

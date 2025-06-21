@@ -264,7 +264,7 @@ class Player {
     if (card.checkKeyword("H") && card.firstTurn) {
       card.attack *= 2;
       card.updateSpan();
-      display(`${this.name} is using Haste!`);
+      display(`${card.name} is using Haste!`);
       setTimeout(() => {display(`${this.name} to move`)}, 1500);
     }
   }
