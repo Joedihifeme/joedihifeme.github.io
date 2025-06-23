@@ -166,22 +166,6 @@ class Creature extends Card {
 		}
 	}
 
-	damageTarget(target) {
-		target.health -= this.attack;
-		if (target instanceof Creature) {
-			target.updateSpan();
-			this.lifelink();
-			this.venom(target);
-		} else if (target instanceof Player) {
-			target.div.update();
-		}
-
-		if (this.checkKeyword("H") && this.firstTurn) {
-			this.attack /= 2;
-			this.updateSpan();
-		}
-	}
-
 	changeTarget() {
 		this.target = this.OWNER.opponent;
 	}
@@ -249,6 +233,18 @@ class Creature extends Card {
 		}
 	}
 
+	ward(target) {
+		if (target.checkKeyword("W")) {
+			if (this.OWNER.gold >= target.getKeywordX("W")) {
+				return true;
+			} 
+
+			return false;
+		}
+
+		return null;
+	}
+
 	goAttack() {
 		let target;
 		let firstStrike = this.checkKeyword("F");
@@ -271,11 +267,42 @@ class Creature extends Card {
 				target = this.target;
 			}
 		}
+
+		if (target instanceof Creature) {
+			switch (this.ward(target)) {
+				case true:
+					this.OWNER.spendGold(target.getKeywordX("W"));
+					break;
+
+				case false:
+					return;
+
+				default:
+					break;
+			}
+		}
+
 		this.damageTarget(target);
 
 		let result = target.deathCheck();
 		if ((this.target instanceof Creature) && result) {
 			this.changeTarget();
+		}
+	}
+
+	damageTarget(target) {
+		target.health -= this.attack;
+		if (target instanceof Creature) {
+			target.updateSpan();
+			this.lifelink();
+			this.venom(target);
+		} else if (target instanceof Player) {
+			target.div.update();
+		}
+
+		if (this.checkKeyword("H") && this.firstTurn) {
+			this.attack /= 2;
+			this.updateSpan();
 		}
 	}
 
