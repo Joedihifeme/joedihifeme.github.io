@@ -369,19 +369,24 @@ class Player {
     return false;
   }
 
-  endTurnRoutine() {
+  async endTurnRoutine() {
+    this.disable();
+
     for (let creature of this.board[1]) {
-      if (creature instanceof Creature) {
-        creature.goAttack()
-      }
+        if (creature instanceof Creature) {
+            if (!creature.checkKeyword("T")) {
+                creature.goAttack();
+            } else {
+                await creature.trampleAttack();
+            }
+        }
     }
 
     this.forEachOnBoard(creature => { creature.firstTurn = false; })
-
-    this.disable();
+    
     setTimeout(() => {
-      this.opponent.enable();
-      this.opponent.startTurnRoutine();
+        this.opponent.enable();
+        this.opponent.startTurnRoutine();
     }, 1000);
   }
 }

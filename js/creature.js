@@ -109,10 +109,16 @@ class Creature extends Card {
 			delete this.tapHandler;
 		}
 
-		this.setTarget();
-
 		this.blockHandler = this.block.bind(this);
 		this.span.onclick = this.blockHandler;
+
+		if (this.checkKeyword("T")) {
+			this.target = this.OWNER.opponent;
+			this.span.style.borderColor = "brown";
+			return;
+		}
+
+		this.setTarget();
 	}
 
 	block() {
@@ -290,8 +296,15 @@ class Creature extends Card {
 		}
 	}
 
-	damageTarget(target) {
-		target.health -= this.attack;
+	damageTarget(target, trample=false) {
+		if (!trample) {
+			target.health -= this.attack;
+		} else {
+			target.health -= 1;
+			this.attack -= 1;
+			target.deathCheck();
+		}
+		
 		if (target instanceof Creature) {
 			target.updateSpan();
 			this.lifelink();
@@ -304,11 +317,69 @@ class Creature extends Card {
 			this.attack /= 2;
 			this.updateSpan();
 		}
+
+		if (trample) {
+			if (this.attack === 0) {
+				this.attack = this.ATTACK;
+
+				if (this.OWNER.opponent.trampleHandler) {
+					this.OWNER.opponent.div.h2.parentNode.onclick = null;
+					delete this.OWNER.opponent.trampleHandler;
+				}
+
+				this.OWNER.opponent.forEachOnBoard(creature => {
+					if (creature.trampleHandler) {
+						creature.span.onclick = null;
+						delete creature.trampleHandler;
+					}
+				});
+
+				if (this.trampleDone) {
+					this.trampleDone();
+					this.trampleDone = null;
+				}
+			}
+		}
 	}
 
-	deathCheck() {
+	trampleAttack() {
+		return new Promise(resolve => {
+			this.trampleDone = resolve;
+
+			this.OWNER.opponent.trampleHandler = function() { 
+				this.damageTarget(this.OWNER.opponent, true); 
+			}.bind(this);
+			this.OWNER.opponent.div.h2.parentNode.onclick = this.OWNER.opponent.trampleHandler;
+
+			this.OWNER.opponent.forEachOnBoard(creature => {
+				creature.trampleHandler = function() {
+					if (creature.checkKeyword("W")) {
+						if (this.OWNER.gold < creature.cost) {
+							return;
+						}
+						this.OWNER.spendGold(creature.getKeywordX("W"));					
+					}
+					this.damageTarget(creature, true);
+				}.bind(this);
+
+				creature.span.onclick = creature.trampleHandler;
+			});
+
+			display(`${this.OWNER.name}, click on who you want to take trample damage from ${this.name}`);
+		});
+	}
+
+	deathCheck(trample=false) {
 		if (this.health < 1) {
 			this.OWNER.discard(this);
+
+			if (trample) {
+				if (this.trampleHandler) {
+					this.span.onclick = false;
+					delete this.trampleHandler;
+				}
+			}
+
 			return true;
 		}
 		
