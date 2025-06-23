@@ -254,8 +254,27 @@ class Creature extends Card {
 	goAttack() {
 		let target;
 		let firstStrike = this.checkKeyword("F");
+		let useDefender = false;
+		const defender = this.OWNER.opponent.board.flat().find(creature => {
+			if (creature.checkKeyword("D")) {
+				return true;
+			}
 
-		if (this.target instanceof Creature) {
+			return false;
+		});
+
+		if (defender !== undefined) {
+			if (window.confirm(`
+				${defender.name} has Defender\n
+				${this.OWNER.opponent.name}, would you like to use it to block ${this.name}'s attack`
+			)) {
+				useDefender = true;
+			}
+		}
+
+		if (useDefender) {
+			target = defender;
+		} else if (this.target instanceof Creature) {
 			target = this.target;
 		} else if (this.target instanceof Player) {
 			const reachCreature = this.target.board[0].find(creature => {
