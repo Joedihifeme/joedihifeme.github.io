@@ -233,6 +233,14 @@
       "keywords": "L1"
     },
     {
+      "name" : "Baby Elephant",
+      "attack": 1,
+      "health": 3,
+      "gold": "4",
+      "type": "n",
+      "keywords": "I,T"
+    },
+    {
       "name": "Elephant",
       "attack": 3,
       "health": 6,

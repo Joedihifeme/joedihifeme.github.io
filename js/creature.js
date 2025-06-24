@@ -1,6 +1,7 @@
-import Card from "./card.js"
+import Card from "./card.js";
 import Player from "./playerClass.js";
 import { display } from "./functions.js";
+import { displayMode } from "./frontpage.js";
 
 class Creature extends Card {
 	keywordArr = [
@@ -73,7 +74,7 @@ class Creature extends Card {
 		this.attack = this.ATTACK;
 		this.health = this.HEALTH;
 		this.span.onclick = null;
-		this.span.style.borderColor = "black";
+		this.span.style.borderColor = this.span.style.color;
 		this.updateSpan();
 
 		if (this.tapHandler) {

@@ -5,6 +5,7 @@ import { setupGame } from "./functions.js";
 const creatures = [];
 const players = [];
 const gameDiv = document.getElementById("game");
+var displayMode = "white";
 
 fetch('./cards.json')
   .then(response => {
@@ -27,6 +28,8 @@ fetch('./cards.json')
   });
 
 const startButton = document.getElementById("start-button");
+const settingsButton = document.getElementById("settings-button");
+
 startButton.onclick = () => {
   document.getElementById("start").remove();
 
@@ -50,6 +53,47 @@ startButton.onclick = () => {
     askForName(playerInput, text, askingDiv);
   };
 };
+
+settingsButton.onclick = () => {
+  const start = settingsButton.parentNode;
+  start.remove();
+  const settingsPage = document.createElement("div");
+  document.body.appendChild(settingsPage);
+
+  const screenMode = document.createElement("button");
+  screenMode.innerHTML = "Dark mode";
+
+  screenMode.onclick = () => { displayMode === "white" ? darkMode(screenMode) : lightMode(screenMode) };
+  settingsPage.appendChild(screenMode);
+
+  const backButton = document.createElement("button");
+  backButton.innerHTML = "Back";
+  backButton.onclick = () => { settingsPage.remove(); document.body.appendChild(start); }
+  settingsPage.appendChild(backButton);
+};
+
+function lightMode(screenMode) {
+  document.body.style.backgroundColor = "white";
+  document.body.style.color = "black";
+  creatures.forEach(creature => {
+    creature.span.style.borderColor = "black";
+    creature.span.color = "black";
+  });
+
+  screenMode.innerHTML = "Dark mode";
+  displayMode = "white";
+}
+
+function darkMode(screenMode) {
+  document.body.style.backgroundColor = "black";
+  document.body.style.color = "#FAEBD7";
+  creatures.forEach(creature => {
+    creature.span.style.borderColor = "#FAEBD7";
+  });
+
+  screenMode.innerHTML = "Light mode";
+  displayMode = "black";
+}
 
 function askForName(inputBox, text, div) {
   if (inputBox.value.trim() !== "") {
@@ -105,7 +149,7 @@ function assignCards(players, creatures) {
           } else {
             div.remove();
             creatures.forEach(creature => { creature.span.removeEventListener("click", chooseCard); });
-            setupGame(players, gameDiv);
+            setupGame(players, gameDiv, displayMode);
           };
         }
       }
@@ -114,3 +158,4 @@ function assignCards(players, creatures) {
   });
 }
 
+export { displayMode }
