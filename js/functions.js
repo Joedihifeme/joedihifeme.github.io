@@ -1,4 +1,4 @@
-function buildInterface(players, gameDiv) {
+function buildInterface(players, gameDiv, displayMode) {
   const p1Div = document.createElement("div");
   p1Div.setAttribute("id", "player1");
   p1Div.setAttribute("class", "player");
@@ -81,6 +81,7 @@ function buildInterface(players, gameDiv) {
     discardModal.style.display = "none";
     const modalContent = document.createElement("div");
     modalContent.setAttribute("class", "modal-content");
+    modalContent.style.backgroundColor = displayMode === "white" ? "white" : "black";
     discardModal.appendChild(modalContent);
     const modalText = document.createElement("p");
     modalText.innerHTML = "Click on the card to bring back (for 2 gold)";
@@ -134,7 +135,7 @@ function display(text) {
   document.getElementById("text-space").innerHTML = text;
 }
 
-function setupGame(players, creatures, gameDiv) {
+function setupGame(players, gameDiv) {
   buildInterface(players, gameDiv);
 
   //players draw a starting 6

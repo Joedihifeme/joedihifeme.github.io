@@ -1,8 +1,19 @@
+body {
+  font-size: 100%;
+}
+
 .card-display {
   display: inline-block;
   border-style: solid;
   border-radius: 10px;
-  margin: 10px 10px 10px 10px;
-  padding: 10px;
+  margin: 0.5em;;
+  padding: 5px;
   font-family: "Lucida Console", monospace;
+  font-size: 0.6875em;
+}
+
+.card-choice-div > .card-display {
+  font-size: 1em;
+  padding: 10px;
+  margin: 10px;
 }

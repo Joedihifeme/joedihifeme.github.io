@@ -43,7 +43,7 @@
     {
       "name": "Hyena Warrior",
       "attack": 2,
-      "health": 4,
+      "health": 5,
       "gold": "6",
       "type": "n",
       "keywords": "S,L1"
@@ -51,7 +51,7 @@
     {
       "name": "Lost Rhino",
       "attack": 2,
-      "health": 4,
+      "health": 3,
       "gold": "3",
       "type": "n",
       "keywords": ""
@@ -84,7 +84,7 @@
       "name": "Vulture",
       "attack": 1,
       "health": 6,
-      "gold": "3",
+      "gold": "10",
       "type": "n",
       "keywords": ""
     },
@@ -105,10 +105,18 @@
       "keywords": "H"
     },
     {
+      "name": "Baby Woodpecker",
+      "attack": 1,
+      "health": 2,
+      "gold": "3",
+      "type": "n",
+      "keywords": "H"
+    },
+    {
       "name": "Falcon",
       "attack": 2,
       "health": 4,
-      "gold": "5",
+      "gold": "6",
       "type": "n",
       "keywords": "F,I"
     },
@@ -155,16 +163,16 @@
     {
       "name": "Snapping Turtle",
       "attack": 0,
-      "health": 3,
+      "health": 4,
       "gold": "4",
       "type": "n",
-      "keywords": "V2,L1"
+      "keywords": "V2"
     },
     {
       "name": "Turtle Mother",
       "attack": 0,
       "health": 7,
-      "gold": "6",
+      "gold": "10",
       "type": "n",
       "keywords": "L2,D"
     },
@@ -185,6 +193,14 @@
       "keywords": ""
     },
     {
+      "name": "Baby Buffalo",
+      "attack": 1,
+      "health": 4,
+      "gold": "2",
+      "type": "n",
+      "keywords": ""
+    },
+    {
       "name": "Crocodile",
       "attack": 3,
       "health": 5,
@@ -201,12 +217,28 @@
       "keywords": "C,D"
     },
     {
+      "name": "Baby Alligator",
+      "attack": 1,
+      "health": 1,
+      "gold": "4",
+      "type": "n",
+      "keywords": "C"
+    },
+    {
       "name": "Leech",
       "attack": 1,
       "health": 3,
       "gold": "3",
       "type": "n",
       "keywords": "L1"
+    },
+    {
+      "name" : "Baby Elephant",
+      "attack": 1,
+      "health": 3,
+      "gold": "4",
+      "type": "n",
+      "keywords": "I,T"
     },
     {
       "name": "Elephant",
@@ -231,6 +263,14 @@
       "gold": "9",
       "type": "n",
       "keywords": "I"
+    },
+    {
+      "name": "Racist Bunny",
+      "attack": 2,
+      "health": 4,
+      "gold": "7",
+      "type": "n",
+      "keywords": "R,F"
     }
   ],
   "consumables": [
@@ -286,6 +326,12 @@
       "name": "Annoy",
       "gold": "5",
       "ability": "This card can be played on your opponent's turns. If you play this right after a consumble is cast, that consumable does nothing and goes to the discard pile",
+      "implemented": "n"
+    },
+    {
+      "name": "Buffalo's protection",
+      "gold": "6",
+      "ability": "All target creatures gain (I)",
       "implemented": "n"
     }
   ],
@@ -343,7 +389,7 @@
       "gold1": "4",
       "ability1": "Give target creature (F)",
       "gold2": "5",
-      "ability2": "All cards that attack this turn gets +1 attack",
+      "ability2": "All cards that attack this turn gets +1 ATCK",
       "implemented": "n"
     },
     {

@@ -1,5 +1,5 @@
 import Creature from "./creature.js";
-import { display } from "./runner.js";
+import { display } from "./functions.js";
 
 class Player {
   constructor (name) {
@@ -78,6 +78,14 @@ class Player {
     return this._div;
   }
 
+  forEachOnBoard(func) {
+    this.board.forEach(section => {
+      section.forEach(creature => {
+        func(creature);
+      });
+    });
+  }
+
   enable(element="all") {
     if (element === "all" || element === "end turn") {
       this.div.endTurn.disabled = false;
@@ -99,19 +107,20 @@ class Player {
     }
 
     if (element === "all" || element === "board") {
-      this.board.forEach(section => {
-        if (section.length > 0) {
-          section.forEach(creature => {
-            if (creature.tapped) {
-              creature.blockHandler = creature.block.bind(creature);
-              creature.span.onclick = creature.blockHandler;
-            } else {
-              creature.tapHandler = creature.tap.bind(creature)
-              creature.span.onclick = creature.tapHandler;
-            }
-          });
-        }
-      });
+      if (this.board[0].length > 0) {
+        this.board[0].forEach(creature => {
+          creature.tapHandler = creature.tap.bind(creature)
+          creature.span.onclick = creature.tapHandler;
+        });
+      }
+
+      if (this.board[1].length > 0) {
+        this.board[1].forEach(creature => {
+          creature.blockHandler = creature.block.bind(creature);
+          creature.span.onclick = creature.blockHandler;
+        });
+      }
+
     }
 
     if (element === "all" || element === "discard button") {
@@ -140,23 +149,23 @@ class Player {
     }
 
     if (element === "all" || element === "board") {
-      this.board.forEach(section => {
-        if (section.length> 0) {
-          section.forEach(creature => {
-            if (creature.tapped) {
-              if (creature.blockHandler) {
-                creature.span.onclick = null;
-                delete creature.blockHandler;
-              }
-            } else {
-              if (creature.tapHandler) {
-                creature.span.onclick = null;
-                delete creature.tapHandler;
-              }
-            }
-          });
-        }
-      });
+      if (this.board[0].length > 0) {
+        this.board[0].forEach(creature => {
+          if (creature.tapHandler) {
+            creature.span.onclick = null;
+            delete creature.tapHandler;
+          }
+        });
+      }
+
+      if (this.board[1].length > 0) {
+        this.board[1].forEach(creature => {
+          if (creature.blockHandler) {
+            creature.span.onclick = null;
+            delete creature.blockHandler;
+          }
+        });
+      }
     }
     
     if (element === "all" || element === "discard button") {
@@ -182,6 +191,10 @@ class Player {
   }
 
   startTurnRoutine() {
+    if (this.turn > 0) {
+      this.forEachOnBoard(creature => { creature.sufferVenom(); });
+    }
+
     this.adder += 1;
     this.turn += 1;
     this.addGold(3 + this.adder);
@@ -230,29 +243,108 @@ class Player {
       }
       this.spendGold(card.cost);
       this.hand.splice(index, 1);
-      this.board[0].push(card);
       card.span.remove();
       this.div.board.appendChild(card.span);
-      if (card.playHandler) {
-        card.span.onclick = null;
-        delete card.playHandler;
+
+      if (card.checkKeyword("S")) {
+        this.stamina(card);
+      } else {
+        this.board[0].push(card);
+
+        if (card.playHandler) {
+          card.span.onclick = null;
+          delete card.playHandler;
+        }
+        card.tapHandler = card.tap.bind(card);
+        card.span.onclick = card.tapHandler;
+        card.span.style.borderColor = "blue";
+
+        if (card instanceof Creature) {
+          this.keywordsOnPlay(card); 
+        }
       }
-      card.tapHandler = card.tap.bind(card);
-      card.span.onclick = card.tapHandler;
-      card.span.style.borderColor = "blue";
     }
+  }
+
+  keywordsOnPlay(card) {
+    this.haste(card);
+    this.creatureRemovalAndIndestructible(card);
+  }
+
+  //keyword on play
+  haste(card) {
+    if (card.checkKeyword("H") && card.firstTurn) {
+      card.attack *= 2;
+      card.updateSpan();
+      display(`${card.name} is using Haste!`);
+      setTimeout(() => {display(`${this.name} to move`)}, 1500);
+    }
+  }
+
+  //keyword on play
+  creatureRemovalAndIndestructible(card) {
+    const enemyBoard = this.opponent.board.flat();
+
+    if (card.checkKeyword("C")) {
+      if (enemyBoard.length > 0) {
+        if (enemyBoard.every(creature => { return creature.checkKeyword("I"); })) {
+          display(
+            `${card.name} is using Creature Removal but all enemy creatures are Indestructible!`
+          )
+          setTimeout(() => {display(`${this.name} to move`);}, 1500);
+          return;
+        }
+        display(
+          `${card.name} is using Creature Removal! ${this.name}, choose a creature to remove.`
+        );
+
+        this.opponent.disable("board");
+        this.opponent.forEachOnBoard(creature => {
+          if (!creature.checkKeyword("I")) {
+            creature.removeHandler = () => {
+              creature.OWNER.discard(creature);
+
+              if (creature.removeHandler) {
+                creature.span.onclick = null;
+                delete creature.removeHandler;
+              }
+
+              creature.OWNER.forEachOnBoard(creature => {
+                if (creature.removeHandler) {
+                  creature.span.onclick = null;
+                  delete creature.removeHandler;
+                }
+              });
+
+              display(`${this.name} to move.`);
+            }
+
+            creature.span.onclick = creature.removeHandler;
+          }
+        });
+      }
+    }
+  }
+
+  stamina(card) {
+    this.board.forEach(section => { section.push(card); });
+    card.span.style.borderColor = "purple";
+    display(`${card.name} is using stamina!`);
+    setTimeout(() => { card.setTarget(); }, 1500);
   }
 
   discard(card) {
     for (let section of this.board) {
       if (section.includes(card)) {
         section.splice(section.indexOf(card), 1);
-        this.discards.push(card);
-        card.discard();
-        this.div.update();
-        this.div.discardModalCardSpace.appendChild(card.span);
       }
     }
+
+    //this block is outside of the loop as a stamina creature will appear in each section of the board
+    this.discards.push(card);
+    card.discard();
+    this.div.update();
+    this.div.discardModalCardSpace.appendChild(card.span);
   }
 
   reviveCard(card, paid=false) {
@@ -277,16 +369,25 @@ class Player {
     return false;
   }
 
-  endTurnRoutine() {
+  async endTurnRoutine() {
+    this.disable();
+
     for (let creature of this.board[1]) {
-      if (creature instanceof Creature) {
-        creature.goAttack()
-      }
+        if (creature instanceof Creature) {
+            if (!creature.checkKeyword("T")) {
+                creature.goAttack();
+            } else {
+                await creature.trampleAttack();
+            }
+        }
     }
 
-    this.disable();
-    this.opponent.enable();
-    this.opponent.startTurnRoutine();
+    this.forEachOnBoard(creature => { creature.firstTurn = false; })
+    
+    setTimeout(() => {
+        this.opponent.enable();
+        this.opponent.startTurnRoutine();
+    }, 1000);
   }
 }
 
