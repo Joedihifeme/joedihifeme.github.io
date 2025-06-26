@@ -1,8 +1,9 @@
 import Creature from "./creature.js"
+import Consumable from "./consumables.js";
 import Player from "./playerClass.js"
 import { setupGame } from "./functions.js";
 
-const creatures = [];
+const cards = [];
 const players = [];
 const gameDiv = document.getElementById("game");
 var displayMode = "white";
@@ -17,10 +18,16 @@ fetch('./cards.json')
   })
   .then(data => {
     data.creatures.forEach(creature => {
-      creatures.push(new Creature(
+      cards.push(new Creature(
         creature.name, creature.attack, creature.health, 
         creature.gold, creature.type, creature.keywords
       ));
+    });
+
+    data.consumables.forEach(consumable => {
+      if (consumable.implemented) {
+        cards.push(new Consumable(consumable.name, consumable.gold, consumable.ability));
+      }
     });
   })
   .catch(error => {
@@ -75,9 +82,9 @@ settingsButton.onclick = () => {
 function lightMode(screenMode) {
   document.body.style.backgroundColor = "white";
   document.body.style.color = "black";
-  creatures.forEach(creature => {
-    creature.span.style.borderColor = "black";
-    creature.span.color = "black";
+  cards.forEach(card => {
+    card.span.style.borderColor = "black";
+    card.span.color = "black";
   });
 
   screenMode.innerHTML = "Dark mode";
@@ -87,8 +94,8 @@ function lightMode(screenMode) {
 function darkMode(screenMode) {
   document.body.style.backgroundColor = "black";
   document.body.style.color = "#FAEBD7";
-  creatures.forEach(creature => {
-    creature.span.style.borderColor = "#FAEBD7";
+  cards.forEach(card => {
+    card.span.style.borderColor = "#FAEBD7";
   });
 
   screenMode.innerHTML = "Light mode";
@@ -112,13 +119,13 @@ function askForName(inputBox, text, div) {
     players[0].opponent = players[1];
     players[1].id = 1;
     players[1].opponent = players[0];
-    assignCards(players, creatures);
+    assignCards(players, cards);
   }
 }
 
-function assignCards(players, creatures) {
+function assignCards(players, cards) {
   const div = document.createElement("div");
-  div.setAttribute("class", "card-choice-div");
+  div.setAttribute("id", "card-choice-div");
   gameDiv.appendChild(div);
   const text = document.createElement("p");
   div.appendChild(text);
@@ -128,14 +135,14 @@ function assignCards(players, creatures) {
 
   text.innerHTML = `${players[playerIndex].name}, choose ${cardCount} cards by clicking on them.`;
 
-  creatures.forEach(creature => {
-    const creatureSpan = creature.span;
-    creatureSpan.onclick = function chooseCard() {
+  cards.forEach(card => {
+    const cardSpan = card.span;
+    cardSpan.onclick = function chooseCard() {
       if (cardCount > 0) {
-        div.removeChild(creatureSpan);
-        removedSpans.push(creatureSpan);
-        creature.owner = players[playerIndex];
-        players[playerIndex].deck.push(creature.duplicate(), creature.copyCard()); 
+        div.removeChild(cardSpan);
+        removedSpans.push(cardSpan);
+        card.owner = players[playerIndex];
+        players[playerIndex].deck.push(card.duplicate(), card.copyCard()); 
         cardCount--;
         text.innerHTML = `${players[playerIndex].name}, choose ${cardCount} cards by clicking on them.`;
 
@@ -148,13 +155,13 @@ function assignCards(players, creatures) {
             text.innerHTML = `${players[playerIndex].name}, choose ${cardCount} cards by clicking on them.`;
           } else {
             div.remove();
-            creatures.forEach(creature => { creature.span.removeEventListener("click", chooseCard); });
+            cards.forEach(card => { card.span.removeEventListener("click", chooseCard); });
             setupGame(players, gameDiv, displayMode);
           };
         }
       }
     };
-    div.appendChild(creatureSpan);
+    div.appendChild(cardSpan);
   });
 }
 

@@ -42,14 +42,28 @@ class Creature extends Card {
 		this.updateSpan();
 	}
 
+	get keywordsHTML() {
+		let text = "";
+		if (this.keywords === null) {
+			return "";
+		}
+
+		this.keywords.forEach(element => {
+			let keyword = `(${element.toUpperCase()}) `
+			text += keyword;
+		});
+
+		return text
+	}
+
 	updateSpan() {
 		this.span.innerHTML = `
 			Card Type: Creature <br>
 			Name: ${this.name} <br>
 			Attack: ${this.attack} <br>
 			Health: ${this.health > 0 ? this.health : 0} <br>
-			Price: ${this.cost} gold <br>
-			Keywords: ${(this.keywords === null ? "None":this.keywords)} <br>
+			Price: ${this.cost} gold <hr>
+			${(this.keywordsHTML)} <br>
 			`;
 	}
 
