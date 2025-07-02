@@ -8,6 +8,13 @@ const players = [];
 const gameDiv = document.getElementById("game");
 var displayMode = "white";
 
+const savedMode = localStorage.getItem("displayMode");
+if (savedMode === "black") {
+  darkMode(); 
+} else {
+  lightMode();
+}
+
 fetch('./cards.json')
   .then(response => {
     if (!response.ok) {
@@ -79,27 +86,42 @@ settingsButton.onclick = () => {
   settingsPage.appendChild(backButton);
 };
 
-function lightMode(screenMode) {
+function lightMode(screenMode=undefined) {
   document.body.style.backgroundColor = "white";
   document.body.style.color = "black";
   cards.forEach(card => {
     card.span.style.borderColor = "black";
-    card.span.color = "black";
   });
 
-  screenMode.innerHTML = "Dark mode";
+  document.querySelectorAll('.modal-content').forEach(modal => {
+    modal.style.backgroundColor = "white";
+  });
+
+  if (screenMode !== undefined) {
+    screenMode.innerHTML = "Dark mode";
+  }
+  
   displayMode = "white";
+  localStorage.setItem("displayMode", displayMode);
 }
 
-function darkMode(screenMode) {
+function darkMode(screenMode=undefined) {
   document.body.style.backgroundColor = "black";
   document.body.style.color = "#FAEBD7";
   cards.forEach(card => {
     card.span.style.borderColor = "#FAEBD7";
   });
 
-  screenMode.innerHTML = "Light mode";
+  document.querySelectorAll('.modal-content').forEach(modal => {
+    modal.style.backgroundColor = "black";
+  });
+
+  if (screenMode !== undefined) {
+    screenMode.innerHTML = "Light mode";
+  }
+
   displayMode = "black";
+  localStorage.setItem("displayMode", displayMode);
 }
 
 function askForName(inputBox, text, div) {
@@ -141,7 +163,7 @@ function assignCards(players, cards) {
       if (cardCount > 0) {
         div.removeChild(cardSpan);
         removedSpans.push(cardSpan);
-        card.owner = players[playerIndex];
+        card.OWNER = players[playerIndex];
         players[playerIndex].deck.push(card.duplicate(), card.copyCard()); 
         cardCount--;
         text.innerHTML = `${players[playerIndex].name}, choose ${cardCount} cards by clicking on them.`;

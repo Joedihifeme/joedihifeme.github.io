@@ -1,6 +1,9 @@
 import Card from "./card.js";
+import Creature from "./creature.js";
+import { display } from "./functions.js";
 
 class Consumable extends Card {
+  
   targetTypes = [
     "in your hand", "all consumables", "all your creatures", "freefall",
     "target opponent's creature", "opponent", "opponent's turn", "your deck",
@@ -27,12 +30,24 @@ class Consumable extends Card {
 
   updateSpan() {
     this.span.innerHTML = `
-      Card Type: Consumable
+      Card Type: Consumable <br>
       Name: ${this.name} <br>
-      Price ${this.cost}<hr>
+      Price ${this.cost} gold<hr>
       ${this.DISPLAYED_ABILITY}
       `;
   }
+
+  duplicate() {
+		const dup = super.duplicate();
+		dup.updateSpan();
+		return dup;
+	}
+
+	copyCard() {
+		const copy = super.copyCard();
+		copy.updateSpan();
+		return copy;
+	}
 
   initialiseTargets(ability) {
     let foundTarget = false;
@@ -47,6 +62,132 @@ class Consumable extends Card {
     if (!foundTarget) {
       throw new Error(`Target not found for ${this.name}`);
     }
+  }
+
+  playConsumable() {
+    const board = this.OWNER.flatBoard
+    const creatures = board.filter(creature => { return creature instanceof Creature; });
+
+    if (this._targets.includes("cards in your hand")) {
+      if (this.OWNER.hand.length < 1) { return false; } 
+
+      this.OWNER.hand.forEach(card => { this.activateAbility(card); });
+      return true;
+    }
+
+    if (this._targets.includes("all your creatures")) {
+      if (board.length < 1) { return false; }
+
+      board.forEach(creature => {
+        if (creature instanceof Creature) { this.activateAbility(creature); }
+      });
+
+      return true;
+    }
+
+    if (this._targets.includes("target opponent's creature")) {
+      let i = 0;
+      this.OWNER.opponent.disable("board");
+      this.OWNER.opponent.board.flatBoard.forEach(creature => {
+        if (!creature instanceof Creature) { return; }
+
+        i++;
+        creature.addTargetHandler = () => {
+          this.activateAbility(creature);
+
+          if (creature.addTargetHandler) {
+            creature.span.onclick = null;
+            delete creature.addTargetHandler;
+          }
+
+          creatures.forEach(c => {
+            if (c.addTargetHandler) {
+              c.span.onclick = null;
+              delete c.addTargetHandler;
+            }
+          });
+
+          this.OWNER.opponent.enable("board");
+          display(`${this.OWNER.name} to move`);
+        }
+
+        creature.span.onclick = creature.addTargetHandler;
+        display(`${this.OWNER.name}, click on the card that will be affected by ${this.name}`);
+      });
+
+      if (i < 1) { return false; } else return true;
+
+    } else if (this._targets.includes("opponent")) {
+      this.activateAbility(this.OWNER.opponent);
+      return true;
+    }
+
+    if (this._targets.includes("your deck")) {
+      if (this.OWNER.deck > 0) { 
+        this.activateAbility(this.OWNER.deck); 
+        return true;
+      } else return false;
+    }
+
+    if (this._targets.includes("your hand")) {
+      if (this.OWNER.hand > 0) { 
+        this.activateAbility(this.OWNER.hand); 
+        return true;
+      } else return false;
+    }
+
+    if (this._targets.includes("target creature")) {
+      let i = 0;
+      this.OWNER.disable();
+
+      creatures.forEach(creature => {
+        if (!creature instanceof Creature) { return; }
+
+        i++;
+        creature.addTargetHandler = () => {
+          this.activateAbility(creature);
+
+          if (creature.addTargetHandler) {
+            creature.span.onclick = null;
+            delete creature.addTargetHandler;
+          }
+
+          creatures.forEach(c => {
+            if (c.addTargetHandler) {
+              c.span.onclick = null;
+              delete c.addTargetHandler;
+            }
+          });
+
+          this.OWNER.enable();
+          display(`${this.OWNER.name} to move`);
+        }
+
+        creature.span.onclick = creature.addTargetHandler;
+        display(`${this.OWNER.name}, click on the card that will be affected by ${this.name}`);
+      });
+
+      if (i < 1) { return false; } else return true;
+    }
+
+    if (this._targets.includes("freefall")) {
+      const freefall = this.OWNER.discards.filter(card => { return card instanceof Creature });
+      if (freefall.length < 1) { return false; }
+      
+      freefall.forEach(creature => { this.activateAbility(creature); });
+      return true;
+    }
+
+    return false;
+  }
+
+  discard() {
+    super.discard();
+    this.reset();
+  }
+
+  reset() {
+    this._targets.clear();
   }
 }
 

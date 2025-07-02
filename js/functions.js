@@ -1,3 +1,11 @@
+Array.prototype.remove = function(item) { 
+  let index = this.indexOf(item);
+
+  this.splice(index, 1); 
+};
+
+Array.prototype.clear = function() { this.splice(0, this.length); };
+
 function buildInterface(players, gameDiv, displayMode) {
   const p1Div = document.createElement("div");
   p1Div.setAttribute("id", "player1");
@@ -21,7 +29,7 @@ function buildInterface(players, gameDiv, displayMode) {
   const p1GoldSpan = document.createElement("span");
   p1GoldSpan.innerHTML = `Gold: ${players[0].gold}`;
   const p1EndTurn = document.createElement("button");
-  p1EndTurn.onclick = () => {players[0].endTurnRoutine();}
+  p1EndTurn.onclick = () => { players[0].endTurnRoutine(); }
   p1EndTurn.innerHTML = "End turn";
   p1Stats.appendChild(p1h2);
   p1Stats.appendChild(p1HealthSpan);
@@ -81,7 +89,7 @@ function buildInterface(players, gameDiv, displayMode) {
     discardModal.style.display = "none";
     const modalContent = document.createElement("div");
     modalContent.setAttribute("class", "modal-content");
-    modalContent.style.backgroundColor = displayMode === "white" ? "white" : "black";
+    modalContent.style.backgroundColor = displayMode;
     discardModal.appendChild(modalContent);
     const modalText = document.createElement("p");
     modalText.innerHTML = "Click on the card to bring back (for 2 gold)";
@@ -119,7 +127,7 @@ function buildInterface(players, gameDiv, displayMode) {
   const p2GoldSpan = document.createElement("span");
   p2GoldSpan.innerHTML = `Gold: ${players[1].gold}`;
   const p2EndTurn = document.createElement("button");
-  p2EndTurn.onclick = () => {players[1].endTurnRoutine();}
+  p2EndTurn.onclick = () => { players[1].endTurnRoutine(); }
   p2EndTurn.innerHTML = "End turn";
   p2Stats.appendChild(p2HealthSpan);
   p2Stats.appendChild(p2GoldSpan);
@@ -135,8 +143,8 @@ function display(text) {
   document.getElementById("text-space").innerHTML = text;
 }
 
-function setupGame(players, gameDiv) {
-  buildInterface(players, gameDiv);
+function setupGame(players, gameDiv, displayMode) {
+  buildInterface(players, gameDiv, displayMode);
 
   //players draw a starting 6
   players.forEach(player => {

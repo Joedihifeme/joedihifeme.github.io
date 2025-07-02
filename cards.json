@@ -281,6 +281,12 @@
       "implemented": false
     },
     {
+      "name" : "Zombie Growth",
+      "gold": "5",
+      "ability": "Give all creatures in freefall +1/+2",
+      "implemented": true
+    },
+    {
       "name": "Strategic Capture",
       "gold": "5",
       "ability": "Your opponent reveals their hand and you discard a card from their hand",
@@ -302,12 +308,6 @@
       "name": "Clone",
       "gold": "x",
       "ability": "Clone a card on the battlefield and pay the same manna cost as the original",
-      "implemented": false
-    },
-    {
-      "name": "Strengthen",
-      "gold": "3",
-      "ability": "Give (W)2 to target creature or give it 6HP",
       "implemented": false
     },
     {
@@ -341,7 +341,7 @@
       "gold1": "4",
       "ability1": "During your opponent's turn, your cards will take 2 less damage",
       "gold2": "x",
-      "ability2": "Target",
+      "ability2": "Target creature gains (L)2 and (I) for your opponent's next turn",
       "implemented": false
     },
     {
@@ -381,7 +381,7 @@
       "gold1": "3",
       "ability1": "Draw 3 cards",
       "gold2": "10",
-      "ability2": "Look at your entire deck and arrange it in any way",
+      "ability2": "Search your deck for any 3 cards and put them into your hand",
       "implemented": false
     },
     {
@@ -398,6 +398,14 @@
       "ability1": "Reset Haste",
       "gold2": "4",
       "ability2": "Remove all poison and hyena wither counters",
+      "implemented": false
+    },
+    {
+      "name" : "Strengthen",
+      "gold1" : "3",
+      "ability1" : "Give (W)2 to target creature",
+      "gold2" : "3",
+      "ability2" : "Give 6HP to target creature",
       "implemented": false
     }
   ]

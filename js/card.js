@@ -1,6 +1,5 @@
-import Player from "./playerClass.js"
-
 class Card {
+
 	abilityMap = new Map ([
 		["gain", ["+1/+2", "+2/+4", "-2/-4", "-5/-10", 
 			"(l)", "(i)", "(t)", "(f)", "(w)2", "(v)1", 
@@ -51,10 +50,6 @@ class Card {
 		return this._cost;
 	}
 
-	set owner(player) {
-		if (player instanceof Player) {this.OWNER = player;} else {throw "Owner must be of type Player";}
-	}
-
 	duplicate() {
 		const dup = Object.create(this);
 		dup.name += " I";
@@ -72,9 +67,29 @@ class Card {
 		return copy;
 	}
 
+	play() {
+		this.OWNER.playCard(this);
+	}
+
 	discard() {
 		this.discarded = true;
 		this.span.remove();
+		this.span.onclick = null;
+
+		this.reviveHandler = this.revive.bind(this);
+		this.span.onclick = this.reviveHandler;
+	}
+
+	revive() {
+		if (this.reviveHandler) {
+			this.span.onclick = null;
+			delete this.reviveHandler;
+		}
+
+		this.OWNER.reviveCard(this, true);
+
+		this.playHandler = this.play.bind(this);
+		this.span.onclick = this.playHandler;
 	}
 
 	initialiseAbility(ability) {
@@ -103,6 +118,38 @@ class Card {
 		}
 	}
 
+	activateAbility(target) {
+		if (this.ability === null) {
+			return;
+		}
+
+		for (let ability of this.ability) {
+			if (ability instanceof Map) {
+
+				if (ability.has("gain") || ability.has("give") || ability.has("gets")) {
+					for (let stat of ability.values()) {
+						if (target.keywordArr.includes(stat.toUpperCase())) {
+							target.addKeyword(stat);
+						} else if (stat.includes("ATCK")) {
+							target.changeStats("attack", stat[1]);
+						} else if (stat.includes("HP")) {
+							target.changeStats("health", stat[0]);
+						} else if (stat.includes("gold")) {
+							target.addGold(Number(stat));
+						} else {
+							target.changeStats("both", stat);
+						}
+					}
+
+				} //else if (ability.has("draw"))
+			
+			} else {
+				if (ability === "destroy") {
+					//TODO
+				}
+			}
+		}
+	}
 }
 
 export default Card;
