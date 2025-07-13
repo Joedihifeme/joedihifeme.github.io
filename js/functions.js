@@ -6,6 +6,14 @@ Array.prototype.remove = function(item) {
 
 Array.prototype.clear = function() { this.splice(0, this.length); };
 
+Array.prototype.count = function(item) {
+  let i = 0;
+  
+  this.forEach(element => {if (item === element) i++; });
+  
+  return i;
+}
+
 function buildInterface(players, gameDiv, displayMode) {
   const p1Div = document.createElement("div");
   p1Div.setAttribute("id", "player1");

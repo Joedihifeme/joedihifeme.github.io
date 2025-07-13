@@ -1,5 +1,6 @@
 import Creature from "./creature.js"
 import Consumable from "./consumables.js";
+import doubleConsumable from "./doubleconsumables.js";
 import Player from "./playerClass.js"
 import { setupGame } from "./functions.js";
 
@@ -34,6 +35,14 @@ fetch('./cards.json')
     data.consumables.forEach(consumable => {
       if (consumable.implemented) {
         cards.push(new Consumable(consumable.name, consumable.gold, consumable.ability));
+      }
+    });
+
+    data.doubleConsumables.forEach(dc => {
+      if (dc.implemented) {
+        cards.push(new doubleConsumable(
+          dc.name, dc.gold1, dc.ability1, dc.gold2, dc.ability2
+        ));
       }
     });
   })

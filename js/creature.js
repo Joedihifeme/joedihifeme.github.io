@@ -85,7 +85,7 @@ class Creature extends Card {
 		}
 
 		keywords.forEach(element => {
-			let keyword = element.substr(1, 1);
+			let keyword = element.substr(1, 1).toUpperCase();
 			if (this.numberedKeywords.includes(keyword)) {
 				keyword += element.at(-1);
 			}
@@ -142,7 +142,6 @@ class Creature extends Card {
 		super.discard();
 		this.attack = this.ATTACK;
 		this.health = this.HEALTH;
-		this.span.style.borderColor = this.span.style.color;
 		this.updateSpan();
 
 		if (this.tapHandler) {
@@ -187,15 +186,20 @@ class Creature extends Card {
 	}
 
 	setTarget() {
+		this.OWNER.disable();
 		display(`${this.OWNER.name}, click on what you want to target. (A player or a creature)`);
 		this.OWNER.opponent.targetHandler = function () {
 			this.assignTarget(this.OWNER.opponent);
+			this.OWNER.enable();
 		}.bind(this);
 		this.OWNER.opponent.div.h2.parentNode.onclick = this.OWNER.opponent.targetHandler;
 
 		for (let section of this.OWNER.opponent.board) {
 			for (let creature of section) {
-				creature.targetHandler = function () { this.assignTarget(creature); }.bind(this);
+				creature.targetHandler = function () { 
+					this.assignTarget(creature); 
+					this.OWNER.enable();
+				}.bind(this);
 				creature.span.onclick = creature.targetHandler;
 			}
 		}

@@ -25,11 +25,11 @@ class Card {
 		this._cost = Number(cost);
 		this.discarded = false;
 		this.OWNER = undefined;
-		this.ability = null;
+		this._ability = null;
 
 		//creatures do not have abilities (yet) so this will be skipped during their initialisation
 		if (ability !== null && targets !== null) {
-			this.ability = [];
+			this._ability = [];
 			this.initialiseAbility(ability.toLowerCase());
 			this.DISPLAYED_ABILITY = ability;
 		}
@@ -48,6 +48,14 @@ class Card {
 	//will be updated later once gold is done
 	get cost() {
 		return this._cost;
+	}
+
+	get dAbility1 () {
+    return this.DISPLAYED_ABILITY.toLowerCase();
+  }
+
+	get ability() {
+		return this._ability;
 	}
 
 	duplicate() {
@@ -75,6 +83,7 @@ class Card {
 		this.discarded = true;
 		this.span.remove();
 		this.span.onclick = null;
+		this.span.style.borderColor = this.span.style.color;
 
 		this.reviveHandler = this.revive.bind(this);
 		this.span.onclick = this.reviveHandler;
@@ -100,7 +109,7 @@ class Card {
 				value.forEach(element => {
 					if (ability.includes(element)) {
 						foundAbility = true;
-						this.ability.push(new Map([[key, element]]));
+						this._ability.push(new Map([[key, element]]));
 					}
 				});
 			}
@@ -109,7 +118,7 @@ class Card {
 		this.abilityArr.forEach(element => {
 			if (ability.includes(element)) {
 				foundAbility = true;
-				this.ability.push(element);
+				this._ability.push(element);
 			}
 		});
 
@@ -119,7 +128,7 @@ class Card {
 	}
 
 	activateAbility(target) {
-		if (this.ability === null) {
+		if (this._ability === null) {
 			return;
 		}
 
@@ -128,11 +137,11 @@ class Card {
 
 				if (ability.has("gain") || ability.has("give") || ability.has("gets")) {
 					for (let stat of ability.values()) {
-						if (target.keywordArr.includes(stat.toUpperCase())) {
+						if (target.keywordArr.includes(stat.substr(0, 3).toUpperCase())) {
 							target.addKeyword(stat);
-						} else if (stat.includes("ATCK")) {
+						} else if (stat.includes("atck")) {
 							target.changeStats("attack", stat[1]);
-						} else if (stat.includes("HP")) {
+						} else if (stat.includes("hp")) {
 							target.changeStats("health", stat[0]);
 						} else if (stat.includes("gold")) {
 							target.addGold(Number(stat));

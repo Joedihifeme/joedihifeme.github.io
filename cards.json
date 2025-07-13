@@ -289,7 +289,7 @@
     {
       "name": "Strategic Capture",
       "gold": "5",
-      "ability": "Your opponent reveals their hand and you discard a card from their hand",
+      "ability": "Discard a card from your opponent's hand",
       "implemented": false
     },
     {
@@ -347,10 +347,10 @@
     {
       "name": "Growth",
       "gold1": "2",
-      "ability1": "When played give +1/+2 to one of your creatures",
+      "ability1": "Give +1/+2 to target creature",
       "gold2": "4",
       "ability2": "Give +2/+4 to target creature",
-      "implemented": false
+      "implemented": true
     },
     {
       "name": "Weight",
@@ -371,10 +371,10 @@
     {
       "name": "Squish",
       "gold1": "3",
-      "ability1": "Target opponent's creatures gets -2/-4",
+      "ability1": "Target opponent's creature gets -2/-4",
       "gold2": "8",
       "ability2": "Target opponent's creature gets -5/-10",
-      "implemented": false
+      "implemented": true
     },
     {
       "name": "Delve",
@@ -406,7 +406,7 @@
       "ability1" : "Give (W)2 to target creature",
       "gold2" : "3",
       "ability2" : "Give 6HP to target creature",
-      "implemented": false
+      "implemented": true
     }
   ]
 }

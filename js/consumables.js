@@ -3,7 +3,7 @@ import Creature from "./creature.js";
 import { display } from "./functions.js";
 
 class Consumable extends Card {
-  
+
   targetTypes = [
     "in your hand", "all consumables", "all your creatures", "freefall",
     "target opponent's creature", "opponent", "opponent's turn", "your deck",
@@ -32,7 +32,7 @@ class Consumable extends Card {
     this.span.innerHTML = `
       Card Type: Consumable <br>
       Name: ${this.name} <br>
-      Price ${this.cost} gold<hr>
+      Price: ${this.cost} gold<hr>
       ${this.DISPLAYED_ABILITY}
       `;
   }
@@ -64,31 +64,39 @@ class Consumable extends Card {
     }
   }
 
+  get targets() {
+    return this._targets;
+  }
+
   playConsumable() {
     const board = this.OWNER.flatBoard
     const creatures = board.filter(creature => { return creature instanceof Creature; });
+    const targets = this.targets;
 
-    if (this._targets.includes("cards in your hand")) {
+    if (targets.includes("cards in your hand")) {
       if (this.OWNER.hand.length < 1) { return false; } 
 
       this.OWNER.hand.forEach(card => { this.activateAbility(card); });
+      this.OWNER.discard(this);
       return true;
     }
 
-    if (this._targets.includes("all your creatures")) {
+    if (targets.includes("all your creatures")) {
       if (board.length < 1) { return false; }
 
       board.forEach(creature => {
         if (creature instanceof Creature) { this.activateAbility(creature); }
       });
 
+      this.OWNER.discard(this);
       return true;
     }
 
-    if (this._targets.includes("target opponent's creature")) {
+    if (targets.includes("target opponent's creature")) {
       let i = 0;
+      this.OWNER.disable();
       this.OWNER.opponent.disable("board");
-      this.OWNER.opponent.board.flatBoard.forEach(creature => {
+      this.OWNER.opponent.flatBoard.forEach(creature => {
         if (!creature instanceof Creature) { return; }
 
         i++;
@@ -107,6 +115,8 @@ class Consumable extends Card {
             }
           });
 
+          this.OWNER.discard(this);
+          this.OWNER.enable();
           this.OWNER.opponent.enable("board");
           display(`${this.OWNER.name} to move`);
         }
@@ -117,26 +127,29 @@ class Consumable extends Card {
 
       if (i < 1) { return false; } else return true;
 
-    } else if (this._targets.includes("opponent")) {
+    } else if (targets.includes("opponent")) {
       this.activateAbility(this.OWNER.opponent);
+      this.OWNER.discard(this);
       return true;
     }
 
-    if (this._targets.includes("your deck")) {
+    if (targets.includes("your deck")) {
       if (this.OWNER.deck > 0) { 
         this.activateAbility(this.OWNER.deck); 
+        this.OWNER.discard(this);
         return true;
       } else return false;
     }
 
-    if (this._targets.includes("your hand")) {
+    if (targets.includes("your hand")) {
       if (this.OWNER.hand > 0) { 
         this.activateAbility(this.OWNER.hand); 
+        this.OWNER.discard(this);
         return true;
       } else return false;
     }
 
-    if (this._targets.includes("target creature")) {
+    if (targets.includes("target creature")) {
       let i = 0;
       this.OWNER.disable();
 
@@ -159,6 +172,7 @@ class Consumable extends Card {
             }
           });
 
+          this.OWNER.discard(this);
           this.OWNER.enable();
           display(`${this.OWNER.name} to move`);
         }
@@ -170,24 +184,16 @@ class Consumable extends Card {
       if (i < 1) { return false; } else return true;
     }
 
-    if (this._targets.includes("freefall")) {
+    if (targets.includes("freefall")) {
       const freefall = this.OWNER.discards.filter(card => { return card instanceof Creature });
       if (freefall.length < 1) { return false; }
       
       freefall.forEach(creature => { this.activateAbility(creature); });
+      this.OWNER.discard(this);
       return true;
     }
 
     return false;
-  }
-
-  discard() {
-    super.discard();
-    this.reset();
-  }
-
-  reset() {
-    this._targets.clear();
   }
 }
 

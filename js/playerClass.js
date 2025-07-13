@@ -1,5 +1,6 @@
 import Creature from "./creature.js";
 import Consumable from "./consumables.js";
+import doubleConsumable from "./doubleconsumables.js";
 import { display } from "./functions.js";
 
 class Player {
@@ -114,7 +115,7 @@ class Player {
     }
 
     if (element === "all" || element === "draw button") {
-      if (this.deck.length > 0 && this.gold >= 1) {
+      if ((this.deck.length > 0) && (this.gold >= 1)) {
         this.div.drawButton.disabled = false;
       }
     }
@@ -215,6 +216,7 @@ class Player {
     this.addGold(3 + this.adder);
     this.drawCard(1);
     display(`${this.name} to move`);
+    this.enable();
   }
 
   drawCard(num, paid=false) {
@@ -242,7 +244,7 @@ class Player {
   }
 
   playCard(card) {
-    if (this.gold < card.cost) {
+    if (this.gold < card.cost && !(card instanceof doubleConsumable)) {
       display("Not enough gold to play this card");
       setTimeout(() => { display(`${this.name} to move`); }, 1000);
       return;
@@ -252,13 +254,13 @@ class Player {
       this.div.board.innerHTML = "";
     }
 
-    this.spendGold(card.cost);
+    if (!(card instanceof doubleConsumable)) { this.spendGold(card.cost); }
     card.span.remove();
     this.hand.remove(card);
 
     if (card.playHandler) {
-        card.span.onclick = null;
-        delete card.playHandler;
+      card.span.onclick = null;
+      delete card.playHandler;
     }
 
     if (card instanceof Creature) {
@@ -279,12 +281,19 @@ class Player {
     } else if (card instanceof Consumable) {
       let ableToUse = card.playConsumable();
 
-      if (ableToUse) { this.discard(card); } else {
+      if (!ableToUse) {
         display(`${this.name}, you cannot use ${card.name} right now`);
         setTimeout(() => { display(`${this.name} to move`); }, 1000);
         this.hand.push(card);
         this.div.hand.appendChild(card.span);
-        this.addGold(card.cost);
+
+        if (card instanceof doubleConsumable) {
+          if (card.currentlyChosenAbility === 1) { 
+            this.addGold(card.cost); 
+          } else { 
+            this.addGold(card.cost2); 
+          }
+        } else { this.addGold(card.cost); }
       }
     }
   }
@@ -408,10 +417,7 @@ class Player {
 
     this.forEachOnBoard(creature => { creature.firstTurn = false; })
     
-    setTimeout(() => {
-        this.opponent.enable();
-        this.opponent.startTurnRoutine();
-    }, 1000);
+    setTimeout(() => { this.opponent.startTurnRoutine() }, 1000);
   }
 }
 
