@@ -1,9 +1,9 @@
 import Card from "./card.js";
 import Player from "./playerClass.js";
 import { display } from "./functions.js";
-import { displayMode } from "./frontpage.js";
 
 class Creature extends Card {
+
 	keywordArr = [
 		null, "H", "(H)", "F", "(F)", "R", "(R)", "C", "(C)", "I", "(I)", "T", "(T)", 
 		"L", "(L)", "W", "(W)", "V", "(V)", "D", "(D)", "S", "(S)", "G", "(G)"
@@ -25,7 +25,7 @@ class Creature extends Card {
 				if (this.keywordArr.includes(keyword[0])) {
 					this.keywords.push(keyword)
 				} else {
-					console.log(`Keyword "${keyword}" does not exist.`)
+					throw new Error(`Keyword "${keyword}" does not exist.`);
 				}
 			}
 		} else {
@@ -42,6 +42,20 @@ class Creature extends Card {
 		this.updateSpan();
 	}
 
+	get keywordsHTML() {
+		let text = "";
+		if (this.keywords === null) {
+			return "None";
+		}
+
+		this.keywords.forEach(element => {
+			let keyword = `(${element.toUpperCase()}) `
+			text += keyword;
+		});
+
+		return text
+	}
+
 	updateSpan() {
 		this.span.innerHTML = `
 			Card Type: Creature <br>
@@ -49,7 +63,7 @@ class Creature extends Card {
 			Attack: ${this.attack} <br>
 			Health: ${this.health > 0 ? this.health : 0} <br>
 			Price: ${this.cost} gold <br>
-			Keywords: ${(this.keywords === null ? "None":this.keywords)} <br>
+			Keywords: ${(this.keywordsHTML)} <br>
 			`;
 	}
 
@@ -65,16 +79,69 @@ class Creature extends Card {
 		return copy;
 	}
 
-	play() {
-		this.OWNER.playCard(this);
+	addKeyword(...keywords) {
+		if (this.keywords === null) {
+			this.keywords = [];
+		}
+
+		keywords.forEach(element => {
+			let keyword = element.substr(1, 1).toUpperCase();
+			if (this.numberedKeywords.includes(keyword)) {
+				keyword += element.at(-1);
+			}
+
+			this.keywords.push(keyword);
+		});
+
+		this.updateSpan();
+	}
+
+	removeKeyword(...keywords) {
+		if (this.keywords !== null) {
+			keywords.forEach(keyword => {
+				if (this.numberedKeywords.includes(keyword)) {
+					this.keywords.remove(keyword + this.getKeywordX(keyword).toString());
+				} else {
+					this.keywords.remove(keyword);
+				}
+			});
+
+			if (this.keywords.length < 1) {
+				this.keywords = null;
+			}
+		}
+
+		this.updateSpan();
+	}
+
+	changeStats(stat, amount) {
+		if (stat === "both") {
+			let stats = amount.split("/");
+			this.attack += Number(stats[0]);
+			this.health += Number(stats[1]);
+		} else if (stat === "attack") {
+			this.attack += Number(amount);
+		} else if (stat === "health") {
+			this.health += Number(amount);
+		} else {
+			throw new Error("Stat not defined");
+		}
+
+		if (this.attack < 0) {
+			this.attack = 0;
+		}
+
+		if (this.health < 0) {
+			this.OWNER.discard(this);
+		}
+
+		this.updateSpan();
 	}
 
 	discard() {
 		super.discard();
 		this.attack = this.ATTACK;
 		this.health = this.HEALTH;
-		this.span.onclick = null;
-		this.span.style.borderColor = this.span.style.color;
 		this.updateSpan();
 
 		if (this.tapHandler) {
@@ -82,27 +149,10 @@ class Creature extends Card {
 		} else {
 			delete this.blockHandler;
 		}
-
-		this.reviveHandler = this.revive.bind(this);
-		this.span.onclick = this.reviveHandler;
-	}
-
-	revive() {
-		if (this.reviveHandler) {
-			this.span.onclick = null;
-			delete this.reviveHandler;
-		}
-
-		this.OWNER.reviveCard(this, true);
-
-		this.playHandler = this.play.bind(this);
-		this.span.onclick = this.playHandler;
 	}
 
 	tap() {
-		//find the index of the card, then slice it out of the array
-		let index = this.OWNER.board[0].indexOf(this);
-		this.OWNER.board[0].splice(index, 1);
+		this.OWNER.board[0].remove(this);
 		this.OWNER.board[1].push(this);
 		this.span.style.borderColor = "red";
 		if (this.tapHandler) {
@@ -123,7 +173,7 @@ class Creature extends Card {
 	}
 
 	block() {
-		this.OWNER.board[1].splice(this.OWNER.board[1].indexOf(this), 1);
+		this.OWNER.board[1].remove(this);
 		this.OWNER.board[0].push(this);
 		this.span.style.borderColor = "blue";
 		if (this.blockHandler) {
@@ -136,15 +186,20 @@ class Creature extends Card {
 	}
 
 	setTarget() {
+		this.OWNER.disable();
 		display(`${this.OWNER.name}, click on what you want to target. (A player or a creature)`);
 		this.OWNER.opponent.targetHandler = function () {
 			this.assignTarget(this.OWNER.opponent);
+			this.OWNER.enable();
 		}.bind(this);
 		this.OWNER.opponent.div.h2.parentNode.onclick = this.OWNER.opponent.targetHandler;
 
 		for (let section of this.OWNER.opponent.board) {
 			for (let creature of section) {
-				creature.targetHandler = function () { this.assignTarget(creature); }.bind(this);
+				creature.targetHandler = function () { 
+					this.assignTarget(creature); 
+					this.OWNER.enable();
+				}.bind(this);
 				creature.span.onclick = creature.targetHandler;
 			}
 		}
@@ -256,7 +311,7 @@ class Creature extends Card {
 		let target;
 		let firstStrike = this.checkKeyword("F");
 		let useDefender = false;
-		const defender = this.OWNER.opponent.board.flat().find(creature => {
+		const defender = this.OWNER.opponent.flatBoard.find(creature => {
 			if (creature.checkKeyword("D")) {
 				return true;
 			}
@@ -405,7 +460,6 @@ class Creature extends Card {
 		
 		return false;
 	}
-	
 }
 
 export default Creature

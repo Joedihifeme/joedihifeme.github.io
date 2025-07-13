@@ -17,6 +17,14 @@
       "keywords": ""
     },
     {
+      "name" : "Monkey Twins",
+      "attack": 1,
+      "health": 2,
+      "gold": "3",
+      "type": "n",
+      "keywords": "G2"
+    },
+    {
       "name": "Chimpanzee",
       "attack": 2,
       "health": 4,
@@ -225,6 +233,14 @@
       "keywords": "C"
     },
     {
+      "name": "Scorpion",
+      "attack": 1,
+      "health": 5,
+      "gold": "6",
+      "type": "n",
+      "keywords": "G1,I"
+    },
+    {
       "name": "Leech",
       "attack": 1,
       "health": 3,
@@ -278,61 +294,61 @@
       "name": "Blood Moon",
       "gold": "6",
       "ability": "All cards in your hand are also hyena cards",
-      "implemented": "n"
+      "implemented": false
+    },
+    {
+      "name" : "Zombie Growth",
+      "gold": "5",
+      "ability": "Give all creatures in freefall +1/+2",
+      "implemented": true
     },
     {
       "name": "Strategic Capture",
       "gold": "5",
-      "ability": "Your opponent reveals their hand and you discard a card from their hand",
-      "implemented": "n"
+      "ability": "Discard a card from your opponent's hand",
+      "implemented": true
     },
     {
       "name": "Summon",
       "gold": "3",
       "ability": "Search your deck for a card, reveal it and put it into your hand. Then, lose 3 health",
-      "implemented": "n"
+      "implemented": false
     },
     {
       "name": "Imminent Threat",
       "gold": "7",
       "ability": "Target creature gets +2/+4 and (I) and hexproof",
-      "implemented": "n"
+      "implemented": true
     },
     {
       "name": "Clone",
       "gold": "x",
       "ability": "Clone a card on the battlefield and pay the same manna cost as the original",
-      "implemented": "n"
-    },
-    {
-      "name": "Strengthen",
-      "gold": "3",
-      "ability": "Give (W)2 to target creature or give it 6HP",
-      "implemented": "n"
+      "implemented": false
     },
     {
       "name": "Thieve",
       "gold": "x",
       "ability": "Discard x cards from your hand and gain x gold",
-      "implemented": "n"
+      "implemented": false
     },
     {
       "name": "Royalty",
       "gold": "2",
       "ability": "Counter target card or all other consumables cost 1 mana less to cast",
-      "implemented": "n"
+      "implemented": false
     },
     {
       "name": "Annoy",
       "gold": "5",
       "ability": "This card can be played on your opponent's turns. If you play this right after a consumble is cast, that consumable does nothing and goes to the discard pile",
-      "implemented": "n"
+      "implemented": false
     },
     {
       "name": "Buffalo's protection",
       "gold": "6",
       "ability": "All target creatures gain (I)",
-      "implemented": "n"
+      "implemented": true
     }
   ],
   "doubleConsumables": [
@@ -341,16 +357,16 @@
       "gold1": "4",
       "ability1": "During your opponent's turn, your cards will take 2 less damage",
       "gold2": "x",
-      "ability2": "Target",
-      "implemented": "n"
+      "ability2": "Target creature gains (L)2 and (I) for your opponent's next turn",
+      "implemented": false
     },
     {
       "name": "Growth",
       "gold1": "2",
-      "ability1": "When played give +1/+2 to one of your creatures",
+      "ability1": "Give +1/+2 to target creature",
       "gold2": "4",
       "ability2": "Give +2/+4 to target creature",
-      "implemented": "n"
+      "implemented": true
     },
     {
       "name": "Weight",
@@ -358,7 +374,7 @@
       "ability1": "Give target creature (T)",
       "gold2": "3x",
       "ability2": "Target creaure takes 2x less damage from larger creatures permanently",
-      "implemented": "n"
+      "implemented": false
     },
     {
       "name": "Destruction",
@@ -366,23 +382,23 @@
       "ability1": "Destroy target creature",
       "gold2": "5",
       "ability2": "Destroy target structure",
-      "implemented": "n"
+      "implemented": false
     },
     {
       "name": "Squish",
       "gold1": "3",
-      "ability1": "Target opponent's creatures gets -2/-4",
+      "ability1": "Target opponent's creature gets -2/-4",
       "gold2": "8",
       "ability2": "Target opponent's creature gets -5/-10",
-      "implemented": "n"
+      "implemented": true
     },
     {
       "name": "Delve",
       "gold1": "3",
       "ability1": "Draw 3 cards",
       "gold2": "10",
-      "ability2": "Look at your entire deck and arrange it in any way",
-      "implemented": "n"
+      "ability2": "Search your deck for any 3 cards and put them into your hand",
+      "implemented": false
     },
     {
       "name": "Speed up",
@@ -390,7 +406,7 @@
       "ability1": "Give target creature (F)",
       "gold2": "5",
       "ability2": "All cards that attack this turn gets +1 ATCK",
-      "implemented": "n"
+      "implemented": false
     },
     {
       "name": "Allegiance",
@@ -398,7 +414,15 @@
       "ability1": "Reset Haste",
       "gold2": "4",
       "ability2": "Remove all poison and hyena wither counters",
-      "implemented": "n"
+      "implemented": false
+    },
+    {
+      "name" : "Strengthen",
+      "gold1" : "3",
+      "ability1" : "Give (W)2 to target creature",
+      "gold2" : "3",
+      "ability2" : "Give 6HP to target creature",
+      "implemented": true
     }
   ]
 }

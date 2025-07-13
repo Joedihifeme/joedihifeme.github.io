@@ -1,7 +1,10 @@
 import Creature from "./creature.js";
+import Consumable from "./consumables.js";
+import doubleConsumable from "./doubleconsumables.js";
 import { display } from "./functions.js";
 
 class Player {
+
   constructor (name) {
     this.name = name;
     this.id = undefined;
@@ -78,6 +81,17 @@ class Player {
     return this._div;
   }
 
+  get flatBoard() {
+    //change the board to a Set to remove duplicates, then change it back to an Array
+    //Arrays have more methods than sets, which is why it's being used instead
+    const arr = Array.from(new Set(this.board.flat()));
+    return arr;
+  }
+
+  get keywords() {
+    return Creature.keywords();
+  }
+
   forEachOnBoard(func) {
     this.board.forEach(section => {
       section.forEach(creature => {
@@ -101,7 +115,7 @@ class Player {
     }
 
     if (element === "all" || element === "draw button") {
-      if (this.deck.length > 0) {
+      if ((this.deck.length > 0) && (this.gold >= 1)) {
         this.div.drawButton.disabled = false;
       }
     }
@@ -124,7 +138,9 @@ class Player {
     }
 
     if (element === "all" || element === "discard button") {
-      this.div.discardButton.disabled = false;
+      if (this.gold >= 2) {
+        this.div.discardButton.disabled = false;
+      }
     }
   }
 
@@ -200,6 +216,7 @@ class Player {
     this.addGold(3 + this.adder);
     this.drawCard(1);
     display(`${this.name} to move`);
+    this.enable();
   }
 
   drawCard(num, paid=false) {
@@ -227,23 +244,26 @@ class Player {
   }
 
   playCard(card) {
-    if (this.gold < card.cost) {
+    if (this.gold < card.cost && !(card instanceof doubleConsumable)) {
       display("Not enough gold to play this card");
-      setTimeout(() => {display(`${this.name} to move`)}, 1000);
+      setTimeout(() => { display(`${this.name} to move`); }, 1000);
       return;
     }
 
-    let index = this.hand.indexOf(card);
+    if (this.div.board.innerHTML === "No cards placed...") {
+      this.div.board.innerHTML = "";
+    }
 
-    if (index === -1) {
-      throw new Error("Card not in hand");
-    } else {
-      if (this.div.board.innerHTML === "No cards placed...") {
-        this.div.board.innerHTML = "";
-      }
-      this.spendGold(card.cost);
-      this.hand.splice(index, 1);
-      card.span.remove();
+    if (!(card instanceof doubleConsumable)) { this.spendGold(card.cost); }
+    card.span.remove();
+    this.hand.remove(card);
+
+    if (card.playHandler) {
+      card.span.onclick = null;
+      delete card.playHandler;
+    }
+
+    if (card instanceof Creature) {
       this.div.board.appendChild(card.span);
 
       if (card.checkKeyword("S")) {
@@ -251,17 +271,29 @@ class Player {
       } else {
         this.board[0].push(card);
 
-        if (card.playHandler) {
-          card.span.onclick = null;
-          delete card.playHandler;
-        }
         card.tapHandler = card.tap.bind(card);
         card.span.onclick = card.tapHandler;
         card.span.style.borderColor = "blue";
 
-        if (card instanceof Creature) {
-          this.keywordsOnPlay(card); 
-        }
+      this.keywordsOnPlay(card); 
+      }
+
+    } else if (card instanceof Consumable) {
+      let ableToUse = card.playConsumable();
+
+      if (!ableToUse) {
+        display(`${this.name}, you cannot use ${card.name} right now`);
+        setTimeout(() => { display(`${this.name} to move`); }, 1000);
+        this.hand.push(card);
+        this.div.hand.appendChild(card.span);
+
+        if (card instanceof doubleConsumable) {
+          if (card.currentlyChosenAbility === 1) { 
+            this.addGold(card.cost); 
+          } else { 
+            this.addGold(card.cost2); 
+          }
+        } else { this.addGold(card.cost); }
       }
     }
   }
@@ -269,6 +301,7 @@ class Player {
   keywordsOnPlay(card) {
     this.haste(card);
     this.creatureRemovalAndIndestructible(card);
+    this.grab(card)
   }
 
   //keyword on play
@@ -283,7 +316,7 @@ class Player {
 
   //keyword on play
   creatureRemovalAndIndestructible(card) {
-    const enemyBoard = this.opponent.board.flat();
+    const enemyBoard = this.opponent.flatBoard;
 
     if (card.checkKeyword("C")) {
       if (enemyBoard.length > 0) {
@@ -294,6 +327,7 @@ class Player {
           setTimeout(() => {display(`${this.name} to move`);}, 1500);
           return;
         }
+        
         display(
           `${card.name} is using Creature Removal! ${this.name}, choose a creature to remove.`
         );
@@ -326,6 +360,18 @@ class Player {
     }
   }
 
+  //keyword on play
+  grab(card) {
+    if (card.checkKeyword("G") && this.discards.length > 0) {
+      let n = card.getKeywordX("G");
+
+      for (let i = 0; i < n; i++) {
+        const consum = this.discards.find(card => { return card instanceof Consumable });
+        if (consum !== undefined) { consum.revive(false); }
+      }
+    }
+  }
+
   stamina(card) {
     this.board.forEach(section => { section.push(card); });
     card.span.style.borderColor = "purple";
@@ -336,7 +382,7 @@ class Player {
   discard(card) {
     for (let section of this.board) {
       if (section.includes(card)) {
-        section.splice(section.indexOf(card), 1);
+        section.remove(card);
       }
     }
 
@@ -348,7 +394,7 @@ class Player {
   }
 
   reviveCard(card, paid=false) {
-    this.discards.splice(this.discards.indexOf(card), 1);
+    this.discards.remove(card);
     this.hand.push(card);
     this.div.hand.appendChild(card.span);
     if (paid) {
@@ -384,10 +430,7 @@ class Player {
 
     this.forEachOnBoard(creature => { creature.firstTurn = false; })
     
-    setTimeout(() => {
-        this.opponent.enable();
-        this.opponent.startTurnRoutine();
-    }, 1000);
+    setTimeout(() => { this.opponent.startTurnRoutine() }, 1000);
   }
 }
 
