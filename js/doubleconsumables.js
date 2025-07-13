@@ -34,7 +34,6 @@ class doubleConsumable extends Consumable {
     return this.DISPLAYED_ABILITY2.toLowerCase();
   }
 
-  //To fix next time
   get ability() {
     const chosenAbility = [];
 
@@ -151,8 +150,8 @@ class doubleConsumable extends Consumable {
     display(`${this.OWNER.name}, click on the ability you want to use`);
   }
 
-  revive() {
-    super.revive();
+  revive(paid=true) {
+    super.revive(paid);
     this.currentlyChosenAbility = 0;
   }
 }

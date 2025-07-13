@@ -17,6 +17,14 @@
       "keywords": ""
     },
     {
+      "name" : "Monkey Twins",
+      "attack": 1,
+      "health": 2,
+      "gold": "3",
+      "type": "n",
+      "keywords": "G2"
+    },
+    {
       "name": "Chimpanzee",
       "attack": 2,
       "health": 4,
@@ -225,6 +233,14 @@
       "keywords": "C"
     },
     {
+      "name": "Scorpion",
+      "attack": 1,
+      "health": 5,
+      "gold": "6",
+      "type": "n",
+      "keywords": "G1,I"
+    },
+    {
       "name": "Leech",
       "attack": 1,
       "health": 3,
@@ -290,7 +306,7 @@
       "name": "Strategic Capture",
       "gold": "5",
       "ability": "Discard a card from your opponent's hand",
-      "implemented": false
+      "implemented": true
     },
     {
       "name": "Summon",
@@ -332,7 +348,7 @@
       "name": "Buffalo's protection",
       "gold": "6",
       "ability": "All target creatures gain (I)",
-      "implemented": false
+      "implemented": true
     }
   ],
   "doubleConsumables": [

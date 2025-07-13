@@ -301,6 +301,7 @@ class Player {
   keywordsOnPlay(card) {
     this.haste(card);
     this.creatureRemovalAndIndestructible(card);
+    this.grab(card)
   }
 
   //keyword on play
@@ -355,6 +356,18 @@ class Player {
             creature.span.onclick = creature.removeHandler;
           }
         });
+      }
+    }
+  }
+
+  //keyword on play
+  grab(card) {
+    if (card.checkKeyword("G") && this.discards.length > 0) {
+      let n = card.getKeywordX("G");
+
+      for (let i = 0; i < n; i++) {
+        const consum = this.discards.find(card => { return card instanceof Consumable });
+        if (consum !== undefined) { consum.revive(false); }
       }
     }
   }

@@ -7,8 +7,9 @@ class Consumable extends Card {
   targetTypes = [
     "in your hand", "all consumables", "all your creatures", "freefall",
     "target opponent's creature", "opponent", "opponent's turn", "your deck",
-    "your entire deck", "your hand", "target creature in discard pile",
-    "target creature", "target structure", "target card", "a card"
+    "your entire deck", "your hand", "opponent's hand", "all target creatures", 
+    "target creature in discard pile","target creature", "target structure", "target card", 
+    "a card"
   ];
 
   specialConsumables = ["annoy"];
@@ -127,6 +128,13 @@ class Consumable extends Card {
 
       if (i < 1) { return false; } else return true;
 
+    } else if (targets.includes("opponent's hand")) {
+      if (this.OWNER.opponent.hand.length < 1) { return false; }
+
+      this.activateAbility(this.OWNER.opponent.hand); 
+      this.OWNER.discard(this);
+      return true;
+      
     } else if (targets.includes("opponent")) {
       this.activateAbility(this.OWNER.opponent);
       this.OWNER.discard(this);
@@ -134,22 +142,30 @@ class Consumable extends Card {
     }
 
     if (targets.includes("your deck")) {
-      if (this.OWNER.deck > 0) { 
-        this.activateAbility(this.OWNER.deck); 
-        this.OWNER.discard(this);
-        return true;
-      } else return false;
+      if (this.OWNER.deck.length < 1) { return false; }
+
+      this.activateAbility(this.OWNER.deck); 
+      this.OWNER.discard(this);
+      return true;
     }
 
     if (targets.includes("your hand")) {
-      if (this.OWNER.hand > 0) { 
-        this.activateAbility(this.OWNER.hand); 
-        this.OWNER.discard(this);
-        return true;
-      } else return false;
+      if (this.OWNER.hand.length < 1) { return false; }
+
+      this.activateAbility(this.OWNER.hand); 
+      this.OWNER.discard(this);
+      return true;
     }
 
-    if (targets.includes("target creature")) {
+    if (targets.includes("all target creatures")) {
+      if (board.length < 1) { return false; }
+
+      board.forEach(card => { this.activateAbility(card); });    
+      this.OWNER.discard(this);
+      return true;
+    }
+
+    else if (targets.includes("target creature")) {
       let i = 0;
       this.OWNER.disable();
 

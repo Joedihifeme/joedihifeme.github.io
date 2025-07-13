@@ -1,3 +1,5 @@
+import { display } from "./functions.js";
+
 class Card {
 
 	abilityMap = new Map ([
@@ -14,7 +16,7 @@ class Card {
 		["reset", "haste"],
 		["draw", "3"],
 		["arrange", "in any way"],
-		["discard", "x cards"],
+		["discard", ["x cards", "a card"]],
 		["pay", "same mana cost"]
 	]);
 
@@ -89,13 +91,13 @@ class Card {
 		this.span.onclick = this.reviveHandler;
 	}
 
-	revive() {
+	revive(paid=true) {
 		if (this.reviveHandler) {
 			this.span.onclick = null;
 			delete this.reviveHandler;
 		}
 
-		this.OWNER.reviveCard(this, true);
+		this.OWNER.reviveCard(this, paid);
 
 		this.playHandler = this.play.bind(this);
 		this.span.onclick = this.playHandler;
@@ -147,6 +149,34 @@ class Card {
 							target.addGold(Number(stat));
 						} else {
 							target.changeStats("both", stat);
+						}
+					}
+
+				} else if (ability.has("discard")) {
+					for (let number of ability.values()) {
+						if (number.includes("a card")) {
+							this.OWNER.opponent.disable("hand");
+							this.OWNER.opponent.disable("board");
+
+							target.forEach(card => {
+								card.addTargetHandler = () => {
+									target.forEach(c => {
+										if (c.addTargetHandler) {
+											c.span.onclick = null;
+											delete c.addTargetHandler
+										}
+									});
+
+									card.OWNER.discard(card);
+									card.OWNER.enable("hand");
+									card.OWNER.enable("board");
+									display(`${card.OWNER.opponent.name} to move`);
+								}
+
+								card.span.onclick = card.addTargetHandler;
+							});
+
+							display(`${this.OWNER.name}, discard a card`);
 						}
 					}
 

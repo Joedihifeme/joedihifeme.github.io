@@ -45,7 +45,7 @@ class Creature extends Card {
 	get keywordsHTML() {
 		let text = "";
 		if (this.keywords === null) {
-			return "";
+			return "None";
 		}
 
 		this.keywords.forEach(element => {
@@ -62,8 +62,8 @@ class Creature extends Card {
 			Name: ${this.name} <br>
 			Attack: ${this.attack} <br>
 			Health: ${this.health > 0 ? this.health : 0} <br>
-			Price: ${this.cost} gold <hr>
-			${(this.keywordsHTML)} <br>
+			Price: ${this.cost} gold <br>
+			Keywords: ${(this.keywordsHTML)} <br>
 			`;
 	}
 
