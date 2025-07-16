@@ -76,18 +76,15 @@ class doubleConsumable extends Consumable {
     this._targets.forEach(target => {
       if (this._targets.count(target) > 1) {
           temp.push(this._targets[0]);
-          this._targets.remove(target);
       }
 
       if (this.currentlyChosenAbility === 1) {
         if (this.dAbility2.includes(target) && !this.dAbility1.includes(target)) {
           temp.push(target);
-          this._targets.remove(target);
         }
       } else {
         if (this.dAbility1.includes(target) && !this.dAbility2.includes(target)) {
           temp.push(target);
-          this._targets.remove(target);
         }
       }
     });
@@ -99,6 +96,7 @@ class doubleConsumable extends Consumable {
   play() {
     this.span.style.borderColor = "red";
  
+    console.log(this.span.onclick);
     this.span.onclick = null;
     if (this.divs.ability1) this.divs.ability1.onclick = null;
     if (this.divs.ability2) this.divs.ability2.onclick = null;
@@ -116,25 +114,9 @@ class doubleConsumable extends Consumable {
       this.OWNER.disable();
 
       if (event.currentTarget === this.divs.ability1) {
-        if (this.OWNER.gold < this.cost) {
-          display(`Not enough gold to use this ability`);
-          this.playHandler = this.play.bind(this);
-          this.span.onclick = this.playHandler;
-          setTimeout(() => { display(`${this.OWNER.name} to move`)}, 1000);
-          this.span.borderColor = this.span.color;
-          return;
-        }   
         this.currentlyChosenAbility = 1;
         this.OWNER.spendGold(this.cost);
       } else {
-        if (this.OWNER.gold < this.cost2) {
-          display(`Not enough gold to use this ability`);
-          this.playHandler = this.play.bind(this);
-          this.span.onclick = this.playHandler;
-          setTimeout(() => { display(`${this.OWNER.name} to move`)}, 1000);
-          this.span.borderColor = this.span.color;
-          return;
-        }
         this.currentlyChosenAbility = 2;
         this.OWNER.spendGold(this.cost2);
       }

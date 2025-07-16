@@ -286,6 +286,9 @@ class Player {
         setTimeout(() => { display(`${this.name} to move`); }, 1000);
         this.hand.push(card);
         this.div.hand.appendChild(card.span);
+        card.span.style.borderColor = card.span.style.color;
+        card.playHandler = card.play.bind(card);
+        card.span.onclick = card.playHandler;
 
         if (card instanceof doubleConsumable) {
           if (card.currentlyChosenAbility === 1) { 

@@ -53,12 +53,18 @@ class Consumable extends Card {
   initialiseTargets(ability) {
     let foundTarget = false;
 
-    this.targetTypes.forEach(target => {
+    for (let target of this.targetTypes) {
       if (ability.includes(target)) {
         foundTarget = true;
         this._targets.push(target);
+
+        if (ability.includes("and") || ability.includes("then") || ability.includes(",")) {
+          continue;
+        } 
+
+        break;
       }
-    });
+    }
 
     if (!foundTarget) {
       throw new Error(`Target not found for ${this.name}`);
@@ -72,7 +78,8 @@ class Consumable extends Card {
   playConsumable() {
     const board = this.OWNER.flatBoard
     const creatures = board.filter(creature => { return creature instanceof Creature; });
-    const targets = this.targets;
+    const targets = this.targets; 
+    if (targets.length < 1) return false;
 
     if (targets.includes("cards in your hand")) {
       if (this.OWNER.hand.length < 1) { return false; } 
@@ -126,7 +133,11 @@ class Consumable extends Card {
         display(`${this.OWNER.name}, click on the card that will be affected by ${this.name}`);
       });
 
-      if (i < 1) { return false; } else return true;
+      if (i < 1) { 
+        this.OWNER.enable();
+        this.OWNER.opponent.enable(); 
+        return false; 
+      } else return true;
 
     } else if (targets.includes("opponent's hand")) {
       if (this.OWNER.opponent.hand.length < 1) { return false; }
@@ -197,7 +208,7 @@ class Consumable extends Card {
         display(`${this.OWNER.name}, click on the card that will be affected by ${this.name}`);
       });
 
-      if (i < 1) { return false; } else return true;
+      if (i < 1) { this.OWNER.enable(); return false; } else return true;
     }
 
     if (targets.includes("freefall")) {
@@ -209,6 +220,7 @@ class Consumable extends Card {
       return true;
     }
 
+    console.log(`Target in targets not recognised: ${targets}`);
     return false;
   }
 }
