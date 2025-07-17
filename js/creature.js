@@ -32,6 +32,8 @@ class Creature extends Card {
 			this.keywords = null;
 		}
 
+		this.KEYWORDS = this.keywords;
+
 		this.firstTurn = true;
 		this.blocking = false;
 		this.tapped = false;
@@ -90,7 +92,21 @@ class Creature extends Card {
 				keyword += element.at(-1);
 			}
 
-			this.keywords.push(keyword);
+			if (this.keywords.find(value => { return keyword[1] === value[1]; }) === undefined) {
+				//for non-numbered keywords and identical numbered keywords
+				this.keywords.push(keyword);
+			} else {
+				//for (unidentical) numbered keywords
+				let numberedKeyword = this.keywords.find(value => { return value[1] === keyword[1] });
+
+				if (numberedKeyword === undefined || Number(keyword[1] === NaN)) return;
+				
+				if (Number(numberedKeyword[1]) < Number(keyword[1])) {
+					this.keywords.remove(numberedKeyword);
+					this.keywords.push(keyword);
+				}
+			}
+			
 		});
 
 		this.updateSpan();
@@ -131,7 +147,7 @@ class Creature extends Card {
 			this.attack = 0;
 		}
 
-		if (this.health < 0) {
+		if (this.health < 1) {
 			this.OWNER.discard(this);
 		}
 

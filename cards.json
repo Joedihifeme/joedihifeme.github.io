@@ -328,20 +328,20 @@
     },
     {
       "name": "Thieve",
-      "gold": "x",
+      "gold": "0",
       "ability": "Discard x cards from your hand and gain x gold",
       "implemented": false
     },
     {
       "name": "Royalty",
       "gold": "2",
-      "ability": "Counter target card or all other consumables cost 1 mana less to cast",
+      "ability": "All other consumables cost 1 mana less to cast",
       "implemented": false
     },
     {
       "name": "Annoy",
       "gold": "5",
-      "ability": "This card can be played on your opponent's turns. If you play this right after a consumble is cast, that consumable does nothing and goes to the discard pile",
+      "ability": "This card can be played on your opponent's turn. If you play this right after a consumble is cast, that consumable does nothing and goes to the discard pile",
       "implemented": false
     },
     {
@@ -413,7 +413,7 @@
       "gold1": "4",
       "ability1": "Reset Haste",
       "gold2": "4",
-      "ability2": "Remove all poison and hyena wither counters",
+      "ability2": "Remove all venom and hyena wither counters",
       "implemented": false
     },
     {

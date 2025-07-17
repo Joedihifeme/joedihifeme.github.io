@@ -14,14 +14,65 @@ Array.prototype.count = function(item) {
   return i;
 }
 
+let keywordsText = 
+  `(H): Haste: When played: this creature does 2x ATCK on its first turn. <br> <br>
+  (F): First Strike: This card can only be blocked by (R) creatures. <br> <br>
+  (R): Reach: This card can block creatures with (F). <br> <br>
+  (C): Creature Removal: When played, destroy a creature. <br> <br>
+  (I): Indestructible: This card can only be destroyed by attack damage and -x/-x effects. <br> <br>
+  (T): Trample: This card can split up its attack damage in any sort of way among the opponent, 
+    creatures and structures. <br> <br>
+  (L)(x): Lifelink: This card gains x HP when it attacks an opponent’s creature. <br> <br>
+  (W)(x): Ward: When an opponent attempts to attack this card with a creature, 
+    they must first pay x gold, otherwise the damage becomes zero. <br> <br>
+  (V)(x): Venom: When this card attacks an opponents card, put x venom counters on that card; 
+    at the start of the opponent’s turn that card will take x damage. <br> <br>
+  (D): Defender: This card can block structures, creatures or the hero 
+    when they would take damage. <br> <br>
+  (S): Stamina: This card can attack and defend simultaneously. <br> <br>
+  (G)(x): Grab: When this card enters play, bring up to x consumables from freefall 
+    into your hand. <br> <br>
+  `;
+
 function buildInterface(players, gameDiv, displayMode) {
   const p1Div = document.createElement("div");
   p1Div.setAttribute("id", "player1");
   p1Div.setAttribute("class", "player");
   gameDiv.appendChild(p1Div);
   const textSpace = document.createElement("div");
-  textSpace.setAttribute("id", "text-space");
+  textSpace.setAttribute("id", "text-space")
   gameDiv.appendChild(textSpace);
+
+  //middle space
+  const text = document.createElement("span");
+  text.setAttribute("id", "text");
+  textSpace.appendChild(text);
+  const keywordsButton = document.createElement("button");
+  keywordsButton.innerHTML = "Show Keywords";
+
+  const keywordsModal = document.createElement("div");
+  keywordsModal.setAttribute("class", "modal");
+  keywordsModal.style.display = "none";
+  const modalContent = document.createElement("div");
+  modalContent.setAttribute("class", "modal-content");
+  modalContent.style.backgroundColor = displayMode;
+  keywordsModal.appendChild(modalContent);
+  const modalText = document.createElement("p");
+  modalText.style.fontFamily = "Lucida Console, monospace";
+  modalText.innerHTML = keywordsText;
+  modalContent.appendChild(modalText);
+  keywordsButton.onclick = () => {
+    keywordsModal.style.display = "block"; 
+  };
+  window.addEventListener("click", (event) => {
+    if (event.target === keywordsModal) {
+      keywordsModal.style.display = "none";
+    }
+  });
+  
+  textSpace.appendChild(keywordsModal);
+
+  textSpace.appendChild(keywordsButton);
   const p2Div = document.createElement("div");
   p2Div.setAttribute("id", "player2");
   p2Div.setAttribute("class", "player");
@@ -93,7 +144,7 @@ function buildInterface(players, gameDiv, displayMode) {
 
     //discards modal
     const discardModal = document.createElement("div");
-    discardModal.setAttribute("class", "discard-modal");
+    discardModal.setAttribute("class", "modal");
     discardModal.style.display = "none";
     const modalContent = document.createElement("div");
     modalContent.setAttribute("class", "modal-content");
@@ -148,7 +199,7 @@ function buildInterface(players, gameDiv, displayMode) {
 }
 
 function display(text) {
-  document.getElementById("text-space").innerHTML = text;
+  document.getElementById("text").innerHTML = text;
 }
 
 function setupGame(players, gameDiv, displayMode) {
