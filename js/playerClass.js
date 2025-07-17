@@ -412,26 +412,29 @@ class Player {
       this.div.update();
       this.opponent.disable();
       this.opponent.div.update();
-      display(`${this.opponent.name} has won!<br>Reload the page to play again.`);
+      this.killed = true;
     }
-
-    return false;
   }
 
   async endTurnRoutine() {
     this.disable();
 
     for (let creature of this.board[1]) {
-        if (creature instanceof Creature) {
-            if (!creature.checkKeyword("T")) {
-                creature.goAttack();
-            } else {
-                await creature.trampleAttack();
-            }
+      if (creature instanceof Creature) {
+        if (!creature.checkKeyword("T")) {
+          creature.goAttack();
+        } else {
+          await creature.trampleAttack();
         }
+      }
     }
 
-    this.forEachOnBoard(creature => { creature.firstTurn = false; })
+    this.forEachOnBoard(creature => { creature.firstTurn = false; });
+
+    if (this.opponent.killed) { 
+      display(`${this.opponent.name} has won!<br>Reload the page to play again.`);
+      return;
+    }
     
     setTimeout(() => { this.opponent.startTurnRoutine() }, 1000);
   }
