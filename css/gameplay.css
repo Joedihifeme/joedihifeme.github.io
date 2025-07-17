@@ -36,7 +36,7 @@ span {
   border-left: solid;
 }
 
-.discard-modal {
+.modal {
   display: none;
   position: fixed;
   top: 0;
@@ -88,6 +88,11 @@ span {
 
 #player2 {
   border-top: solid;
+}
+
+#text {
+  margin: auto;
+  text-align: center;
 }
 
 #text-space {
