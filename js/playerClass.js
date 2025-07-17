@@ -107,9 +107,9 @@ class Player {
 
     if (element === "all" || element === "hand") {
       if (this.hand.length > 0) {
-        this.hand.forEach(creature => {
-          creature.playHandler = creature.play.bind(creature);
-          creature.span.onclick = creature.playHandler;
+        this.hand.forEach(card => {
+          card.playHandler = card.play.bind(card);
+          card.span.onclick = card.playHandler;
         });
       }
     }
@@ -151,10 +151,10 @@ class Player {
 
     if (element === "all" || element === "hand") {
       if (this.hand.length > 0) {
-        this.hand.forEach(creature => {
-          if (creature.playHandler) {
-            creature.span.onclick = null;
-            delete creature.playHandler;
+        this.hand.forEach(card => {
+          if (card.playHandler) {
+            card.span.onclick = null;
+            delete card.playHandler;
           }
         });
       }
@@ -245,6 +245,7 @@ class Player {
 
   playCard(card) {
     if (this.gold < card.cost && !(card instanceof doubleConsumable)) {
+      console.log(`Player: ${this.gold}, card: ${card.cost}`);
       display("Not enough gold to play this card");
       setTimeout(() => { display(`${this.name} to move`); }, 1000);
       return;
@@ -283,12 +284,15 @@ class Player {
 
       if (!ableToUse) {
         display(`${this.name}, you cannot use ${card.name} right now`);
-        setTimeout(() => { display(`${this.name} to move`); }, 1000);
+        setTimeout(() => { 
+          display(`${this.name} to move`); 
+          card.playHandler = card.play.bind(card);
+          card.span.onclick = card.playHandler; 
+        }, 1000);
+        
         this.hand.push(card);
         this.div.hand.appendChild(card.span);
         card.span.style.borderColor = card.span.style.color;
-        card.playHandler = card.play.bind(card);
-        card.span.onclick = card.playHandler;
 
         if (card instanceof doubleConsumable) {
           if (card.currentlyChosenAbility === 1) { 
@@ -296,6 +300,8 @@ class Player {
           } else { 
             this.addGold(card.cost2); 
           }
+
+          card.currentlyChosenAbility = 0;
         } else { this.addGold(card.cost); }
       }
     }

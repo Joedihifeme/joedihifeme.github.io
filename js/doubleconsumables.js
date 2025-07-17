@@ -96,7 +96,6 @@ class doubleConsumable extends Consumable {
   play() {
     this.span.style.borderColor = "red";
  
-    console.log(this.span.onclick);
     this.span.onclick = null;
     if (this.divs.ability1) this.divs.ability1.onclick = null;
     if (this.divs.ability2) this.divs.ability2.onclick = null;
