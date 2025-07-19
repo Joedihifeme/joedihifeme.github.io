@@ -245,7 +245,7 @@ class Player {
 
   playCard(card) {
     if (this.gold < card.cost && !(card instanceof doubleConsumable)) {
-      console.log(`Player: ${this.gold}, card: ${card.cost}`);
+      console.log(`Player: ${this.gold}, card: ${card._cost.numeric}`);
       display("Not enough gold to play this card");
       setTimeout(() => { display(`${this.name} to move`); }, 1000);
       return;
@@ -255,7 +255,7 @@ class Player {
       this.div.board.innerHTML = "";
     }
 
-    if (!(card instanceof doubleConsumable)) { this.spendGold(card.cost); }
+    if (!(card instanceof doubleConsumable)) { this.spendGold(card._cost.x()); }
     card.span.remove();
     this.hand.remove(card);
 
@@ -296,13 +296,13 @@ class Player {
 
         if (card instanceof doubleConsumable) {
           if (card.currentlyChosenAbility === 1) { 
-            this.addGold(card.cost); 
+            this.addGold(card._cost); 
           } else { 
-            this.addGold(card.cost2); 
+            this.addGold(card._cost2.x()); 
           }
 
           card.currentlyChosenAbility = 0;
-        } else { this.addGold(card.cost); }
+        } else { this.addGold(card._cost.x()); }
       }
     }
   }

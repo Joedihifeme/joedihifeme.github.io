@@ -1,4 +1,5 @@
 import { display } from "./functions.js";
+import Gold from "./gold.js"
 
 class Card {
 
@@ -24,7 +25,7 @@ class Card {
 
 	constructor(name, cost, ability=null, targets=null) {
 		this.name = name;
-		this._cost = Number(cost);
+		this._cost = new Gold(cost);
 		this.discarded = false;
 		this.OWNER = undefined;
 		this._ability = null;
@@ -47,9 +48,8 @@ class Card {
 		return ogName;
 	}
 
-	//will be updated later once gold is done
 	get cost() {
-		return this._cost;
+		return this._cost.numeric;
 	}
 
 	get dAbility1 () {

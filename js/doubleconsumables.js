@@ -1,11 +1,12 @@
 import Consumable from "./consumables.js";
+import Gold from "./gold.js";
 import { display } from "./functions.js";
 
 class doubleConsumable extends Consumable {
 
   constructor(name, cost1, ability1, cost2, ability2) {
     super(name, cost1, ability1);
-    this.cost2 = cost2;
+    this._cost2 = new Gold(cost2);
     this.initialiseAbility(ability2.toLowerCase());
     this.initialiseTargets(ability2.toLowerCase());
     this.DISPLAYED_ABILITY2 = ability2;
@@ -92,6 +93,10 @@ class doubleConsumable extends Consumable {
     this._targets = this._targets.concat(temp);
     return temp;
   }
+  
+  get cost2() {
+    return this._cost2.numeric;
+  }
 
   play() {
     this.span.style.borderColor = "red";
@@ -114,10 +119,10 @@ class doubleConsumable extends Consumable {
 
       if (event.currentTarget === this.divs.ability1) {
         this.currentlyChosenAbility = 1;
-        this.OWNER.spendGold(this.cost);
+        this.OWNER.spendGold(this._cost.x());
       } else {
         this.currentlyChosenAbility = 2;
-        this.OWNER.spendGold(this.cost2);
+        this.OWNER.spendGold(this._cost2.x());
       }
 
       this.OWNER.enable();

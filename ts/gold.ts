@@ -135,3 +135,5 @@ class Gold {
     this.updateValue();
   }
 }
+
+export default Gold;

@@ -17,7 +17,7 @@ class Consumable extends Card {
   constructor(name, cost, ability) {
     super(name, cost, ability, true);
     this._targets = [];
-    //this.multiplier = cost.includes("x"); <-- for later when gold is done
+    this.multiplier = cost.includes("x");
 
     if (!this.specialConsumables.includes(this.rootName.toLowerCase())) {
       this.initialiseTargets(ability.toLowerCase());
@@ -26,7 +26,7 @@ class Consumable extends Card {
       this.special = true;
     }
 
-    this.updateSpan();
+    if (Object.getPrototypeOf(this) === Consumable.prototype) this.updateSpan();
   }
 
   updateSpan() {

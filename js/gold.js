@@ -1,4 +1,3 @@
-"use strict";
 class Gold {
     constructor(value) {
         this.value = value;
@@ -125,3 +124,4 @@ class Gold {
         this.updateValue();
     }
 }
+export default Gold;
