@@ -311,7 +311,7 @@
     {
       "name": "Summon",
       "gold": "3",
-      "ability": "Search your deck for a card, reveal it and put it into your hand. Then, lose 3 health",
+      "ability": "Search your deck for a card and put it into your hand. Then, lose 3 health",
       "implemented": false
     },
     {
@@ -324,7 +324,7 @@
       "name": "Clone",
       "gold": "x",
       "ability": "Clone a card on the battlefield and pay the same manna cost as the original",
-      "implemented": false
+      "implemented": true
     },
     {
       "name": "Thieve",

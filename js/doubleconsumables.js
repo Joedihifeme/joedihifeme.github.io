@@ -95,7 +95,7 @@ class doubleConsumable extends Consumable {
   }
   
   get cost2() {
-    return this._cost2.numeric;
+    return this._cost2.value;
   }
 
   play() {

@@ -8,8 +8,7 @@ class Consumable extends Card {
     "in your hand", "all consumables", "all your creatures", "freefall",
     "target opponent's creature", "opponent", "opponent's turn", "your deck",
     "your entire deck", "your hand", "opponent's hand", "all target creatures", 
-    "target creature in discard pile","target creature", "target structure", "target card", 
-    "a card"
+    "target creature in discard pile","target creature", "target structure", "target card", "battlefield"
   ];
 
   specialConsumables = ["annoy"];
@@ -211,9 +210,20 @@ class Consumable extends Card {
       if (i < 1) { this.OWNER.enable(); return false; } else return true;
     }
 
+    if (targets.includes("battlefield")) {
+      if (board.length < 1) return false;
+
+      let affordable = board.find(card => { return this.OWNER.gold >= card.cost });
+      if (!affordable) return false;
+
+      this.activateAbility(board); 
+      this.OWNER.discard(this);
+      return true;
+    }
+
     if (targets.includes("freefall")) {
-      const freefall = this.OWNER.discards.filter(card => { return card instanceof Creature });
-      if (freefall.length < 1) { return false; }
+      const freefall = this.OWNER.discards.filter(card => { return card instanceof Creature; });
+      if (freefall.length < 1) return false;
       
       freefall.forEach(creature => { this.activateAbility(creature); });
       this.OWNER.discard(this);

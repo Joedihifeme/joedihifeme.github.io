@@ -21,7 +21,7 @@ class Card {
 		["pay", "same mana cost"]
 	]);
 
-	abilityArr = ["Destroy, Clone"];
+	abilityArr = ["destroy", "clone"];
 
 	constructor(name, cost, ability=null, targets=null) {
 		this.name = name;
@@ -29,6 +29,8 @@ class Card {
 		this.discarded = false;
 		this.OWNER = undefined;
 		this._ability = null;
+		this.clone = false;
+		this.copyCounter = 0;
 
 		//creatures do not have abilities (yet) so this will be skipped during their initialisation
 		if (ability !== null && targets !== null) {
@@ -49,7 +51,7 @@ class Card {
 	}
 
 	get cost() {
-		return this._cost.numeric;
+		return this._cost.value;
 	}
 
 	get dAbility1 () {
@@ -62,7 +64,13 @@ class Card {
 
 	duplicate() {
 		const dup = Object.create(this);
-		dup.name += " I";
+		this.copyCounter++;
+		if (this.copyCounter > 2) {
+			dup.name = dup.rootName;
+			for (let i = 0; i < this.copyCounter; i++) {
+				dup.name += "I"
+			}
+		} else dup.name += " I";
 		dup.span = this.span.cloneNode();
 		dup.span.setAttribute("id", `${dup.name}`);
 		return dup;
@@ -89,6 +97,7 @@ class Card {
 
 		this.reviveHandler = this.revive.bind(this);
 		this.span.onclick = this.reviveHandler;
+		
 	}
 
 	revive(paid=true) {
@@ -102,18 +111,32 @@ class Card {
 		this.playHandler = this.play.bind(this);
 		this.span.onclick = this.playHandler;
 	}
+	
+	vanish() {
+		delete this;
+	}
 
 	initialiseAbility(ability) {
 		let foundAbility = false;
 
 		this.abilityMap.forEach((value, key) => {
 			if (ability.includes(key)) {
-				value.forEach(element => {
-					if (ability.includes(element)) {
+
+				if (value instanceof Array) {
+					value.forEach(element => {
+						if (ability.includes(element)) {
+							foundAbility = true;
+							this._ability.push(new Map([[key, element]]));
+						}
+					});
+				} 
+
+				else {
+					if (ability.includes(value)) {
 						foundAbility = true;
-						this._ability.push(new Map([[key, element]]));
+						this._ability.push(new Map([key, value]));
 					}
-				});
+				}
 			}
 		});
 
@@ -155,8 +178,7 @@ class Card {
 				} else if (ability.has("discard")) {
 					for (let number of ability.values()) {
 						if (number.includes("a card")) {
-							this.OWNER.opponent.disable("hand");
-							this.OWNER.opponent.disable("board");
+							this.OWNER.opponent.disable();
 
 							target.forEach(card => {
 								card.addTargetHandler = () => {
@@ -168,8 +190,7 @@ class Card {
 									});
 
 									card.OWNER.discard(card);
-									card.OWNER.enable("hand");
-									card.OWNER.enable("board");
+									card.OWNER.enable();
 									display(`${card.OWNER.opponent.name} to move`);
 								}
 
@@ -183,8 +204,31 @@ class Card {
 				} //else if (ability.has("draw"))
 			
 			} else {
-				if (ability === "destroy") {
-					//TODO
+				if (ability === "clone") {
+					this.OWNER.opponent.disable();
+
+							target.forEach(card => {
+								card.addTargetHandler = () => {
+									target.forEach(c => {
+										if (c.addTargetHandler) {
+											c.span.onclick = null;
+											delete c.addTargetHandler
+										}
+									});
+
+									const clone = card.duplicate();
+									clone.clone = true;
+									card.OWNER.hand.push(clone);
+									card.OWNER.div.hand.appendChild(clone.span);
+									card.OWNER.playCard(clone);
+									card.OWNER.enable();
+									display(`${card.OWNER.name} to move`);
+								}
+
+								card.span.onclick = card.addTargetHandler;
+							});
+
+							display(`${this.OWNER.name}, clone a card on the board`);
 				}
 			}
 		}

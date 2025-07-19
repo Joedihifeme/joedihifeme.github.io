@@ -20,7 +20,7 @@ class Creature extends Card {
 
 		if (keywords !== null && keywords !== "") {
 			keywords = keywords.split(",");
-			this.keywords = []
+			this.keywords = [];
 			for (let keyword of keywords) {
 				if (this.keywordArr.includes(keyword[0])) {
 					this.keywords.push(keyword)

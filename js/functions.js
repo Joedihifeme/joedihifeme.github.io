@@ -48,6 +48,7 @@ function buildInterface(players, gameDiv, displayMode) {
   text.setAttribute("id", "text");
   textSpace.appendChild(text);
   const keywordsButton = document.createElement("button");
+  keywordsButton.setAttribute("id", "keywords-button");
   keywordsButton.innerHTML = "Show Keywords";
 
   const keywordsModal = document.createElement("div");
@@ -71,8 +72,8 @@ function buildInterface(players, gameDiv, displayMode) {
   });
   
   textSpace.appendChild(keywordsModal);
-
   textSpace.appendChild(keywordsButton);
+
   const p2Div = document.createElement("div");
   p2Div.setAttribute("id", "player2");
   p2Div.setAttribute("class", "player");

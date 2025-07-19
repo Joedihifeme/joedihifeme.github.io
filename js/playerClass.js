@@ -36,7 +36,8 @@ class Player {
         discardButton: pDiv.childNodes[2].lastChild.firstChild,
         discardText: pDiv.childNodes[2].lastChild.lastChild,
         discardModalText: pDiv.lastChild.firstChild.firstChild,
-        discardModalCardSpace: pDiv.lastChild.firstChild.lastChild
+        discardModalCardSpace: pDiv.lastChild.firstChild.lastChild,
+        keywordsButton: document.getElementById("keywords-button")
         }
       } else {
         this._div = {
@@ -51,7 +52,8 @@ class Player {
         discardButton: pDiv.firstChild.lastChild.firstChild,
         discardText: pDiv.firstChild.lastChild.lastChild,
         discardModalText: pDiv.childNodes[1].firstChild.firstChild,
-        discardModalCardSpace: pDiv.childNodes[1].firstChild.lastChild
+        discardModalCardSpace: pDiv.childNodes[1].firstChild.lastChild,
+        keywordsButton: document.getElementById("keywords-button")
         }
       }
     
@@ -142,6 +144,10 @@ class Player {
         this.div.discardButton.disabled = false;
       }
     }
+
+    if (element === "all") {
+      this.div.keywordsButton.disabled = false;
+    }
   }
 
   disable(element="all") {
@@ -186,6 +192,10 @@ class Player {
     
     if (element === "all" || element === "discard button") {
       this.div.discardButton.disabled = true;
+    }
+
+    if (element === "all") {
+      this.div.keywordsButton.disabled = true;
     }
   }
 
@@ -255,7 +265,10 @@ class Player {
       this.div.board.innerHTML = "";
     }
 
-    if (!(card instanceof doubleConsumable)) { this.spendGold(card._cost.x()); }
+    if (!(card instanceof doubleConsumable)) { 
+      if (!card.multiplier) this.spendGold(card._cost.x()); 
+    }
+
     card.span.remove();
     this.hand.remove(card);
 
@@ -296,13 +309,13 @@ class Player {
 
         if (card instanceof doubleConsumable) {
           if (card.currentlyChosenAbility === 1) { 
-            this.addGold(card._cost); 
+            this.addGold(card._cost.previousValue); 
           } else { 
-            this.addGold(card._cost2.x()); 
+            this.addGold(card._cost2.previousValue); 
           }
 
           card.currentlyChosenAbility = 0;
-        } else { this.addGold(card._cost.x()); }
+        } else { this.addGold(card._cost.previousValue); }
       }
     }
   }
@@ -396,10 +409,15 @@ class Player {
     }
 
     //this block is outside of the loop as a stamina creature will appear in each section of the board
-    this.discards.push(card);
-    card.discard();
-    this.div.update();
-    this.div.discardModalCardSpace.appendChild(card.span);
+    if (card.clone) {
+      card.span.remove(); 
+      card.vanish(); 
+    } else {
+      this.discards.push(card);
+      card.discard();
+      this.div.update();
+      this.div.discardModalCardSpace.appendChild(card.span);
+    }
   }
 
   reviveCard(card, paid=false) {
