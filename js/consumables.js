@@ -5,7 +5,7 @@ import { display } from "./functions.js";
 class Consumable extends Card {
 
   targetTypes = [
-    "in your hand", "all consumables", "all your creatures", "freefall",
+    "in your hand", "all consumables", "all other consumables", "all your creatures", "freefall",
     "target opponent's creature", "opponent", "opponent's turn", "your deck",
     "your entire deck", "your hand", "opponent's hand", "all target creatures", 
     "target creature in discard pile","target creature", "target structure", "target card", "battlefield"
@@ -97,6 +97,23 @@ class Consumable extends Card {
 
       this.OWNER.discard(this);
       return true;
+    }
+
+    if (targets.includes("all other consumables")) {
+      let found = false;
+      const callback = function(card) { 
+        if (card instanceof Consumable && card !== this) {
+          found = true;
+          this.activateAbility(card); 
+        }
+      }.bind(this);
+
+      this.OWNER.deck.forEach(callback);
+      this.OWNER.hand.forEach(callback);
+      board.forEach(callback);
+      this.OWNER.discards.forEach(callback);
+
+      if (found) { this.OWNER.discard(this); return true; } else return false;
     }
 
     if (targets.includes("target opponent's creature")) {

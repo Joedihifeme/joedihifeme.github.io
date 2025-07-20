@@ -253,7 +253,7 @@ class Player {
     }
   }
 
-  playCard(card) {
+  playCard(card, clone=undefined) {
     if (this.gold < card.cost && !(card instanceof doubleConsumable)) {
       console.log(`Player: ${this.gold}, card: ${card._cost.numeric}`);
       display("Not enough gold to play this card");
@@ -266,7 +266,10 @@ class Player {
     }
 
     if (!(card instanceof doubleConsumable)) { 
-      if (!card.multiplier) this.spendGold(card._cost.x()); 
+      if (!card.multiplier) { 
+        if (card.clone) this.spendGold(clone._cost.x(card._cost.x()));
+        else this.spendGold(card._cost.x()); 
+      }
     }
 
     card.span.remove();

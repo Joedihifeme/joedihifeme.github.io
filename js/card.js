@@ -18,7 +18,8 @@ class Card {
 		["draw", "3"],
 		["arrange", "in any way"],
 		["discard", ["x cards", "a card"]],
-		["pay", "same mana cost"]
+		["pay", "same gold cost"],
+		["cost", "1 gold less"]
 	]);
 
 	abilityArr = ["destroy", "clone"];
@@ -62,6 +63,11 @@ class Card {
 		return this._ability;
 	}
 
+	alterGold(callback, amount) {
+		callback(amount);
+		this.updateSpan();
+	}
+
 	duplicate() {
 		const dup = Object.create(this);
 		this.copyCounter++;
@@ -71,6 +77,9 @@ class Card {
 				dup.name += "I"
 			}
 		} else dup.name += " I";
+		dup._cost = new Gold(dup._cost.value);
+		if (dup._cost2) dup._cost2 = new Gold(dup._cost2.value);
+		if (this._ability !== null) dup._ability = Object.create(dup._ability);
 		dup.span = this.span.cloneNode();
 		dup.span.setAttribute("id", `${dup.name}`);
 		return dup;
@@ -134,7 +143,7 @@ class Card {
 				else {
 					if (ability.includes(value)) {
 						foundAbility = true;
-						this._ability.push(new Map([key, value]));
+						this._ability.push(new Map([[key, value]]));
 					}
 				}
 			}
@@ -201,6 +210,13 @@ class Card {
 						}
 					}
 
+				} else if (ability.has("cost")) {
+					for (let cost of ability.values()) {
+						if (cost.includes("1 gold less")) {
+							target.alterGold(target._cost.subtract.bind(target._cost), 1);
+							if (target._cost2) target.alterGold(target._cost2.subtract.bind(target._cost2), 1);
+						}
+					}
 				} //else if (ability.has("draw"))
 			
 			} else {
@@ -220,7 +236,7 @@ class Card {
 									clone.clone = true;
 									card.OWNER.hand.push(clone);
 									card.OWNER.div.hand.appendChild(clone.span);
-									card.OWNER.playCard(clone);
+									card.OWNER.playCard(clone, this);
 									card.OWNER.enable();
 									display(`${card.OWNER.name} to move`);
 								}

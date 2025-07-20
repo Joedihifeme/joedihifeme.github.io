@@ -323,7 +323,7 @@
     {
       "name": "Clone",
       "gold": "x",
-      "ability": "Clone a card on the battlefield and pay the same manna cost as the original",
+      "ability": "Clone a card on the battlefield and pay the same gold cost as the original",
       "implemented": true
     },
     {
@@ -335,8 +335,8 @@
     {
       "name": "Royalty",
       "gold": "2",
-      "ability": "All other consumables cost 1 mana less to cast",
-      "implemented": false
+      "ability": "All other consumables cost 1 gold less to cast",
+      "implemented": true
     },
     {
       "name": "Annoy",
@@ -373,7 +373,7 @@
       "gold1": "2",
       "ability1": "Give target creature (T)",
       "gold2": "3x",
-      "ability2": "Target creaure takes 2x less damage from larger creatures permanently",
+      "ability2": "Target creature takes 2x less damage from larger creatures permanently",
       "implemented": false
     },
     {

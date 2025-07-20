@@ -43,7 +43,10 @@ class Gold {
     get numeric() {
         if (!this.algebraic)
             return this.num;
-        return 1;
+        if (this.operation === "+")
+            return (this.num * 1) + this.operator;
+        else
+            return (this.num * 1) - this.operator;
     }
     //used for spending/adding gold
     x(num = 1) {
