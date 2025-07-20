@@ -193,6 +193,7 @@ class Card {
 							this.OWNER.opponent.disable();
 
 							target.forEach(card => {
+								if (card.checkKeyword("I")) return;
 								card.addTargetHandler = () => {
 									target.forEach(c => {
 										if (c.addTargetHandler) {
@@ -303,8 +304,10 @@ class Card {
 
 							display(`${this.OWNER.name}, clone a card on the board`);
 							
+				} else if (ability === "destroy") {
+					target.OWNER.discard(target);
 				}
-			}
+			} 
 		}
 	}
 }

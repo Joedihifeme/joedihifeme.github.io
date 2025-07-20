@@ -122,6 +122,9 @@ class Consumable extends Card {
       this.OWNER.opponent.disable("board");
       this.OWNER.opponent.flatBoard.forEach(creature => {
         if (!creature instanceof Creature) { return; }
+        if (this.name.toLowerCase().includes("destruction")) {
+          if (creature.checkKeyword("I")) return;
+        }
 
         i++;
         creature.addTargetHandler = () => {

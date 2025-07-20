@@ -349,6 +349,12 @@
       "gold": "6",
       "ability": "All target creatures gain (I)",
       "implemented": true
+    },
+    {
+      "name": "Destruction",
+      "gold": "3",
+      "ability": "Destroy target opponent's creature",
+      "implemented": true
     }
   ],
   "doubleConsumables": [
