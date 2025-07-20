@@ -171,7 +171,9 @@ class Consumable extends Card {
     if (targets.includes("your deck")) {
       if (this.OWNER.deck.length < 1) { return false; }
 
+      this.OWNER.disable();
       this.activateAbility(this.OWNER.deck); 
+      this.OWNER.enable();
       this.OWNER.discard(this);
       return true;
     }

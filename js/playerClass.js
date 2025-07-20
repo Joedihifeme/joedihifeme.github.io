@@ -37,7 +37,10 @@ class Player {
         discardText: pDiv.childNodes[2].lastChild.lastChild,
         discardModalText: pDiv.lastChild.firstChild.firstChild,
         discardModalCardSpace: pDiv.lastChild.firstChild.lastChild,
-        keywordsButton: document.getElementById("keywords-button")
+        keywordsButton: document.getElementById("keywords-button"),
+        generalModal: document.getElementById("general-modal"),
+        modalText: document.getElementById("general-modal").firstChild.firstChild,
+        modalSpace: document.getElementById("general-modal").firstChild.lastChild
         }
       } else {
         this._div = {
@@ -53,7 +56,10 @@ class Player {
         discardText: pDiv.firstChild.lastChild.lastChild,
         discardModalText: pDiv.childNodes[1].firstChild.firstChild,
         discardModalCardSpace: pDiv.childNodes[1].firstChild.lastChild,
-        keywordsButton: document.getElementById("keywords-button")
+        keywordsButton: document.getElementById("keywords-button"),
+        generalModal: document.getElementById("general-modal"),
+        modalText: document.getElementById("general-modal").firstChild.firstChild,
+        modalSpace: document.getElementById("general-modal").firstChild.lastChild
         }
       }
     
@@ -66,6 +72,21 @@ class Player {
         `Number of discarded cards: ${this.player.discards.length}`;
       this.discardModalText.innerHTML = this.player.discards.length < 1 ? 
         "No discarded cards" : "Click on the card to bring back (for 2 gold)";
+    }
+    this._div.openModal = function() { this.generalModal.style.display = "block"; };
+    this._div.closeModal = function() { this.generalModal.style.display = "none"; };
+
+    this._div.populateModal = function(arr) {
+      arr.forEach(card => {
+        this.modalSpace.appendChild(card.span);
+      });
+    }
+
+    this._div.clearModal = function() {
+      for (let element of this.modalSpace.childNodes) {
+        this.modalSpace.removeChild(element);
+      }
+      this.modalText.innerHTML = "";
     }
 
     Object.freeze(this._div);
@@ -235,22 +256,29 @@ class Player {
         if (this.div.hand.innerHTML === "No cards in hand yet") {
           this.div.hand.innerHTML = "";
         }
-        const card = this.deck.splice(Math.floor(Math.random() * this.deck.length), 1)[0];
-        this.hand.push(card);
-        this.div.hand.appendChild(card.span);
-        card.playHandler = card.play.bind(card);
-        card.span.onclick = card.playHandler;
-        this.div.update();
+        this.drawSpecificCard(this.deck[Math.floor(Math.random() * this.deck.length)]);
       }
       if (paid) {
         this.disable("draw button");
         this.spendGold(1);
+      }
+      if (this.deck.length < 1) {
+        this.disable("draw button");
       }
     }
     catch(err) {
       document.getElementById("text-space").innerHTML = "Draw pile is empty";
       this.disable("draw button");
     }
+  }
+
+  drawSpecificCard(card) {
+    this.deck.remove(card);
+    this.hand.push(card);
+    this.div.hand.appendChild(card.span);
+    card.playHandler = card.play.bind(card);
+    card.span.onclick = card.playHandler;
+    this.div.update();
   }
 
   playCard(card, clone=undefined) {

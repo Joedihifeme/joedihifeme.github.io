@@ -118,9 +118,31 @@ class doubleConsumable extends Consumable {
       this.OWNER.disable();
 
       if (event.currentTarget === this.divs.ability1) {
+        if (this.OWNER.gold < this.cost) {
+          display(`Not enough gold to use this ability`);
+          setTimeout(() => { 
+            display(`${this.OWNER.name} to move`);
+            this.OWNER.enable();
+            this.playHandler = this.play.bind(this);
+            this.span.onclick = this.playHandler;
+          }, 1000);
+          this.span.style.borderColor = this.span.style.color;
+          return;
+        }
         this.currentlyChosenAbility = 1;
         this.OWNER.spendGold(this._cost.x());
       } else {
+        if (this.OWNER.gold < this.cost2) {
+          display(`Not enough gold to use this ability`);
+          setTimeout(() => { 
+            display(`${this.OWNER.name} to move`);
+            this.OWNER.enable();
+            this.playHandler = this.play.bind(this);
+            this.span.onclick = this.playHandler;
+          }, 1000);
+          this.span.style.borderColor = this.span.style.color;
+          return;
+        }
         this.currentlyChosenAbility = 2;
         this.OWNER.spendGold(this._cost2.x());
       }

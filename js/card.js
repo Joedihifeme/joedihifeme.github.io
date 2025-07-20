@@ -13,11 +13,12 @@ class Card {
 		["gets", ["+1/+2", "+2/+4", "-2/-4", "-5/-10", 
 			"(l)", "(i)", "(t)", "(f)", "(w)2", "(v)1", 
 			"+1atck", "6hp", "3 gold", "x gold", "spellproof", "stasis"]],
+		["search", ["a card", "3 cards"]],
+		["discard", ["x cards", "a card"]],
 		["lose", "3 health"],
 		["reset", "haste"],
 		["draw", "3"],
 		["arrange", "in any way"],
-		["discard", ["x cards", "a card"]],
 		["pay", "same gold cost"],
 		["cost", "1 gold less"]
 	]);
@@ -104,8 +105,10 @@ class Card {
 		this.span.onclick = null;
 		this.span.style.borderColor = this.span.style.color;
 
-		this.reviveHandler = this.revive.bind(this);
-		this.span.onclick = this.reviveHandler;
+		setTimeout(() => {
+			this.reviveHandler = this.revive.bind(this);
+			this.span.onclick = this.reviveHandler;
+		}, 1);
 		
 	}
 
@@ -210,6 +213,43 @@ class Card {
 						}
 					}
 
+				} else if (ability.has("search")) {
+					let max = 0;
+					let i = 0;
+					for (let number of ability.values()) {
+						if (number[0] === "a") {
+							max += 1;
+						} else max += Number(number[0]);
+					}
+
+					this.OWNER.div.populateModal(target);
+					target.forEach(card => {
+						card.drawHandler = () => {
+							if (card.drawHandler) {
+								card.span.onclick = null;
+								delete card.drawHandler;
+							}
+
+							card.OWNER.drawSpecificCard(card);
+							i++;
+
+							if (i === max) {
+								target.forEach(c => {
+									if (c.drawHandler) {
+										c.span.onclick = null;
+										delete c.drawHandler;
+									}
+								});
+
+								card.OWNER.div.clearModal();
+								card.OWNER.div.closeModal();
+							}
+						}
+						card.span.onclick = card.drawHandler;
+					});
+					this.OWNER.div.modalText.innerHTML = `${this.OWNER.name}, pick a card`;
+					this.OWNER.div.openModal();
+
 				} else if (ability.has("cost")) {
 					for (let cost of ability.values()) {
 						if (cost.includes("1 gold less")) {
@@ -217,7 +257,24 @@ class Card {
 							if (target._cost2) target.alterGold(target._cost2.subtract.bind(target._cost2), 1);
 						}
 					}
-				} //else if (ability.has("draw"))
+				} else if (ability.has("lose")) {
+					for (let number of ability.values()) {
+						if (number.includes("3 health")) {
+							this.OWNER.health -= 3;
+							this.OWNER.deathCheck();
+
+							if (this.OWNER.killed) {
+								display(`${this.opponent.name} has won!<br>Reload the page to play again.`);
+      					return;
+							}
+						}
+					}
+				} else if (ability.has("draw")) {
+					for (let number of ability.values()) {
+						this.OWNER.drawCard(Number(number));
+						display(`${this.OWNER.name} to move`);
+					}
+				}
 			
 			} else {
 				if (ability === "clone") {
@@ -245,6 +302,7 @@ class Card {
 							});
 
 							display(`${this.OWNER.name}, clone a card on the board`);
+							
 				}
 			}
 		}

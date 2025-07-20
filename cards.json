@@ -312,7 +312,7 @@
       "name": "Summon",
       "gold": "3",
       "ability": "Search your deck for a card and put it into your hand. Then, lose 3 health",
-      "implemented": false
+      "implemented": true
     },
     {
       "name": "Imminent Threat",
@@ -395,10 +395,10 @@
     {
       "name": "Delve",
       "gold1": "3",
-      "ability1": "Draw 3 cards",
+      "ability1": "Draw 3 cards from your deck",
       "gold2": "10",
       "ability2": "Search your deck for any 3 cards and put them into your hand",
-      "implemented": false
+      "implemented": true
     },
     {
       "name": "Speed up",

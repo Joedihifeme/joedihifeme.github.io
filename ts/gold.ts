@@ -27,10 +27,10 @@ class Gold {
       this.operator = 0;
     }
 
-    if (isNaN(Number(this.value[0]))) {
-      this.num = 1;
-    } else {
-      this.num = Number(this.value[0]);
+    if (!this.multiplier) this.num = Number(this.value);
+    else {
+      let temp = this.value.slice(this.value.indexOf("x"));
+      this.num = temp === this.value ? 1 : Number(this.value.slice(0, this.value.indexOf("x")));
     }
   }
 
