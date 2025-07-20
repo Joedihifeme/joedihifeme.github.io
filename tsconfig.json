@@ -1,0 +1,13 @@
+{
+  "include": ["ts"],
+  "exclude": ["node_modules", "js", "css"],
+
+  "compilerOptions": {
+    "target": "es2016",
+    "module": "esnext",
+    "outDir": "./js",                          
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true
+  }
+}

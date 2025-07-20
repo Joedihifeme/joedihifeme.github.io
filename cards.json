@@ -311,8 +311,8 @@
     {
       "name": "Summon",
       "gold": "3",
-      "ability": "Search your deck for a card, reveal it and put it into your hand. Then, lose 3 health",
-      "implemented": false
+      "ability": "Search your deck for a card and put it into your hand. Then, lose 3 health",
+      "implemented": true
     },
     {
       "name": "Imminent Threat",
@@ -323,8 +323,8 @@
     {
       "name": "Clone",
       "gold": "x",
-      "ability": "Clone a card on the battlefield and pay the same manna cost as the original",
-      "implemented": false
+      "ability": "Clone a card on the battlefield and pay the same gold cost as the original",
+      "implemented": true
     },
     {
       "name": "Thieve",
@@ -335,8 +335,8 @@
     {
       "name": "Royalty",
       "gold": "2",
-      "ability": "All other consumables cost 1 mana less to cast",
-      "implemented": false
+      "ability": "All other consumables cost 1 gold less to cast",
+      "implemented": true
     },
     {
       "name": "Annoy",
@@ -348,6 +348,12 @@
       "name": "Buffalo's protection",
       "gold": "6",
       "ability": "All target creatures gain (I)",
+      "implemented": true
+    },
+    {
+      "name": "Destruction",
+      "gold": "3",
+      "ability": "Destroy target opponent's creature",
       "implemented": true
     }
   ],
@@ -373,7 +379,7 @@
       "gold1": "2",
       "ability1": "Give target creature (T)",
       "gold2": "3x",
-      "ability2": "Target creaure takes 2x less damage from larger creatures permanently",
+      "ability2": "Target creature takes 2x less damage from larger creatures permanently",
       "implemented": false
     },
     {
@@ -395,10 +401,10 @@
     {
       "name": "Delve",
       "gold1": "3",
-      "ability1": "Draw 3 cards",
+      "ability1": "Draw 3 cards from your deck",
       "gold2": "10",
       "ability2": "Search your deck for any 3 cards and put them into your hand",
-      "implemented": false
+      "implemented": true
     },
     {
       "name": "Speed up",

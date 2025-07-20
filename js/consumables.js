@@ -5,11 +5,10 @@ import { display } from "./functions.js";
 class Consumable extends Card {
 
   targetTypes = [
-    "in your hand", "all consumables", "all your creatures", "freefall",
+    "in your hand", "all consumables", "all other consumables", "all your creatures", "freefall",
     "target opponent's creature", "opponent", "opponent's turn", "your deck",
     "your entire deck", "your hand", "opponent's hand", "all target creatures", 
-    "target creature in discard pile","target creature", "target structure", "target card", 
-    "a card"
+    "target creature in discard pile","target creature", "target structure", "target card", "battlefield"
   ];
 
   specialConsumables = ["annoy"];
@@ -17,7 +16,7 @@ class Consumable extends Card {
   constructor(name, cost, ability) {
     super(name, cost, ability, true);
     this._targets = [];
-    //this.multiplier = cost.includes("x"); <-- for later when gold is done
+    this.multiplier = cost.includes("x");
 
     if (!this.specialConsumables.includes(this.rootName.toLowerCase())) {
       this.initialiseTargets(ability.toLowerCase());
@@ -26,7 +25,7 @@ class Consumable extends Card {
       this.special = true;
     }
 
-    this.updateSpan();
+    if (Object.getPrototypeOf(this) === Consumable.prototype) this.updateSpan();
   }
 
   updateSpan() {
@@ -100,12 +99,32 @@ class Consumable extends Card {
       return true;
     }
 
+    if (targets.includes("all other consumables")) {
+      let found = false;
+      const callback = function(card) { 
+        if (card instanceof Consumable && card !== this) {
+          found = true;
+          this.activateAbility(card); 
+        }
+      }.bind(this);
+
+      this.OWNER.deck.forEach(callback);
+      this.OWNER.hand.forEach(callback);
+      board.forEach(callback);
+      this.OWNER.discards.forEach(callback);
+
+      if (found) { this.OWNER.discard(this); return true; } else return false;
+    }
+
     if (targets.includes("target opponent's creature")) {
       let i = 0;
       this.OWNER.disable();
       this.OWNER.opponent.disable("board");
       this.OWNER.opponent.flatBoard.forEach(creature => {
         if (!creature instanceof Creature) { return; }
+        if (this.name.toLowerCase().includes("destruction")) {
+          if (creature.checkKeyword("I")) return;
+        }
 
         i++;
         creature.addTargetHandler = () => {
@@ -155,7 +174,9 @@ class Consumable extends Card {
     if (targets.includes("your deck")) {
       if (this.OWNER.deck.length < 1) { return false; }
 
+      this.OWNER.disable();
       this.activateAbility(this.OWNER.deck); 
+      this.OWNER.enable();
       this.OWNER.discard(this);
       return true;
     }
@@ -211,9 +232,20 @@ class Consumable extends Card {
       if (i < 1) { this.OWNER.enable(); return false; } else return true;
     }
 
+    if (targets.includes("battlefield")) {
+      if (board.length < 1) return false;
+
+      let affordable = board.find(card => { return this.OWNER.gold >= card.cost });
+      if (!affordable) return false;
+
+      this.activateAbility(board); 
+      this.OWNER.discard(this);
+      return true;
+    }
+
     if (targets.includes("freefall")) {
-      const freefall = this.OWNER.discards.filter(card => { return card instanceof Creature });
-      if (freefall.length < 1) { return false; }
+      const freefall = this.OWNER.discards.filter(card => { return card instanceof Creature; });
+      if (freefall.length < 1) return false;
       
       freefall.forEach(creature => { this.activateAbility(creature); });
       this.OWNER.discard(this);

@@ -11,6 +11,7 @@ body {
   padding: 5px;
   font-family: "Lucida Console", monospace;
   font-size: 0.6875em;
+  cursor: pointer;
 }
 
 #card-choice-div > .card-display {

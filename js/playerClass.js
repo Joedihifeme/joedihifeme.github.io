@@ -36,7 +36,11 @@ class Player {
         discardButton: pDiv.childNodes[2].lastChild.firstChild,
         discardText: pDiv.childNodes[2].lastChild.lastChild,
         discardModalText: pDiv.lastChild.firstChild.firstChild,
-        discardModalCardSpace: pDiv.lastChild.firstChild.lastChild
+        discardModalCardSpace: pDiv.lastChild.firstChild.lastChild,
+        keywordsButton: document.getElementById("keywords-button"),
+        generalModal: document.getElementById("general-modal"),
+        modalText: document.getElementById("general-modal").firstChild.firstChild,
+        modalSpace: document.getElementById("general-modal").firstChild.lastChild
         }
       } else {
         this._div = {
@@ -51,7 +55,11 @@ class Player {
         discardButton: pDiv.firstChild.lastChild.firstChild,
         discardText: pDiv.firstChild.lastChild.lastChild,
         discardModalText: pDiv.childNodes[1].firstChild.firstChild,
-        discardModalCardSpace: pDiv.childNodes[1].firstChild.lastChild
+        discardModalCardSpace: pDiv.childNodes[1].firstChild.lastChild,
+        keywordsButton: document.getElementById("keywords-button"),
+        generalModal: document.getElementById("general-modal"),
+        modalText: document.getElementById("general-modal").firstChild.firstChild,
+        modalSpace: document.getElementById("general-modal").firstChild.lastChild
         }
       }
     
@@ -64,6 +72,21 @@ class Player {
         `Number of discarded cards: ${this.player.discards.length}`;
       this.discardModalText.innerHTML = this.player.discards.length < 1 ? 
         "No discarded cards" : "Click on the card to bring back (for 2 gold)";
+    }
+    this._div.openModal = function() { this.generalModal.style.display = "block"; };
+    this._div.closeModal = function() { this.generalModal.style.display = "none"; };
+
+    this._div.populateModal = function(arr) {
+      arr.forEach(card => {
+        this.modalSpace.appendChild(card.span);
+      });
+    }
+
+    this._div.clearModal = function() {
+      for (let element of this.modalSpace.childNodes) {
+        this.modalSpace.removeChild(element);
+      }
+      this.modalText.innerHTML = "";
     }
 
     Object.freeze(this._div);
@@ -142,6 +165,10 @@ class Player {
         this.div.discardButton.disabled = false;
       }
     }
+
+    if (element === "all") {
+      this.div.keywordsButton.disabled = false;
+    }
   }
 
   disable(element="all") {
@@ -187,6 +214,10 @@ class Player {
     if (element === "all" || element === "discard button") {
       this.div.discardButton.disabled = true;
     }
+
+    if (element === "all") {
+      this.div.keywordsButton.disabled = true;
+    }
   }
 
   addGold(num) {
@@ -225,16 +256,14 @@ class Player {
         if (this.div.hand.innerHTML === "No cards in hand yet") {
           this.div.hand.innerHTML = "";
         }
-        const card = this.deck.splice(Math.floor(Math.random() * this.deck.length), 1)[0];
-        this.hand.push(card);
-        this.div.hand.appendChild(card.span);
-        card.playHandler = card.play.bind(card);
-        card.span.onclick = card.playHandler;
-        this.div.update();
+        this.drawSpecificCard(this.deck[Math.floor(Math.random() * this.deck.length)]);
       }
       if (paid) {
         this.disable("draw button");
         this.spendGold(1);
+      }
+      if (this.deck.length < 1) {
+        this.disable("draw button");
       }
     }
     catch(err) {
@@ -243,9 +272,18 @@ class Player {
     }
   }
 
-  playCard(card) {
+  drawSpecificCard(card) {
+    this.deck.remove(card);
+    this.hand.push(card);
+    this.div.hand.appendChild(card.span);
+    card.playHandler = card.play.bind(card);
+    card.span.onclick = card.playHandler;
+    this.div.update();
+  }
+
+  playCard(card, clone=undefined) {
     if (this.gold < card.cost && !(card instanceof doubleConsumable)) {
-      console.log(`Player: ${this.gold}, card: ${card.cost}`);
+      console.log(`Player: ${this.gold}, card: ${card._cost.numeric}`);
       display("Not enough gold to play this card");
       setTimeout(() => { display(`${this.name} to move`); }, 1000);
       return;
@@ -255,7 +293,13 @@ class Player {
       this.div.board.innerHTML = "";
     }
 
-    if (!(card instanceof doubleConsumable)) { this.spendGold(card.cost); }
+    if (!(card instanceof doubleConsumable)) { 
+      if (!card.multiplier) { 
+        if (card.clone) this.spendGold(clone._cost.x(card._cost.x()));
+        else this.spendGold(card._cost.x()); 
+      }
+    }
+
     card.span.remove();
     this.hand.remove(card);
 
@@ -296,13 +340,13 @@ class Player {
 
         if (card instanceof doubleConsumable) {
           if (card.currentlyChosenAbility === 1) { 
-            this.addGold(card.cost); 
+            this.addGold(card._cost.previousValue); 
           } else { 
-            this.addGold(card.cost2); 
+            this.addGold(card._cost2.previousValue); 
           }
 
           card.currentlyChosenAbility = 0;
-        } else { this.addGold(card.cost); }
+        } else { this.addGold(card._cost.previousValue); }
       }
     }
   }
@@ -396,10 +440,15 @@ class Player {
     }
 
     //this block is outside of the loop as a stamina creature will appear in each section of the board
-    this.discards.push(card);
-    card.discard();
-    this.div.update();
-    this.div.discardModalCardSpace.appendChild(card.span);
+    if (card.clone) {
+      card.span.remove(); 
+      card.vanish(); 
+    } else {
+      this.discards.push(card);
+      card.discard();
+      this.div.update();
+      this.div.discardModalCardSpace.appendChild(card.span);
+    }
   }
 
   reviveCard(card, paid=false) {

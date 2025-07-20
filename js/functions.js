@@ -48,7 +48,22 @@ function buildInterface(players, gameDiv, displayMode) {
   text.setAttribute("id", "text");
   textSpace.appendChild(text);
   const keywordsButton = document.createElement("button");
+  keywordsButton.setAttribute("id", "keywords-button");
   keywordsButton.innerHTML = "Show Keywords";
+
+  const generalModal = document.createElement("div");
+  generalModal.setAttribute("class", "modal");
+  generalModal.setAttribute("id", "general-modal");
+  generalModal.style.display = "none";
+  const generalModalContent = document.createElement("div");
+  generalModalContent.setAttribute("class", "modal-content");
+  generalModalContent.style.backgroundColor = displayMode;
+  generalModal.appendChild(generalModalContent);
+  const generalModalText = document.createElement("p");
+  generalModalContent.appendChild(generalModalText);
+  const generalModalSpace = document.createElement("div");
+  generalModalContent.appendChild(generalModalSpace);
+  textSpace.appendChild(generalModal);
 
   const keywordsModal = document.createElement("div");
   keywordsModal.setAttribute("class", "modal");
@@ -71,8 +86,8 @@ function buildInterface(players, gameDiv, displayMode) {
   });
   
   textSpace.appendChild(keywordsModal);
-
   textSpace.appendChild(keywordsButton);
+
   const p2Div = document.createElement("div");
   p2Div.setAttribute("id", "player2");
   p2Div.setAttribute("class", "player");
