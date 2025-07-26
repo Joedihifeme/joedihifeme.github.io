@@ -36,39 +36,7 @@ class doubleConsumable extends Consumable {
   }
 
   get ability() {
-    const chosenAbility = [];
-
-    for (let item of this._ability) {
-      if (item instanceof Map) {
-        for (let key of item.keys()) {
-          if (this.currentlyChosenAbility === 1) {
-            if (this.dAbility1.includes(key) 
-              && this.dAbility1.includes(item.get(key))
-            ) { chosenAbility.push(item); }
-          } else {
-            if (this.dAbility2.includes(key) 
-              && this.dAbility2.toLowerCase().includes(item.get(key))
-            ) { chosenAbility.push(item); }
-          }
-        }
-      } else {
-        if (this._ability.count(item) > 1) {
-          chosenAbility.push(item);
-          break;
-        }
-        if (this.currentlyChosenAbility === 1) {
-          if (this.dAbility1.includes(item)) {
-            chosenAbility.push(item);
-          }
-        } else {
-          if (this.dAbility2.includes(item)) {
-            chosenAbility.push(item);
-          }
-        }
-      }
-    }
-
-    return chosenAbility;
+    return this._ability[(this.currentlyChosenAbility - 1)];
   }
 
   get targets() {

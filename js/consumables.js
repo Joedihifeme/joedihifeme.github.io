@@ -14,7 +14,7 @@ class Consumable extends Card {
   specialConsumables = ["annoy"];
 
   constructor(name, cost, ability) {
-    super(name, cost, ability, true);
+    super(name, cost, ability);
     this._targets = [];
     this.multiplier = cost.includes("x");
 

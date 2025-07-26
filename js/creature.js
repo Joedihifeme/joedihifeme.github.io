@@ -9,16 +9,20 @@ class Creature extends Card {
 		"L", "(L)", "W", "(W)", "V", "(V)", "D", "(D)", "S", "(S)", "G", "(G)"
 	];
 	numberedKeywords = ["L", "W", "V", "G"];
+	abilityEvents = [
+		"once per turn", "when played", "upon death", "when attacking", 
+		"when blocking", "when alive", "every turn", "when drawn"
+	];
 
-	constructor(name, attack, health, cost, type, keywords=null) {
-		super(name, cost);
+	constructor(name, attack, health, cost, type, keywords, ability1, ability2) {
+		super(name, cost, ability1);
 		this.ATTACK = attack;
 		this.attack = attack;
 		this.HEALTH = health;
 		this.health = health;
 		this.type = type;
 
-		if (keywords !== null && keywords !== "") {
+		if (keywords !== "") {
 			keywords = keywords.split(",");
 			this.keywords = [];
 			for (let keyword of keywords) {
@@ -34,6 +38,14 @@ class Creature extends Card {
 
 		this.KEYWORDS = this.keywords;
 
+		if (ability2 !== "") { 
+			super.initialiseAbility(ability2); 
+		} else { 
+			this.ability2 = null; 
+		}
+
+		this.DISPLAYED_ABILITY2 = ability2;
+
 		this.firstTurn = true;
 		this.blocking = false;
 		this.tapped = false;
@@ -44,10 +56,14 @@ class Creature extends Card {
 		this.updateSpan();
 	}
 
+	initAbilityEvent() {
+
+	}
+
 	get keywordsHTML() {
 		let text = "";
 		if (this.keywords === null) {
-			return "None";
+			return "";
 		}
 
 		this.keywords.forEach(element => {
@@ -59,14 +75,19 @@ class Creature extends Card {
 	}
 
 	updateSpan() {
-		this.span.innerHTML = `
+		let text = `
 			Card Type: Creature <br>
 			Name: ${this.name} <br>
 			Attack: ${this.attack} <br>
 			Health: ${this.health > 0 ? this.health : 0} <br>
-			Price: ${this.cost} gold <br>
-			Keywords: ${(this.keywordsHTML)} <br>
-			`;
+			Price: ${this.cost} gold <hr>
+		`;
+
+		if (this.keywords !== null) text += `${(this.keywordsHTML)}<br>`;
+		if (this.DISPLAYED_ABILITY !== "") text += `${this.DISPLAYED_ABILITY}`;
+		if (this.DISPLAYED_ABILITY2 !== "") text += `<br>${this.DISPLAYED_ABILITY2}`; 
+
+		this.span.innerHTML = text;
 	}
 
 	duplicate() {

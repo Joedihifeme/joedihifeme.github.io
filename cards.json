@@ -6,7 +6,9 @@
       "health": 4,
       "gold": "4",
       "type": "n",
-      "keywords": ""
+      "keywords": "",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Monkey Builder",
@@ -14,7 +16,9 @@
       "health": 4,
       "gold": "4",
       "type": "n",
-      "keywords": ""
+      "keywords": "",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name" : "Monkey Twins",
@@ -22,7 +26,9 @@
       "health": 2,
       "gold": "3",
       "type": "n",
-      "keywords": "G2"
+      "keywords": "G2",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Chimpanzee",
@@ -30,7 +36,9 @@
       "health": 4,
       "gold": "6",
       "type": "n",
-      "keywords": "R"
+      "keywords": "R",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Survivor Hyena",
@@ -38,7 +46,9 @@
       "health": 6,
       "gold": "7",
       "type": "n",
-      "keywords": "S"
+      "keywords": "S",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Baby Hyena",
@@ -46,7 +56,9 @@
       "health": 2,
       "gold": "4",
       "type": "n",
-      "keywords": "S"
+      "keywords": "S",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Hyena Warrior",
@@ -54,7 +66,9 @@
       "health": 5,
       "gold": "6",
       "type": "n",
-      "keywords": "S,L1"
+      "keywords": "S,L1",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Lost Rhino",
@@ -62,7 +76,9 @@
       "health": 3,
       "gold": "3",
       "type": "n",
-      "keywords": ""
+      "keywords": "",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Benevolent Hippo",
@@ -70,7 +86,9 @@
       "health": 6,
       "gold": "4",
       "type": "n",
-      "keywords": ""
+      "keywords": "",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Bee-utiful Bee",
@@ -78,7 +96,9 @@
       "health": 7,
       "gold": "15",
       "type": "l",
-      "keywords": "I"
+      "keywords": "I",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Baby Giraffe",
@@ -86,7 +106,9 @@
       "health": 4,
       "gold": "3",
       "type": "n",
-      "keywords": "R"
+      "keywords": "R",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Vulture",
@@ -94,7 +116,9 @@
       "health": 6,
       "gold": "10",
       "type": "n",
-      "keywords": ""
+      "keywords": "",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Baby Vulture",
@@ -102,7 +126,9 @@
       "health": 2,
       "gold": "4",
       "type": "n",
-      "keywords": ""
+      "keywords": "",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Woodpecker",
@@ -110,7 +136,9 @@
       "health": 4,
       "gold": "6",
       "type": "n",
-      "keywords": "H"
+      "keywords": "H",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Baby Woodpecker",
@@ -118,7 +146,9 @@
       "health": 2,
       "gold": "3",
       "type": "n",
-      "keywords": "H"
+      "keywords": "H",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Falcon",
@@ -126,7 +156,9 @@
       "health": 4,
       "gold": "6",
       "type": "n",
-      "keywords": "F,I"
+      "keywords": "F,I",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Alchemist Lizard",
@@ -134,7 +166,9 @@
       "health": 3,
       "gold": "4",
       "type": "n",
-      "keywords": ""
+      "keywords": "",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Porcupine",
@@ -142,7 +176,9 @@
       "health": 4,
       "gold": "6",
       "type": "n",
-      "keywords": "W3,D"
+      "keywords": "W3,D",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Baby Porcupine",
@@ -150,7 +186,9 @@
       "health": 2,
       "gold": "4",
       "type": "n",
-      "keywords": "W2,S"
+      "keywords": "W2,S",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Porcupine Bomber",
@@ -158,7 +196,9 @@
       "health": 5,
       "gold": "5",
       "type": "n",
-      "keywords": ""
+      "keywords": "",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Porcupine Lunatic",
@@ -166,7 +206,9 @@
       "health": 6,
       "gold": "5",
       "type": "n",
-      "keywords": "D"
+      "keywords": "D",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Snapping Turtle",
@@ -174,7 +216,9 @@
       "health": 4,
       "gold": "4",
       "type": "n",
-      "keywords": "V2"
+      "keywords": "V2",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Turtle Mother",
@@ -182,7 +226,9 @@
       "health": 7,
       "gold": "10",
       "type": "n",
-      "keywords": "L2,D"
+      "keywords": "L2,D",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Raptor",
@@ -190,7 +236,9 @@
       "health": 6,
       "gold": "9",
       "type": "n",
-      "keywords": "H,I"
+      "keywords": "H,I",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Buffalo",
@@ -198,7 +246,9 @@
       "health": 6,
       "gold": "5",
       "type": "n",
-      "keywords": ""
+      "keywords": "",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Baby Buffalo",
@@ -206,7 +256,9 @@
       "health": 4,
       "gold": "2",
       "type": "n",
-      "keywords": ""
+      "keywords": "",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Crocodile",
@@ -214,7 +266,9 @@
       "health": 5,
       "gold": "7",
       "type": "n",
-      "keywords": "C"
+      "keywords": "C",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Alligator",
@@ -222,7 +276,9 @@
       "health": 2,
       "gold": "6",
       "type": "n",
-      "keywords": "C,D"
+      "keywords": "C,D",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Baby Alligator",
@@ -230,7 +286,9 @@
       "health": 1,
       "gold": "4",
       "type": "n",
-      "keywords": "C"
+      "keywords": "C",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Scorpion",
@@ -238,7 +296,9 @@
       "health": 5,
       "gold": "6",
       "type": "n",
-      "keywords": "G1,I"
+      "keywords": "G1,I",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Leech",
@@ -246,7 +306,9 @@
       "health": 3,
       "gold": "3",
       "type": "n",
-      "keywords": "L1"
+      "keywords": "L1",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name" : "Baby Elephant",
@@ -254,7 +316,9 @@
       "health": 3,
       "gold": "4",
       "type": "n",
-      "keywords": "I,T"
+      "keywords": "I,T",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Elephant",
@@ -262,7 +326,9 @@
       "health": 6,
       "gold": "6",
       "type": "n",
-      "keywords": "T,R"
+      "keywords": "T,R",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Viper Babies",
@@ -270,7 +336,9 @@
       "health": 3,
       "gold": "4",
       "type": "n",
-      "keywords": "V1"
+      "keywords": "V1",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Ankylosaurous",
@@ -278,7 +346,9 @@
       "health": 10,
       "gold": "9",
       "type": "n",
-      "keywords": "I"
+      "keywords": "I",
+      "ability1": "",
+      "ability2": ""
     },
     {
       "name": "Racist Bunny",
@@ -286,7 +356,9 @@
       "health": 4,
       "gold": "7",
       "type": "n",
-      "keywords": "R,F"
+      "keywords": "R,F",
+      "ability1": "",
+      "ability2": ""
     }
   ],
   "consumables": [

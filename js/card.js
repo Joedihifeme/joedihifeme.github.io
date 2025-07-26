@@ -25,7 +25,7 @@ class Card {
 
 	abilityArr = ["destroy", "clone"];
 
-	constructor(name, cost, ability=null, targets=null) {
+	constructor(name, cost, ability) {
 		this.name = name;
 		this._cost = new Gold(cost);
 		this.discarded = false;
@@ -34,12 +34,11 @@ class Card {
 		this.clone = false;
 		this.copyCounter = 0;
 
-		//creatures do not have abilities (yet) so this will be skipped during their initialisation
-		if (ability !== null && targets !== null) {
+		if (ability !== "") {
 			this._ability = [];
 			this.initialiseAbility(ability.toLowerCase());
-			this.DISPLAYED_ABILITY = ability;
-		}
+		} else this._ability = null;
+		this.DISPLAYED_ABILITY = ability;
 
 		this.span = document.createElement("span");
 		this.span.setAttribute("class", "card-display");
@@ -61,7 +60,7 @@ class Card {
   }
 
 	get ability() {
-		return this._ability;
+		return this._ability[0];
 	}
 
 	alterGold(callback, amount) {
@@ -130,6 +129,7 @@ class Card {
 
 	initialiseAbility(ability) {
 		let foundAbility = false;
+		const arr = [];
 
 		this.abilityMap.forEach((value, key) => {
 			if (ability.includes(key)) {
@@ -138,7 +138,7 @@ class Card {
 					value.forEach(element => {
 						if (ability.includes(element)) {
 							foundAbility = true;
-							this._ability.push(new Map([[key, element]]));
+							arr.push(new Map([[key, element]]));
 						}
 					});
 				} 
@@ -146,7 +146,7 @@ class Card {
 				else {
 					if (ability.includes(value)) {
 						foundAbility = true;
-						this._ability.push(new Map([[key, value]]));
+						arr.push(new Map([[key, value]]));
 					}
 				}
 			}
@@ -155,13 +155,15 @@ class Card {
 		this.abilityArr.forEach(element => {
 			if (ability.includes(element)) {
 				foundAbility = true;
-				this._ability.push(element);
+				arr.push(element);
 			}
 		});
 
 		if (!foundAbility) {
 			throw new Error(`Ability not found for ${this.name}`);
 		}
+
+		this._ability.push(arr);
 	}
 
 	activateAbility(target) {
@@ -282,6 +284,7 @@ class Card {
 					this.OWNER.opponent.disable();
 
 							target.forEach(card => {
+								if (card.legendary) return;
 								card.addTargetHandler = () => {
 									target.forEach(c => {
 										if (c.addTargetHandler) {
