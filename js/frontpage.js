@@ -1,3 +1,4 @@
+import Card from "./card.js";
 import Creature from "./creature.js";
 import Legendary from "./legendary.js";
 import Consumable from "./consumables.js";
@@ -30,12 +31,14 @@ fetch('./cards.json')
       if (creature.type === "n") {
         cards.push(new Creature(
           creature.name, creature.attack, creature.health, creature.gold, 
-          creature.type, creature.keywords, creature.ability1, creature.ability2
+          creature.type, creature.keywords, creature.ability1, creature.ability2,
+          creature.attribute
         ));
       } else {
         cards.push(new Legendary(
           creature.name, creature.attack, creature.health, creature.gold, 
-          creature.type, creature.keywords, creature.ability1, creature.ability2
+          creature.type, creature.keywords, creature.ability1, creature.ability2,
+          creature.attribute
         ))
       }
       

@@ -4,23 +4,25 @@ import { display } from "./functions.js";
 
 class Creature extends Card {
 
+	abilityEventsArr = [
+		"once per turn", "when played", "upon death", "when attacking", 
+		"when blocking", "when alive", "when damaged", "every turn", "when drawn",
+		"when a card gains a keyword"
+	];
 	keywordArr = [
 		null, "H", "(H)", "F", "(F)", "R", "(R)", "C", "(C)", "I", "(I)", "T", "(T)", 
 		"L", "(L)", "W", "(W)", "V", "(V)", "D", "(D)", "S", "(S)", "G", "(G)"
 	];
 	numberedKeywords = ["L", "W", "V", "G"];
-	abilityEvents = [
-		"once per turn", "when played", "upon death", "when attacking", 
-		"when blocking", "when alive", "every turn", "when drawn"
-	];
 
-	constructor(name, attack, health, cost, type, keywords, ability1, ability2) {
-		super(name, cost, ability1);
+	constructor(name, attack, health, cost, type, keywords, ability1, ability2, attribute) {
+		super(name, cost, ability1, "creature", true);
 		this.ATTACK = attack;
 		this.attack = attack;
 		this.HEALTH = health;
 		this.health = health;
 		this.type = type;
+		this.ATTRIBUTE = attribute;
 
 		if (keywords !== "") {
 			keywords = keywords.split(",");
@@ -39,12 +41,14 @@ class Creature extends Card {
 		this.KEYWORDS = this.keywords;
 
 		if (ability2 !== "") { 
-			super.initialiseAbility(ability2); 
-		} else { 
-			this.ability2 = null; 
+			this._ability = [];
+			super.initialiseAbility(ability2.toLowerCase()); 
 		}
 
 		this.DISPLAYED_ABILITY2 = ability2;
+		this.abilityEvents = [];
+		this.initAbilityEvent();
+		this.currentAbility = 0;
 
 		this.firstTurn = true;
 		this.blocking = false;
@@ -54,10 +58,6 @@ class Creature extends Card {
 		//the object has a player property in case the poisoned creature has ward
 
 		this.updateSpan();
-	}
-
-	initAbilityEvent() {
-
 	}
 
 	get keywordsHTML() {
@@ -74,6 +74,32 @@ class Creature extends Card {
 		return text
 	}
 
+	get ability() {
+		return this._ability[this.currentAbility];
+	}
+
+	initAbilityEvent() {
+		const abilites = [this.DISPLAYED_ABILITY, this.DISPLAYED_ABILITY2];
+
+		abilites.forEach(ability => {
+			if (ability === "") return;
+
+			let found = false;
+
+			this.abilityEventsArr.forEach(ev => {
+				if (ability.toLowerCase().includes(ev)) {
+					this.abilityEvents.push(ev);
+					found = true;
+					return;
+				}
+			});
+
+			if (!found) {
+				this.abilityEvents.push("general");
+			}
+		});
+	}
+
 	updateSpan() {
 		let text = `
 			Card Type: Creature <br>
@@ -83,9 +109,10 @@ class Creature extends Card {
 			Price: ${this.cost} gold <hr>
 		`;
 
+		if (this.DISPLAYED_ABILITY !== "") text += `-${this.DISPLAYED_ABILITY}<br>`;
+		if (this.DISPLAYED_ABILITY2 !== "") text += `-${this.DISPLAYED_ABILITY2}<br>`;
+		if (this.ATTRIBUTE !== "") text += `-${this.ATTRIBUTE}<br>`;
 		if (this.keywords !== null) text += `${(this.keywordsHTML)}<br>`;
-		if (this.DISPLAYED_ABILITY !== "") text += `${this.DISPLAYED_ABILITY}`;
-		if (this.DISPLAYED_ABILITY2 !== "") text += `<br>${this.DISPLAYED_ABILITY2}`; 
 
 		this.span.innerHTML = text;
 	}
@@ -151,18 +178,20 @@ class Creature extends Card {
 		this.updateSpan();
 	}
 
-	changeStats(stat, amount) {
-		if (stat === "both") {
-			let stats = amount.split("/");
+	changeStats(amount, reverse=false) {
+		if (!amount.includes("/")) {
+			console.log("Error: cannot read stats");
+		}
+
+		let stats = amount.split("/");
+		if (reverse) {
+			this.attack += -Number(stats[0]);
+			this.health += -Number(stats[1]);
+		} else {
 			this.attack += Number(stats[0]);
 			this.health += Number(stats[1]);
-		} else if (stat === "attack") {
-			this.attack += Number(amount);
-		} else if (stat === "health") {
-			this.health += Number(amount);
-		} else {
-			throw new Error("Stat not defined");
 		}
+		
 
 		if (this.attack < 0) {
 			this.attack = 0;
@@ -173,6 +202,15 @@ class Creature extends Card {
 		}
 
 		this.updateSpan();
+	}
+	
+	play() {
+		if (this.abilityEvents.includes("when played")) {
+			this.currentAbility = this.abilityEvents.indexOf("when played");
+			this.findTargets();
+		}
+
+		super.play();
 	}
 
 	discard() {

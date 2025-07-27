@@ -11,6 +11,7 @@ class doubleConsumable extends Consumable {
     this.initialiseTargets(ability2.toLowerCase());
     this.DISPLAYED_ABILITY2 = ability2;
     this.currentlyChosenAbility = 0;
+    this.cardType = "dConsumable";
 
     this.updateSpan();
   }

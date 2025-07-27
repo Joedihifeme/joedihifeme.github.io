@@ -8,7 +8,8 @@
       "type": "n",
       "keywords": "",
       "ability1": "",
-      "ability2": ""
+      "ability2": "",
+      "attribute": ""
     },
     {
       "name": "Monkey Builder",
@@ -18,7 +19,8 @@
       "type": "n",
       "keywords": "",
       "ability1": "",
-      "ability2": ""
+      "ability2": "",
+      "attribute": ""
     },
     {
       "name" : "Monkey Twins",
@@ -28,7 +30,8 @@
       "type": "n",
       "keywords": "G2",
       "ability1": "",
-      "ability2": ""
+      "ability2": "",
+      "attribute": "This card counts as 2 cards."
     },
     {
       "name": "Chimpanzee",
@@ -38,7 +41,8 @@
       "type": "n",
       "keywords": "R",
       "ability1": "",
-      "ability2": ""
+      "ability2": "Upon death: Draw 2 cards",
+      "attribute": ""
     },
     {
       "name": "Survivor Hyena",
@@ -47,8 +51,9 @@
       "gold": "7",
       "type": "n",
       "keywords": "S",
-      "ability1": "",
-      "ability2": ""
+      "ability1": "Whenever a hyena card dies, gain +1/+0.",
+      "ability2": "Whenever a hyena card is played, gain +0/+2.",
+      "attribute": ""
     },
     {
       "name": "Baby Hyena",
@@ -57,8 +62,9 @@
       "gold": "4",
       "type": "n",
       "keywords": "S",
-      "ability1": "",
-      "ability2": ""
+      "ability1": "Upon Death: Search your deck for a creature card and a consumable",
+      "ability2": "",
+      "attribute": ""
     },
     {
       "name": "Hyena Warrior",
@@ -67,8 +73,31 @@
       "gold": "6",
       "type": "n",
       "keywords": "S,L1",
+      "ability1": "When damaged: deal the same damage to the opponent.",
+      "ability2": "",
+      "attribute": ""
+    },
+    {
+      "name": "Hyena Shaman",
+      "attack": 1,
+      "health": 6,
+      "gold": "6",
+      "type": "n",
+      "keywords": "",
+      "ability1": "When you put a creature into freefall, gain 1 life.",
+      "ability2": "",
+      "attribute": ""
+    },
+    {
+      "name": "Hyena Shaman",
+      "attack": 2,
+      "health": 4,
+      "gold": "5",
+      "type": "n",
+      "keywords": "",
       "ability1": "",
-      "ability2": ""
+      "ability2": "",
+      "attribute": ""
     },
     {
       "name": "Lost Rhino",
@@ -78,7 +107,8 @@
       "type": "n",
       "keywords": "",
       "ability1": "",
-      "ability2": ""
+      "ability2": "",
+      "attribute": ""
     },
     {
       "name": "Benevolent Hippo",
@@ -88,17 +118,8 @@
       "type": "n",
       "keywords": "",
       "ability1": "",
-      "ability2": ""
-    },
-    {
-      "name": "Bee-utiful Bee",
-      "attack": 2,
-      "health": 7,
-      "gold": "15",
-      "type": "l",
-      "keywords": "I",
-      "ability1": "",
-      "ability2": ""
+      "ability2": "",
+      "attribute": ""
     },
     {
       "name": "Baby Giraffe",
@@ -107,8 +128,9 @@
       "gold": "3",
       "type": "n",
       "keywords": "R",
-      "ability1": "",
-      "ability2": ""
+      "ability1": "When blocking: if this survives, heal all damage and gain +1/+2.",
+      "ability2": "",
+      "attribute": ""
     },
     {
       "name": "Vulture",
@@ -118,7 +140,8 @@
       "type": "n",
       "keywords": "",
       "ability1": "",
-      "ability2": ""
+      "ability2": "",
+      "attribute": ""
     },
     {
       "name": "Baby Vulture",
@@ -127,8 +150,9 @@
       "gold": "4",
       "type": "n",
       "keywords": "",
-      "ability1": "",
-      "ability2": ""
+      "ability1": "Cards in your hand cost 1 gold less",
+      "ability2": "",
+      "attribute": "This card cannot be cloned"
     },
     {
       "name": "Woodpecker",
@@ -138,7 +162,8 @@
       "type": "n",
       "keywords": "H",
       "ability1": "",
-      "ability2": ""
+      "ability2": "",
+      "attribute": ""
     },
     {
       "name": "Baby Woodpecker",
@@ -148,7 +173,8 @@
       "type": "n",
       "keywords": "H",
       "ability1": "",
-      "ability2": ""
+      "ability2": "",
+      "attribute": ""
     },
     {
       "name": "Falcon",
@@ -158,7 +184,8 @@
       "type": "n",
       "keywords": "F,I",
       "ability1": "",
-      "ability2": ""
+      "ability2": "",
+      "attribute": ""
     },
     {
       "name": "Alchemist Lizard",
@@ -168,7 +195,8 @@
       "type": "n",
       "keywords": "",
       "ability1": "",
-      "ability2": ""
+      "ability2": "",
+      "attribute": ""
     },
     {
       "name": "Porcupine",
@@ -178,7 +206,8 @@
       "type": "n",
       "keywords": "W3,D",
       "ability1": "",
-      "ability2": ""
+      "ability2": "",
+      "attribute": ""
     },
     {
       "name": "Baby Porcupine",
@@ -188,17 +217,19 @@
       "type": "n",
       "keywords": "W2,S",
       "ability1": "",
-      "ability2": ""
+      "ability2": "",
+      "attribute": ""
     },
     {
       "name": "Porcupine Bomber",
-      "attack": 3,
+      "attack": 1,
       "health": 5,
       "gold": "5",
       "type": "n",
       "keywords": "",
-      "ability1": "",
-      "ability2": ""
+      "ability1": "When attacking: Gain +2/+0",
+      "ability2": "",
+      "attribute": ""
     },
     {
       "name": "Porcupine Lunatic",
@@ -208,7 +239,8 @@
       "type": "n",
       "keywords": "D",
       "ability1": "",
-      "ability2": ""
+      "ability2": "",
+      "attribute": ""
     },
     {
       "name": "Snapping Turtle",
@@ -216,9 +248,10 @@
       "health": 4,
       "gold": "4",
       "type": "n",
-      "keywords": "V2",
-      "ability1": "",
-      "ability2": ""
+      "keywords": "",
+      "ability1": "Gain (V)2 when blocking",
+      "ability2": "Gain +0/+1 when attacking",
+      "attribute": ""
     },
     {
       "name": "Turtle Mother",
@@ -228,7 +261,8 @@
       "type": "n",
       "keywords": "L2,D",
       "ability1": "",
-      "ability2": ""
+      "ability2": "",
+      "attribute": ""
     },
     {
       "name": "Raptor",
@@ -238,7 +272,8 @@
       "type": "n",
       "keywords": "H,I",
       "ability1": "",
-      "ability2": ""
+      "ability2": "",
+      "attribute": ""
     },
     {
       "name": "Buffalo",
@@ -248,7 +283,8 @@
       "type": "n",
       "keywords": "",
       "ability1": "",
-      "ability2": ""
+      "ability2": "",
+      "attribute": ""
     },
     {
       "name": "Baby Buffalo",
@@ -257,8 +293,20 @@
       "gold": "2",
       "type": "n",
       "keywords": "",
+      "ability1": "Gain 1 gold every turn",
+      "ability2": "",
+      "attribute": ""
+    },
+    {
+      "name": "Buffalo Leader",
+      "attack": 3,
+      "health": 6,
+      "gold": "8",
+      "type": "n",
+      "keywords": "",
       "ability1": "",
-      "ability2": ""
+      "ability2": "Upon Death: Discard 2 random cards from your opponent’s hand.",
+      "attribute": ""
     },
     {
       "name": "Crocodile",
@@ -266,9 +314,10 @@
       "health": 5,
       "gold": "7",
       "type": "n",
-      "keywords": "C",
-      "ability1": "",
-      "ability2": ""
+      "keywords": "",
+      "ability1": "Upon death: Use (C)",
+      "ability2": "",
+      "attribute": ""
     },
     {
       "name": "Alligator",
@@ -278,7 +327,8 @@
       "type": "n",
       "keywords": "C,D",
       "ability1": "",
-      "ability2": ""
+      "ability2": "",
+      "attribute": ""
     },
     {
       "name": "Baby Alligator",
@@ -288,7 +338,8 @@
       "type": "n",
       "keywords": "C",
       "ability1": "",
-      "ability2": ""
+      "ability2": "",
+      "attribute": ""
     },
     {
       "name": "Scorpion",
@@ -298,7 +349,8 @@
       "type": "n",
       "keywords": "G1,I",
       "ability1": "",
-      "ability2": ""
+      "ability2": "",
+      "attribute": ""
     },
     {
       "name": "Leech",
@@ -307,8 +359,9 @@
       "gold": "3",
       "type": "n",
       "keywords": "L1",
-      "ability1": "",
-      "ability2": ""
+      "ability1": "When a card gains a keyword: gain +1/+2",
+      "ability2": "",
+      "attribute": ""
     },
     {
       "name" : "Baby Elephant",
@@ -317,8 +370,9 @@
       "gold": "4",
       "type": "n",
       "keywords": "I,T",
-      "ability1": "",
-      "ability2": ""
+      "ability1": "Upon death, put this into your hand.",
+      "ability2": "",
+      "attribute": ""
     },
     {
       "name": "Elephant",
@@ -328,7 +382,8 @@
       "type": "n",
       "keywords": "T,R",
       "ability1": "",
-      "ability2": ""
+      "ability2": "",
+      "attribute": ""
     },
     {
       "name": "Viper Babies",
@@ -338,7 +393,8 @@
       "type": "n",
       "keywords": "V1",
       "ability1": "",
-      "ability2": ""
+      "ability2": "",
+      "attribute": "This card counts as 3 cards."
     },
     {
       "name": "Ankylosaurous",
@@ -348,7 +404,8 @@
       "type": "n",
       "keywords": "I",
       "ability1": "",
-      "ability2": ""
+      "ability2": "",
+      "attribute": ""
     },
     {
       "name": "Racist Bunny",
@@ -358,7 +415,63 @@
       "type": "n",
       "keywords": "R,F",
       "ability1": "",
-      "ability2": ""
+      "ability2": "",
+      "attribute": ""
+    },
+    {
+      "name": "Thunder Ants",
+      "attack": 1,
+      "health": 2,
+      "gold": "4",
+      "type": "n",
+      "keywords": "",
+      "ability1": "When played: All opposing creatures get +0/-2",
+      "ability2": "",
+      "attribute": ""
+    },
+    {
+      "name": "Tasmanian Devil",
+      "attack": 2,
+      "health": 6,
+      "gold": "6",
+      "type": "n",
+      "keywords": "D",
+      "ability1": "Gains +0/+1 every turn",
+      "ability2": "When attacked: Deal 1 damage to the attacking card and gain 1 gold.",
+      "attribute": ""
+    },
+    {
+      "name": "Bee-utiful Bee",
+      "attack": 2,
+      "health": 7,
+      "gold": "15",
+      "type": "l",
+      "keywords": "I",
+      "ability1": "",
+      "ability2": "",
+      "attribute": ""
+    },
+    {
+      "name": "Void Leech",
+      "attack": 1,
+      "health": 4,
+      "gold": "9",
+      "type": "l",
+      "keywords": "I",
+      "ability1": "When this card attacks a creature, it gains all keywords on it.",
+      "ability2": "",
+      "attribute": ""
+    },
+    {
+      "name": "Pangolin Paladin",
+      "attack": 1,
+      "health": 7,
+      "gold": "9",
+      "type": "l",
+      "keywords": "I",
+      "ability1": "When alive: The opponent’s creature with the highest ATCK will have 0 ATCK.",
+      "ability2": "",
+      "attribute": ""
     }
   ],
   "consumables": [
@@ -483,7 +596,7 @@
       "gold1": "4",
       "ability1": "Give target creature (F)",
       "gold2": "5",
-      "ability2": "All cards that attack this turn gets +1 ATCK",
+      "ability2": "All cards that attack this turn gets +1/+0",
       "implemented": false
     },
     {
@@ -499,7 +612,7 @@
       "gold1" : "3",
       "ability1" : "Give (W)2 to target creature",
       "gold2" : "3",
-      "ability2" : "Give 6HP to target creature",
+      "ability2" : "Give +0/+6 to target creature",
       "implemented": true
     }
   ]

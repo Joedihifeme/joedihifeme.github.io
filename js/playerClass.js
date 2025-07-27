@@ -484,7 +484,10 @@ class Player {
       }
     }
 
-    this.forEachOnBoard(creature => { creature.firstTurn = false; });
+    this.forEachOnBoard(creature => { 
+      creature.firstTurn = false;
+      creature.currentAbility = 0;
+    });
 
     if (this.opponent.killed) { 
       display(`${this.opponent.name} has won!<br>Reload the page to play again.`);
