@@ -89,17 +89,6 @@
       "attribute": ""
     },
     {
-      "name": "Hyena Shaman",
-      "attack": 2,
-      "health": 4,
-      "gold": "5",
-      "type": "n",
-      "keywords": "",
-      "ability1": "",
-      "ability2": "",
-      "attribute": ""
-    },
-    {
       "name": "Lost Rhino",
       "attack": 2,
       "health": 3,
@@ -128,7 +117,7 @@
       "gold": "3",
       "type": "n",
       "keywords": "R",
-      "ability1": "When blocking: if this survives, heal all damage and gain +1/+2.",
+      "ability1": "If this survives whilst blocking, heal all damage and gain +1/+2.",
       "ability2": "",
       "attribute": ""
     },
@@ -249,8 +238,8 @@
       "gold": "4",
       "type": "n",
       "keywords": "",
-      "ability1": "Gain (V)2 when blocking",
-      "ability2": "Gain +0/+1 when attacking",
+      "ability1": "When blocking: Gain (V)2",
+      "ability2": "When attacking: Gain +0/+1",
       "attribute": ""
     },
     {

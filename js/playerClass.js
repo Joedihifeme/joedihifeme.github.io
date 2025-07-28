@@ -315,10 +315,16 @@ class Player {
         this.stamina(card);
       } else {
         this.board[0].push(card);
+        card.blocking = true;
 
         card.tapHandler = card.tap.bind(card);
         card.span.onclick = card.tapHandler;
         card.span.style.borderColor = "blue";
+
+        if (card.abilityEvents.includes("when blocking")) {
+          card.currentAbility = card.abilityEvents.indexOf("when blocking");
+          card.findTargets("activate");
+        }
 
       this.keywordsOnPlay(card); 
       }

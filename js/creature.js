@@ -5,7 +5,7 @@ import { display } from "./functions.js";
 class Creature extends Card {
 
 	abilityEventsArr = [
-		"once per turn", "when played", "upon death", "when attacking", 
+		"once per turn", "when played", "upon death", "when attacking", "survives whilst blocking",
 		"when blocking", "when alive", "when damaged", "every turn", "when drawn",
 		"when a card gains a keyword"
 	];
@@ -21,6 +21,7 @@ class Creature extends Card {
 		this.attack = attack;
 		this.HEALTH = health;
 		this.health = health;
+		this.previousHealth = 0;
 		this.type = type;
 		this.ATTRIBUTE = attribute;
 
@@ -41,7 +42,7 @@ class Creature extends Card {
 		this.KEYWORDS = this.keywords;
 
 		if (ability2 !== "") { 
-			this._ability = [];
+			if (this._ability === null) this._ability = [];
 			super.initialiseAbility(ability2.toLowerCase()); 
 		}
 
@@ -90,8 +91,9 @@ class Creature extends Card {
 				if (ability.toLowerCase().includes(ev)) {
 					this.abilityEvents.push(ev);
 					found = true;
-					return;
 				}
+				
+				if (found) return;
 			});
 
 			if (!found) {
@@ -207,7 +209,7 @@ class Creature extends Card {
 	play() {
 		if (this.abilityEvents.includes("when played")) {
 			this.currentAbility = this.abilityEvents.indexOf("when played");
-			this.findTargets();
+			this.findTargets("activate");
 		}
 
 		super.play();
@@ -227,6 +229,12 @@ class Creature extends Card {
 	}
 
 	tap() {
+		if (this.abilityEvents.includes("when blocking")) {
+			this.currentAbility = this.abilityEvents.indexOf("when blocking");
+			this.findTargets("deactivate");
+			this.currentAbility = 0;
+		}
+
 		this.OWNER.board[0].remove(this);
 		this.OWNER.board[1].push(this);
 		this.span.style.borderColor = "red";
@@ -244,10 +252,21 @@ class Creature extends Card {
 			return;
 		}
 
+		if (this.abilityEvents.includes("when attacking")) {
+			this.currentAbility = this.abilityEvents.indexOf("when attacking");
+			this.findTargets("activate");
+		}
+
 		this.setTarget();
 	}
 
 	block() {
+		if (this.abilityEvents.includes("when attacking")) {
+			this.currentAbility = this.abilityEvents.indexOf("when attacking");
+			this.findTargets("deactivate");
+			this.currentAbility = 0;
+		}
+
 		this.OWNER.board[1].remove(this);
 		this.OWNER.board[0].push(this);
 		this.span.style.borderColor = "blue";
@@ -258,6 +277,11 @@ class Creature extends Card {
 		this.tapHandler = this.tap.bind(this);
 		this.span.onclick = this.tapHandler;
 		this.target = null;
+
+		if (this.abilityEvents.includes("when blocking")) {
+			this.currentAbility = this.abilityEvents.indexOf("when blocking");
+			this.findTargets("activate");
+		}
 	}
 
 	setTarget() {
@@ -436,6 +460,8 @@ class Creature extends Card {
 				default:
 					break;
 			}
+
+			target.previousHealth = target.health;
 		}
 
 		this.damageTarget(target);
@@ -531,6 +557,11 @@ class Creature extends Card {
 			}
 
 			return true;
+		}
+
+		if (this.abilityEvents.includes("survives whilst blocking") && this.blocking) {
+			this.currentAbility = this.abilityEvents.indexOf("survives whilst blocking");
+			this.findTargets("activate");
 		}
 		
 		return false;

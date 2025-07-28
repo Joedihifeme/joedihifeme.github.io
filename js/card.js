@@ -4,6 +4,7 @@ import Gold from "./gold.js"
 class Card {
 
 	abilityMap = new Map ([
+		["heal", "all damage"],
 		["gain", ["+1/+0", "+2/+0", "+0/+1", "+0/+2",
 			"+0/+6", "+1/+2", "+2/+4", "+0/-2", "-2/-4", 
 			"-5/-10", "(l)", "(i)", "(t)", "(f)", "(w)2", 
@@ -23,7 +24,6 @@ class Card {
 		["discard", ["x cards", "a card", "2 random cards"]],
 		["draw", ["2", "3"]],
 		["deal", ["same damage"]],
-		["heal", "all damage"],
 		["lose", "3 health"],
 		["reset", "haste"],
 		["arrange", "in any way"],
@@ -221,7 +221,7 @@ class Card {
     }
   }
 
-	findTargets() {
+	findTargets(mode) {
 		const board = this.OWNER.flatBoard
     const creatures = board.filter(creature => { return creature.cardType === "creature"; });
     const targets = this.targets; 
@@ -230,7 +230,9 @@ class Card {
     if (targets.includes("cards in your hand")) {
       if (this.OWNER.hand.length < 1) { return false; } 
 
-      this.OWNER.hand.forEach(card => { this.activateAbility(card); });
+      this.OWNER.hand.forEach(card => { 
+				if (mode === "activate") this.activateAbility(card); else this.deactivateAbility(card); 
+			});
       
       return true;
     }
@@ -238,7 +240,9 @@ class Card {
     if (targets.includes("all your creatures")) {
       if (board.length < 1) { return false; }
 
-      creatures.forEach(creature => { this.activateAbility(creature); });
+      creatures.forEach(creature => { 
+				if (mode === "activate") this.activateAbility(creature); else this.deactivateAbility(creature) ;
+				});
 
       
       return true;
@@ -249,7 +253,9 @@ class Card {
 
 			if (oCreatures.length < 1) return false;
 
-			oCreatures.forEach(creature => { this.activateAbility(creature); });
+			oCreatures.forEach(creature => { 
+				if (mode === "activate") this.activateAbility(creature); else this.deactivateAbility(creature);
+				});
 			return true;
 		}
 
@@ -258,7 +264,7 @@ class Card {
       const callback = function(card) { 
         if ((card.cardType === "consumable" || card.cardType === "dConsumable") && card !== this) {
           found = true;
-          this.activateAbility(card); 
+          if (mode === "activate") this.activateAbility(card); else this.deactivateAbility(card); 
         }
       }.bind(this);
 
@@ -282,7 +288,7 @@ class Card {
 
         i++;
         creature.addTargetHandler = () => {
-          this.activateAbility(creature);
+          if (mode === "activate") this.activateAbility(creature); else this.deactivateAbility(creature);
 
           if (creature.addTargetHandler) {
             creature.span.onclick = null;
@@ -315,12 +321,14 @@ class Card {
     } else if (targets.includes("opponent's hand")) {
       if (this.OWNER.opponent.hand.length < 1) { return false; }
 
-      this.activateAbility(this.OWNER.opponent.hand); 
+      if (mode === "activate") this.activateAbility(this.OWNER.opponent.hand); 
+			else this.deactivateAbility(this.OWNER.opponent.hand);
       
       return true;
       
     } else if (targets.includes("opponent")) {
-      this.activateAbility(this.OWNER.opponent);
+      if (mode === "activate") this.activateAbility(this.OWNER.opponent); 
+			else this.deactivateAbility(this.OWNER.opponent);
       
       return true;
     }
@@ -329,7 +337,8 @@ class Card {
       if (this.OWNER.deck.length < 1) { return false; }
 
       this.OWNER.disable();
-      this.activateAbility(this.OWNER.deck); 
+      if (mode === "activate") this.activateAbility(this.OWNER.deck); 
+			else this.deactivateAbility(this.OWNER.deck);
       this.OWNER.enable();
       
       return true;
@@ -338,7 +347,8 @@ class Card {
     if (targets.includes("your hand")) {
       if (this.OWNER.hand.length < 1) { return false; }
 
-      this.activateAbility(this.OWNER.hand); 
+      if (mode === "activate") this.activateAbility(this.OWNER.hand); 
+			else this.deactivateAbility(this.OWNER.hand);
       
       return true;
     }
@@ -346,7 +356,9 @@ class Card {
     if (targets.includes("all target creatures")) {
       if (board.length < 1) { return false; }
 
-      board.forEach(card => { this.activateAbility(card); });    
+      board.forEach(card => { 
+				if (mode === "activate") this.activateAbility(card); else this.deactivateAbility(card); 
+			});
       
       return true;
     }
@@ -360,7 +372,8 @@ class Card {
 
         i++;
         creature.addTargetHandler = () => {
-          this.activateAbility(creature);
+          if (mode === "activate") this.activateAbility(creature); 
+					else this.deactivateAbility(creature);
 
           if (creature.addTargetHandler) {
             creature.span.onclick = null;
@@ -392,7 +405,7 @@ class Card {
       let affordable = board.find(card => { return this.OWNER.gold >= card.cost });
       if (!affordable) return false;
 
-      this.activateAbility(board); 
+      if (mode === "activate") this.activateAbility(board); else this.deactivateAbility(board);
       
       return true;
     }
@@ -401,12 +414,20 @@ class Card {
       const freefall = this.OWNER.discards.filter(card => { return card.cardType === "creature"; });
       if (freefall.length < 1) return false;
       
-      freefall.forEach(creature => { this.activateAbility(creature); });
+      freefall.forEach(creature => { 
+				if (mode === "activate") this.activateAbility(creature); 
+				else this.deactivateAbility(creature);
+			});
       
       return true;
     }
 
-		if (targets.includes("general")) { this.activateAbility(this); return true; }
+		if (targets.includes("general")) { 
+			if (mode === "activate") this.activateAbility(this); 
+			else this.deactivateAbility(this); 
+
+			return true; 
+		}
 
     console.log(`Target in targets not recognised: ${targets}; for ${this.name}`);
     return false;
@@ -517,6 +538,13 @@ class Card {
 						this.OWNER.drawCard(Number(number));
 						display(`${this.OWNER.name} to move`);
 					}
+				} else if (ability.has("heal")) {
+					for (let amount of ability.values()) {
+						if (amount.includes("all damage")) {
+							target.health = target.previousHealth;
+							target.updateSpan();
+						}
+					}
 				}
 			
 			} else {
@@ -566,7 +594,7 @@ class Card {
 						} else if (stat.includes("gold")) {
 							target.spendGold(Number(stat));
 						} else {
-							target.changeStats(stat, reverse=true);
+							target.changeStats(stat, true);
 						}
 					}
 				}

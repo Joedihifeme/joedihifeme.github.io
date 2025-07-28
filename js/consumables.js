@@ -1,6 +1,4 @@
 import Card from "./card.js";
-import Creature from "./creature.js";
-import { display } from "./functions.js";
 
 class Consumable extends Card {
 
@@ -32,7 +30,7 @@ class Consumable extends Card {
   }
 
   playConsumable() {
-    if (this.findTargets()) { this.OWNER.discard(this); return true; } else return false;
+    if (this.findTargets("activate")) { this.OWNER.discard(this); return true; } else return false;
   }
 }
 
