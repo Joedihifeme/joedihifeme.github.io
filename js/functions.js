@@ -14,6 +14,10 @@ Array.prototype.count = function(item) {
   return i;
 }
 
+Array.prototype.randomElement = function() {
+  return this[Math.floor(Math.random() * this.length)];
+}
+
 let keywordsText = 
   `(H): Haste: When played: this creature does 2x ATCK on its first turn. <br> <br>
   (F): First Strike: This card can only be blocked by (R) creatures. <br> <br>
@@ -213,8 +217,12 @@ function buildInterface(players, gameDiv, displayMode) {
   players[1].div = p2Div;
 }
 
-function display(text) {
-  document.getElementById("text").innerHTML = text;
+function display(text) { document.getElementById("text").innerHTML = text; }
+
+//note: this function can't be used in Card.duplicate() due to the existence of DOM objects
+function copy(obj, notJSON=false) { 
+  if (!notJSON) return JSON.parse(JSON.stringify(obj)); 
+  else return Object.create(obj);
 }
 
 function setupGame(players, gameDiv, displayMode) {
@@ -231,4 +239,6 @@ function setupGame(players, gameDiv, displayMode) {
   players[1].disable();
 }
 
-export { setupGame, display }
+
+
+export { setupGame, display, copy }

@@ -18,6 +18,7 @@ class Player {
     this._div = undefined;
     this.adder = 0;
     this.turn = 0;
+    this.drawn = false;
     this.opponent = undefined;
   }
 
@@ -138,7 +139,7 @@ class Player {
     }
 
     if (element === "all" || element === "draw button") {
-      if ((this.deck.length > 0) && (this.gold >= 1)) {
+      if ((this.deck.length > 0) && (this.gold >= 1) && (!this.drawn)) {
         this.div.drawButton.disabled = false;
       }
     }
@@ -244,6 +245,7 @@ class Player {
 
     this.adder += 1;
     this.turn += 1;
+    this.drawn = false;
     this.addGold(3 + this.adder);
     this.drawCard(1);
     display(`${this.name} to move`);
@@ -256,18 +258,19 @@ class Player {
         if (this.div.hand.innerHTML === "No cards in hand yet") {
           this.div.hand.innerHTML = "";
         }
-        this.drawSpecificCard(this.deck[Math.floor(Math.random() * this.deck.length)]);
+        this.drawSpecificCard(this.deck.randomElement());
       }
       if (paid) {
         this.disable("draw button");
         this.spendGold(1);
+        this.drawn = true;
       }
       if (this.deck.length < 1) {
         this.disable("draw button");
       }
     }
     catch(err) {
-      document.getElementById("text-space").innerHTML = "Draw pile is empty";
+      display("Draw pile is empty");
       this.disable("draw button");
     }
   }
@@ -374,7 +377,7 @@ class Player {
   }
 
   //keyword on play
-  creatureRemovalAndIndestructible(card) {
+  creatureRemovalAndIndestructible(card, outsideTurn=false) {
     const enemyBoard = this.opponent.flatBoard;
 
     if (card.checkKeyword("C")) {
@@ -383,18 +386,25 @@ class Player {
           display(
             `${card.name} is using Creature Removal but all enemy creatures are Indestructible!`
           )
-          setTimeout(() => {display(`${this.name} to move`);}, 1500);
+          setTimeout(() => { display(`${this.name } to move`);}, 1500);
           return;
         }
         
         display(
           `${card.name} is using Creature Removal! ${this.name}, choose a creature to remove.`
         );
+        if (outsideTurn) {
+          setTimeout(() => { display(
+            `${card.name} is using Creature Removal! ${this.name}, choose a creature to remove.`
+          ); this.disable(); }, 1001);
+        }
+        
 
+        this.disable();
         this.opponent.disable("board");
         this.opponent.forEachOnBoard(creature => {
           if (!creature.checkKeyword("I")) {
-            creature.removeHandler = () => {
+            creature.removeHandler = function() {
               creature.OWNER.discard(creature);
 
               if (creature.removeHandler) {
@@ -409,8 +419,9 @@ class Player {
                 }
               });
 
+              this.enable()
               display(`${this.name} to move.`);
-            }
+            }.bind(this);
 
             creature.span.onclick = creature.removeHandler;
           }

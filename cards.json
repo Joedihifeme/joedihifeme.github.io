@@ -293,8 +293,8 @@
       "gold": "8",
       "type": "n",
       "keywords": "",
-      "ability1": "",
-      "ability2": "Upon Death: Discard 2 random cards from your opponent’s hand.",
+      "ability1": "Upon Death: Discard 2 random cards from your opponent's hand.",
+      "ability2": "",
       "attribute": ""
     },
     {
@@ -359,7 +359,7 @@
       "gold": "4",
       "type": "n",
       "keywords": "I,T",
-      "ability1": "Upon death, put this into your hand.",
+      "ability1": "Upon death: put this into your hand. It retains its buffs",
       "ability2": "",
       "attribute": ""
     },
@@ -414,7 +414,7 @@
       "gold": "4",
       "type": "n",
       "keywords": "",
-      "ability1": "When played: All opposing creatures get +0/-2",
+      "ability1": "When played: Give +0/-2 to all opposing creatures",
       "ability2": "",
       "attribute": ""
     },
@@ -458,7 +458,7 @@
       "gold": "9",
       "type": "l",
       "keywords": "I",
-      "ability1": "When alive: The opponent’s creature with the highest ATCK will have 0 ATCK.",
+      "ability1": "When alive: The opponent's creature with the highest ATCK will have 0 ATCK.",
       "ability2": "",
       "attribute": ""
     }

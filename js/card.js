@@ -1,4 +1,4 @@
-import { display } from "./functions.js";
+import { display, copy } from "./functions.js";
 import Gold from "./gold.js"
 
 class Card {
@@ -15,7 +15,7 @@ class Card {
 			"-5/-10", "(l)", "(i)", "(t)", "(f)", "(w)2", 
 			"(v)1", "(v)2", "1 gold", "3 gold", "x gold", 
 			"spellproof", "stasis", "1 life", "all keywords"]],
-		["get", ["+1/+0", "+2/+0", "+0/+1", "+0/+2",
+		["gets", ["+1/+0", "+2/+0", "+0/+1", "+0/+2",
 			"+0/+6", "+1/+2", "+2/+4", "+0/-2", "-2/-4", 
 			"-5/-10", "(l)", "(i)", "(t)", "(f)", "(w)2", 
 			"(v)1", "(v)2", "1 gold", "3 gold", "x gold", 
@@ -31,6 +31,7 @@ class Card {
 		["cost", "1 gold less"],
 		["use", "(c)"],
 		["put", "this"],
+		["retains", "buffs"],
 		["have", "0 atck"]
 	]);
 
@@ -111,7 +112,7 @@ class Card {
 		} else dup.name += " I";
 		dup._cost = new Gold(dup._cost.value);
 		if (dup._cost2) dup._cost2 = new Gold(dup._cost2.value);
-		if (this._ability !== null) dup._ability = Object.create(dup._ability);
+		if (this._ability !== null) dup._ability = copy(dup._ability, true);
 		dup.span = this.span.cloneNode();
 		dup.span.setAttribute("id", `${dup.name}`);
 		return dup;
@@ -433,7 +434,7 @@ class Card {
     return false;
 	}
 
-	activateAbility(target) {
+	async activateAbility(target) {
 		if (this._ability === null) return;
 
 		for (let ability of this.ability) {
@@ -441,7 +442,7 @@ class Card {
 
 				if (ability.has("gain") || ability.has("give") || ability.has("get")) {
 					for (let stat of ability.values()) {
-						if (target.keywordArr.includes(stat.substr(0, 3).toUpperCase())) {
+						if (target.keywordArr.includes(stat.replace(/(|)\W/g, "").at(0).toUpperCase())) {
 							target.addKeyword(stat);
 						} else if (stat.includes("gold")) {
 							target.addGold(Number(stat));
@@ -452,9 +453,21 @@ class Card {
 
 				} else if (ability.has("discard")) {
 					for (let number of ability.values()) {
-						if (number.includes("a card")) {
-							this.OWNER.opponent.disable();
+						let max = 0;
+						let i = 0;
 
+						if (number[0] === "a") {
+							max += 1;
+						} else max += Number(number[0]);
+
+						this.OWNER.opponent.disable();
+
+						if (number.includes("random card")) {
+							for (i; i < max; i++) {
+								const card = target.randomElement();
+								card.OWNER.discard(card);
+							}
+						} else {
 							target.forEach(card => {
 								if (card.checkKeyword("I")) return;
 								card.addTargetHandler = () => {
@@ -466,8 +479,12 @@ class Card {
 									});
 
 									card.OWNER.discard(card);
-									card.OWNER.enable();
-									display(`${card.OWNER.opponent.name} to move`);
+									i++;
+
+									if (i === max) {
+										card.OWNER.enable();
+										display(`${card.OWNER.opponent.name} to move`);
+									}
 								}
 
 								card.span.onclick = card.addTargetHandler;
@@ -480,39 +497,60 @@ class Card {
 				} else if (ability.has("search")) {
 					let max = 0;
 					let i = 0;
+					let cards = target;
+
 					for (let number of ability.values()) {
 						if (number[0] === "a") {
 							max += 1;
+
+							if (number.includes("creature") || number.includes("consumable")) {
+								cards = target.filter(card => { 
+									return card.cardType.includes(number.slice(2));
+								});
+							}
+
 						} else max += Number(number[0]);
 					}
 
-					this.OWNER.div.populateModal(target);
-					target.forEach(card => {
-						card.drawHandler = () => {
-							if (card.drawHandler) {
-								card.span.onclick = null;
-								delete card.drawHandler;
-							}
+					if (cards.length < 1) return;
 
-							card.OWNER.drawSpecificCard(card);
-							i++;
-
-							if (i === max) {
-								target.forEach(c => {
-									if (c.drawHandler) {
-										c.span.onclick = null;
-										delete c.drawHandler;
-									}
-								});
-
-								card.OWNER.div.clearModal();
-								card.OWNER.div.closeModal();
-							}
-						}
-						card.span.onclick = card.drawHandler;
-					});
-					this.OWNER.div.modalText.innerHTML = `${this.OWNER.name}, pick a card`;
+					this.OWNER.div.populateModal(cards);
 					this.OWNER.div.openModal();
+
+					const useModal = function() {
+						return new Promise(resolve => {
+							cards.forEach(card => {
+								card.drawHandler = () => {
+									if (card.drawHandler) {
+										card.span.onclick = null;
+										delete card.drawHandler;
+									}
+
+									card.OWNER.drawSpecificCard(card);
+									i++;
+
+									if (i === max) {
+										target.forEach(c => {
+											if (c.drawHandler) {
+												c.span.onclick = null;
+												delete c.drawHandler;
+											}
+										});
+
+										card.OWNER.div.clearModal();
+										card.OWNER.div.closeModal();
+										resolve();
+									}
+								}
+								card.span.onclick = card.drawHandler;
+							});
+							this.OWNER.div.modalText.innerHTML = `${this.OWNER.name}, pick a card`;
+						});
+					}.bind(this);
+
+
+					await useModal();
+					
 
 				} else if (ability.has("cost")) {
 					for (let cost of ability.values()) {
@@ -543,6 +581,29 @@ class Card {
 						if (amount.includes("all damage")) {
 							target.health = target.previousHealth;
 							target.updateSpan();
+						}
+					}
+				} else if (ability.has("use")) {
+					for (let item of ability.values()) {
+						if (item.includes("(c)")) {
+							this.addKeyword("(c)");
+							this.OWNER.creatureRemovalAndIndestructible(this, true);
+							this.removeKeyword("(c)");
+						}
+					}
+				} else if (ability.has("put")) {
+					for (let element of ability.values()) {
+						if (element.includes("this")) {
+							this.revive(false);
+						}
+					}
+				} else if (ability.has("retains")) {
+					for (let element of ability.values()) {
+						if (element.includes("buffs")) {
+							this.attack = this.previousAttack;
+							this.health = this.cumulatedHealth;
+							this.keywords = this.previousKeywords;
+							this.updateSpan();
 						}
 					}
 				}

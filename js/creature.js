@@ -1,6 +1,6 @@
 import Card from "./card.js";
 import Player from "./playerClass.js";
-import { display } from "./functions.js";
+import { display, copy } from "./functions.js";
 
 class Creature extends Card {
 
@@ -21,7 +21,9 @@ class Creature extends Card {
 		this.attack = attack;
 		this.HEALTH = health;
 		this.health = health;
+		this.previousAttack = 0
 		this.previousHealth = 0;
+		this.cumulatedHealth = health;
 		this.type = type;
 		this.ATTRIBUTE = attribute;
 
@@ -39,7 +41,8 @@ class Creature extends Card {
 			this.keywords = null;
 		}
 
-		this.KEYWORDS = this.keywords;
+		this.KEYWORDS = copy(this.keywords);
+		this.previousKeywords = copy(this.keywords);
 
 		if (ability2 !== "") { 
 			if (this._ability === null) this._ability = [];
@@ -134,48 +137,70 @@ class Creature extends Card {
 	addKeyword(...keywords) {
 		if (this.keywords === null) {
 			this.keywords = [];
-		}
+		} 
+
+		this.previousKeywords = copy(this.keywords);
 
 		keywords.forEach(element => {
-			let keyword = element.substr(1, 1).toUpperCase();
-			if (this.numberedKeywords.includes(keyword)) {
-				keyword += element.at(-1);
+			let keyword = element.replace(/(|)\W/g, "").toUpperCase();
+			let numbered = false;;
+			if (this.numberedKeywords.includes(keyword[0])) {
+				numbered = true;
 			}
 
-			if (this.keywords.find(value => { return keyword[1] === value[1]; }) === undefined) {
-				//for non-numbered keywords and identical numbered keywords
-				this.keywords.push(keyword);
-			} else {
-				//for (unidentical) numbered keywords
-				let numberedKeyword = this.keywords.find(value => { return value[1] === keyword[1] });
-
-				if (numberedKeyword === undefined || Number(keyword[1] === NaN)) return;
-				
-				if (Number(numberedKeyword[1]) < Number(keyword[1])) {
-					this.keywords.remove(numberedKeyword);
+			if (!numbered) {
+				//for non-numbered keywords
+				if (!this.keywords.includes(keyword)) {
 					this.keywords.push(keyword);
 				}
+
+			} else /*for numbered keywords*/ {
+				let numberedKeyword = this.keywords.find(value => { return keyword[0] == value[0] });
+				
+				//for numbered keywords that are not included yet (adding L2 to a creature with W2) 
+				if (numberedKeyword === undefined) {
+					this.keywords.push(keyword);
+
+				} else if (Number(numberedKeyword[1]) < Number(keyword[1]))  {
+					//for numbered keywords that are inclued but different in value (V1 and V2)
+					this.keywords.splice(this.keywords.indexOf(numberedKeyword), 1, keyword);
+				}
 			}
-			
 		});
 
 		this.updateSpan();
+
+		console.log(this.keywords, ",", this.previousKeywords);
 	}
 
+	//follows a similar algo to its counterpart
 	removeKeyword(...keywords) {
-		if (this.keywords !== null) {
-			keywords.forEach(keyword => {
-				if (this.numberedKeywords.includes(keyword)) {
-					this.keywords.remove(keyword + this.getKeywordX(keyword).toString());
-				} else {
+		this.previousKeywords = copy(this.keywords);
+
+		keywords.forEach(element => {
+			let keyword = element.replace(/(|)\W/g, "").toUpperCase();
+			let numbered = false;;
+			if (this.numberedKeywords.includes(keyword[0])) {
+				numbered = true;
+			}
+
+			if (!numbered) {
+				if (this.keywords.includes(keyword)) {
 					this.keywords.remove(keyword);
 				}
-			});
+			} else {
+				let numberedKeyword = this.keywords.find(value => { return keyword == value });
+				let ogNumberedKeyword = this.KEYWORDS.find(value => { return keyword[0] == value[0] });
 
-			if (this.keywords.length < 1) {
-				this.keywords = null;
+				if (numberedKeyword === undefined) {
+					return;
+				}
+
+				if (ogNumberedKeyword === undefined) this.keywords.remove(numberedKeyword);
+				else this.keywords.splice(this.keywords.indexOf(numberedKeyword), 1, ogNumberedKeyword);
 			}
-		}
+
+		});
 
 		this.updateSpan();
 	}
@@ -185,15 +210,19 @@ class Creature extends Card {
 			console.log("Error: cannot read stats");
 		}
 
+		this.previousAttack = this.attack;
+		this.previousHealth = this.health;
+
 		let stats = amount.split("/");
 		if (reverse) {
 			this.attack += -Number(stats[0]);
 			this.health += -Number(stats[1]);
+			this.cumulatedHealth += Number(stats[1]);
 		} else {
 			this.attack += Number(stats[0]);
 			this.health += Number(stats[1]);
+			this.cumulatedHealth += Number(stats[1]);
 		}
-		
 
 		if (this.attack < 0) {
 			this.attack = 0;
@@ -217,8 +246,24 @@ class Creature extends Card {
 
 	discard() {
 		super.discard();
+		this.previousAttack = this.attack;
 		this.attack = this.ATTACK;
 		this.health = this.HEALTH;
+
+		const temp = [];
+
+		if (this.KEYWORDS !== null) {
+			this.keywords.forEach(keyword => {
+			if (!this.KEYWORDS.includes(keyword)) {
+				temp.push(keyword);
+			}
+		});
+		this.removeKeyword(...temp);
+		} else {
+			this.previousKeywords = copy(this.keywords);
+			this.keywords = null; 
+		}
+
 		this.updateSpan();
 
 		if (this.tapHandler) {
@@ -554,6 +599,11 @@ class Creature extends Card {
 					this.span.onclick = false;
 					delete this.trampleHandler;
 				}
+			}
+
+			if (this.abilityEvents.includes("upon death")) {
+				this.currentAbility = this.abilityEvents.indexOf("upon death");
+				this.findTargets("activate");
 			}
 
 			return true;
