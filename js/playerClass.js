@@ -319,6 +319,7 @@ class Player {
 
       if (card.checkKeyword("S")) {
         this.stamina(card);
+        card.tapped, card.blocking = true;
       } else {
         this.board[0].push(card);
         card.blocking = true;

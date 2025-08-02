@@ -6,7 +6,7 @@ class Creature extends Card {
 
 	abilityEventsArr = [
 		"once per turn", "when played", "upon death", "when attacking", "survives whilst blocking",
-		"when blocking", "when alive", "when damaged", "every turn", "when drawn",
+		"when blocking", "when alive", "when attacked", "when damaged", "every turn", "when drawn",
 		"when a card gains a keyword"
 	];
 	keywordArr = [
@@ -46,7 +46,8 @@ class Creature extends Card {
 
 		if (ability2 !== "") { 
 			if (this._ability === null) this._ability = [];
-			super.initialiseAbility(ability2.toLowerCase()); 
+			super.initialiseAbility(ability2.toLowerCase());
+			super.initialiseTargets(ability2.toLowerCase());
 		}
 
 		this.DISPLAYED_ABILITY2 = ability2;
@@ -58,6 +59,7 @@ class Creature extends Card {
 		this.blocking = false;
 		this.tapped = false;
 		this.target = null;
+		this.attacker = null;
 		this.poison = {damage: 0, player: undefined}; //called poison to differentiate from venom method
 		//the object has a player property in case the poisoned creature has ward
 
@@ -83,6 +85,7 @@ class Creature extends Card {
 	}
 
 	static checkEvent(creature, event, mode) {
+		if (!creature instanceof Creature) return;
 		if (creature.abilityEvents.includes(event)) {
 			creature.currentAbility = creature.abilityEvents.indexOf(event);
 			creature.findTargets(mode);
@@ -198,7 +201,10 @@ class Creature extends Card {
 				}
 			} else {
 				let numberedKeyword = this.keywords.find(value => { return keyword == value });
-				let ogNumberedKeyword = this.KEYWORDS.find(value => { return keyword[0] == value[0] });
+				let ogNumberedKeyword;
+				if (this.KEYWORDS !== null) {
+					 ogNumberedKeyword = this.KEYWORDS.find(value => { return keyword[0] == value[0] });
+				} else ogNumberedKeyword = undefined;
 
 				if (numberedKeyword === undefined) {
 					return;
@@ -225,7 +231,9 @@ class Creature extends Card {
 		if (reverse) {
 			this.attack += -Number(stats[0]);
 			this.health += -Number(stats[1]);
-			this.cumulatedHealth += Number(stats[1]);
+			this.cumulatedHealth += -Number(stats[1]);
+
+			Creature.checkEvent(this, "when damaged", "activate");
 		} else {
 			this.attack += Number(stats[0]);
 			this.health += Number(stats[1]);
@@ -504,16 +512,16 @@ class Creature extends Card {
 		}
 
 		this.damageTarget(target);
+		if (target instanceof Creature) Creature.checkEvent(target, "when attacked", "activate");
 
-		let result = target.deathCheck();
-		if ((this.target instanceof Creature) && result) {
+		if (target.deathCheck() && this.target instanceof Creature) {
 			this.changeTarget();
 		}
 	}
 
-	damageTarget(target, trample=false) {
+	damageTarget(target, trample=false, attack=null) {
 		if (!trample) {
-			target.health -= this.attack;
+			target.health -= attack !== null ? attack : this.attack;
 		} else {
 			target.health -= 1;
 			this.attack -= 1;
@@ -524,6 +532,8 @@ class Creature extends Card {
 			target.updateSpan();
 			this.lifelink();
 			this.venom(target);
+			target.attacker = this;
+			Creature.checkEvent(target, "when damaged", "activate");
 		} else if (target instanceof Player) {
 			target.div.update();
 		}
@@ -601,7 +611,7 @@ class Creature extends Card {
 		}
 
 		if (this.blocking) {
-			Creature.checkEvent(this, "survives whilst blocking")
+			Creature.checkEvent(this, "survives whilst blocking", "activate");
 		}
 		
 		return false;

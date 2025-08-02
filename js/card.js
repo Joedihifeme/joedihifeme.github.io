@@ -4,7 +4,7 @@ import Gold from "./gold.js"
 class Card {
 
 	abilityMap = new Map ([
-		["heal", "all damage"],
+		["heal", ["all damage", "+0/+1"]],
 		["gain", ["+1/+0", "+2/+0", "+0/+1", "+0/+2",
 			"+0/+6", "+1/+2", "+2/+4", "+0/-2", "-2/-4", 
 			"-5/-10", "(l)", "(i)", "(t)", "(f)", "(w)2", 
@@ -23,7 +23,7 @@ class Card {
 		["search", ["a creature", "a consumable", "a card", "3 cards"]],
 		["discard", ["x cards", "a card", "2 random cards"]],
 		["draw", ["2", "3"]],
-		["deal", ["same damage"]],
+		["deal", ["same damage", "1 damage"]],
 		["lose", "3 health"],
 		["reset", "haste"],
 		["arrange", "in any way"],
@@ -42,7 +42,7 @@ class Card {
 		"all opposing creatures" ,"freefall","target opponent's creature", "opponent", 
 		"opponent's turn", "your deck","your entire deck", "your hand", "opponent's hand", 
 		"all target creatures", "target creature in discard pile","target creature", 
-		"target structure", "target card", "battlefield"
+		"target structure", "target card", "battlefield", "attacker"
   ];
 
 	specialConsumables = ["annoy"];
@@ -423,6 +423,12 @@ class Card {
       return true;
     }
 
+		if (targets.includes("attacker")) {
+			if (this.attacker) {
+				if (this.attacker !== null) this.activateAbility(this.attacker);
+			}
+		}
+
 		if (targets.includes("general")) { 
 			if (mode === "activate") this.activateAbility(this); 
 			else this.deactivateAbility(this); 
@@ -439,205 +445,248 @@ class Card {
 
 		for (let ability of this.ability) {
 			if (ability instanceof Map) {
-
-				if (ability.has("gain") || ability.has("give") || ability.has("get")) {
-					for (let stat of ability.values()) {
-						if (target.keywordArr.includes(stat.replace(/(|)\W/g, "").at(0).toUpperCase())) {
-							target.addKeyword(stat);
-						} else if (stat.includes("gold")) {
-							target.OWNER.addGold(Number(stat[0]));
-						} else {
-							target.changeStats(stat);
-						}
-					}
-
-				} else if (ability.has("discard")) {
-					for (let number of ability.values()) {
-						let max = 0;
-						let i = 0;
-
-						if (number[0] === "a") {
-							max += 1;
-						} else max += Number(number[0]);
-
-						this.OWNER.opponent.disable();
-
-						if (number.includes("random card")) {
-							for (i; i < max; i++) {
-								const card = target.randomElement();
-								card.OWNER.discard(card);
+				const keys = Array.from(ability.keys());
+				for (const key of keys) {
+					switch (key) {
+						case "gain":
+						case "give":
+						case "get":
+							for (let stat of ability.values()) {
+								if (target.keywordArr.includes(stat.replace(/(|)\W/g, "").at(0).toUpperCase())) {
+									target.addKeyword(stat);
+								} else if (stat.includes("gold")) {
+									target.OWNER.addGold(Number(stat[0]));
+								} else {
+									target.changeStats(stat);
+								}
 							}
-						} else {
-							target.forEach(card => {
-								if (card.checkKeyword("I")) return;
-								card.addTargetHandler = () => {
-									target.forEach(c => {
-										if (c.addTargetHandler) {
-											c.span.onclick = null;
-											delete c.addTargetHandler
+
+							break;
+						case "discard":
+							for (let number of ability.values()) {
+								let max = 0;
+								let i = 0;
+
+								if (number[0] === "a") {
+									max += 1;
+								} else max += Number(number[0]);
+
+								this.OWNER.opponent.disable();
+
+								if (number.includes("random card")) {
+									for (i; i < max; i++) {
+										const card = target.randomElement();
+										card.OWNER.discard(card);
+									}
+								} else {
+									target.forEach(card => {
+										if (card.checkKeyword("I")) return;
+										card.addTargetHandler = () => {
+											target.forEach(c => {
+												if (c.addTargetHandler) {
+													c.span.onclick = null;
+													delete c.addTargetHandler
+												}
+											});
+
+											card.OWNER.discard(card);
+											i++;
+
+											if (i === max) {
+												card.OWNER.enable();
+												display(`${card.OWNER.opponent.name} to move`);
+											}
 										}
+
+										card.span.onclick = card.addTargetHandler;
 									});
 
-									card.OWNER.discard(card);
-									i++;
-
-									if (i === max) {
-										card.OWNER.enable();
-										display(`${card.OWNER.opponent.name} to move`);
-									}
+									display(`${this.OWNER.name}, discard a card`);
 								}
-
-								card.span.onclick = card.addTargetHandler;
-							});
-
-							display(`${this.OWNER.name}, discard a card`);
-						}
-					}
-
-				} else if (ability.has("search")) {
-					let max = 0;
-					let i = 0;
-					let cards = target;
-
-					for (let number of ability.values()) {
-						if (number[0] === "a") {
-							max += 1;
-
-							if (number.includes("creature") || number.includes("consumable")) {
-								cards = target.filter(card => { 
-									return card.cardType.includes(number.slice(2));
-								});
 							}
 
-						} else max += Number(number[0]);
-					}
+							break;
+						case "search":
+							let max = 0;
+							let i = 0;
+							let cards = target;
 
-					if (cards.length < 1) return;
+							for (let number of ability.values()) {
+								if (number[0] === "a") {
+									max += 1;
 
-					this.OWNER.div.populateModal(cards);
-					this.OWNER.div.openModal();
-
-					const useModal = function() {
-						return new Promise(resolve => {
-							cards.forEach(card => {
-								card.drawHandler = () => {
-									if (card.drawHandler) {
-										card.span.onclick = null;
-										delete card.drawHandler;
-									}
-
-									card.OWNER.drawSpecificCard(card);
-									i++;
-
-									if (i === max) {
-										target.forEach(c => {
-											if (c.drawHandler) {
-												c.span.onclick = null;
-												delete c.drawHandler;
-											}
+									if (number.includes("creature") || number.includes("consumable")) {
+										cards = target.filter(card => { 
+											return card.cardType.includes(number.slice(2));
 										});
+									}
 
-										card.OWNER.div.clearModal();
-										card.OWNER.div.closeModal();
-										resolve();
+								} else max += Number(number[0]);
+							}
+
+							if (cards.length < 1) return;
+
+							this.OWNER.div.populateModal(cards);
+							this.OWNER.div.openModal();
+
+							const useModal = function() {
+								return new Promise(resolve => {
+									cards.forEach(card => {
+										card.drawHandler = () => {
+											if (card.drawHandler) {
+												card.span.onclick = null;
+												delete card.drawHandler;
+											}
+
+											card.OWNER.drawSpecificCard(card);
+											i++;
+
+											if (i === max) {
+												target.forEach(c => {
+													if (c.drawHandler) {
+														c.span.onclick = null;
+														delete c.drawHandler;
+													}
+												});
+
+												card.OWNER.div.clearModal();
+												card.OWNER.div.closeModal();
+												resolve();
+											}
+										}
+										card.span.onclick = card.drawHandler;
+									});
+									this.OWNER.div.modalText.innerHTML = `${this.OWNER.name}, pick a card`;
+								});
+							}.bind(this);
+
+							await useModal();
+
+							break;
+						case "cost":
+							for (let cost of ability.values()) {
+								if (cost.includes("1 gold less")) {
+									target.alterGold(target._cost.subtract.bind(target._cost), 1);
+									if (target._cost2) target.alterGold(target._cost2.subtract.bind(target._cost2), 1);
+								}
+							}
+
+							break;
+						case "lose":
+							for (let number of ability.values()) {
+								if (number.includes("3 health")) {
+									this.OWNER.health -= 3;
+									this.OWNER.deathCheck();
+									this.OWNER.div.update();
+
+									if (this.OWNER.killed) {
+										display(`${this.opponent.name} has won!<br>Reload the page to play again.`);
+										return;
 									}
 								}
-								card.span.onclick = card.drawHandler;
-							});
-							this.OWNER.div.modalText.innerHTML = `${this.OWNER.name}, pick a card`;
-						});
-					}.bind(this);
-
-
-					await useModal();
-					
-
-				} else if (ability.has("cost")) {
-					for (let cost of ability.values()) {
-						if (cost.includes("1 gold less")) {
-							target.alterGold(target._cost.subtract.bind(target._cost), 1);
-							if (target._cost2) target.alterGold(target._cost2.subtract.bind(target._cost2), 1);
-						}
-					}
-				} else if (ability.has("lose")) {
-					for (let number of ability.values()) {
-						if (number.includes("3 health")) {
-							this.OWNER.health -= 3;
-							this.OWNER.deathCheck();
-
-							if (this.OWNER.killed) {
-								display(`${this.opponent.name} has won!<br>Reload the page to play again.`);
-      					return;
 							}
-						}
-					}
-				} else if (ability.has("draw")) {
-					for (let number of ability.values()) {
-						this.OWNER.drawCard(Number(number));
-						display(`${this.OWNER.name} to move`);
-					}
-				} else if (ability.has("heal")) {
-					for (let amount of ability.values()) {
-						if (amount.includes("all damage")) {
-							target.health = target.previousHealth;
-							target.updateSpan();
-						}
-					}
-				} else if (ability.has("use")) {
-					for (let item of ability.values()) {
-						if (item.includes("(c)")) {
-							this.addKeyword("(c)");
-							this.OWNER.creatureRemovalAndIndestructible(this, true);
-							this.removeKeyword("(c)");
-						}
-					}
-				} else if (ability.has("put")) {
-					for (let element of ability.values()) {
-						if (element.includes("this")) {
-							this.revive(false);
-						}
-					}
-				} else if (ability.has("retains")) {
-					for (let element of ability.values()) {
-						if (element.includes("buffs")) {
-							this.attack = this.previousAttack;
-							this.health = this.cumulatedHealth;
-							this.keywords = this.previousKeywords;
-							this.updateSpan();
-						}
+
+							break;
+						case "draw":
+							for (let number of ability.values()) {
+								this.OWNER.drawCard(Number(number));
+								display(`${this.OWNER.name} to move`);
+							}
+
+							break;
+						case "heal":
+							if (target.health >= target.cumulatedHealth) return;	
+
+							for (let amount of ability.values()) {
+								if (amount.includes("all damage")) {
+									target.health = target.previousHealth;
+									target.updateSpan();
+								} else target.changeStats(amount);
+							}
+
+							break;
+						case "use":
+							for (let item of ability.values()) {
+								if (item.includes("(c)")) {
+									this.addKeyword("(c)");
+									this.OWNER.creatureRemovalAndIndestructible(this, true);
+									this.removeKeyword("(c)");
+								}
+							}
+
+							break;
+						case "put":
+							for (let element of ability.values()) {
+								if (element.includes("this")) {
+									this.revive(false);
+								}
+							}
+
+							break;
+						case "retains":
+							for (let element of ability.values()) {
+								if (element.includes("buffs")) {
+									this.attack = this.previousAttack;
+									this.health = this.cumulatedHealth;
+									this.keywords = this.previousKeywords;
+									this.updateSpan();
+								}
+							}
+
+							break;
+						case "deal":
+							for (let number of ability.values()) {
+								let damage;
+
+								if (number.includes("same")) {
+									damage = this.previousHealth - this.health;
+								} else {
+									damage = Number(number[0]);
+								}
+
+								this.damageTarget(target, false, damage);
+							}
+
+							break;
+						default:
+							break;
 					}
 				}
-			
 			} else {
-				if (ability === "clone") {
-					this.OWNER.opponent.disable();
+				switch (ability) {
+					case "clone":
+						this.OWNER.opponent.disable();
 
-							target.forEach(card => {
-								if (card.legendary) return;
-								card.addTargetHandler = () => {
-									target.forEach(c => {
-										if (c.addTargetHandler) {
-											c.span.onclick = null;
-											delete c.addTargetHandler
-										}
-									});
+						target.forEach(card => {
+							if (card.legendary) return;
+							card.addTargetHandler = () => {
+								target.forEach(c => {
+									if (c.addTargetHandler) {
+										c.span.onclick = null;
+										delete c.addTargetHandler
+									}
+								});
 
-									const clone = card.duplicate();
-									clone.clone = true;
-									card.OWNER.hand.push(clone);
-									card.OWNER.div.hand.appendChild(clone.span);
-									card.OWNER.playCard(clone, this);
-									card.OWNER.enable();
-									display(`${card.OWNER.name} to move`);
-								}
+								const clone = card.duplicate();
+								clone.clone = true;
+								card.OWNER.hand.push(clone);
+								card.OWNER.div.hand.appendChild(clone.span);
+								card.OWNER.playCard(clone, this);
+								card.OWNER.enable();
+								display(`${card.OWNER.name} to move`);
+							}
 
-								card.span.onclick = card.addTargetHandler;
-							});
+							card.span.onclick = card.addTargetHandler;
+						});
 
-							display(`${this.OWNER.name}, clone a card on the board`);
-							
-				} else if (ability === "destroy") {
-					target.OWNER.discard(target);
+						display(`${this.OWNER.name}, clone a card on the board`);
+						break;
+					case "destroy":
+						target.OWNER.discard(target);
+
+						break;
+					default:
+						break;
 				}
 			} 
 		}
@@ -653,7 +702,7 @@ class Card {
 						if (target.keywordArr.includes(stat.substr(0, 3).toUpperCase())) {
 							target.removeKeyword(stat);
 						} else if (stat.includes("gold")) {
-							target.spendGold(Number(stat));
+							target.OWNER.spendGold(Number(stat));
 						} else {
 							target.changeStats(stat, true);
 						}

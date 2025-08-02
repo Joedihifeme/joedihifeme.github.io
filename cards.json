@@ -425,8 +425,8 @@
       "gold": "6",
       "type": "n",
       "keywords": "D",
-      "ability1": "Gains +0/+1 every turn",
-      "ability2": "When attacked: Deal 1 damage to the attacking card and gain 1 gold.",
+      "ability1": "Heal +0/+1 every turn",
+      "ability2": "When attacked: Deal 1 damage to the attacker and gain 1 gold.",
       "attribute": ""
     },
     {
