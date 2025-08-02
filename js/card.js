@@ -445,7 +445,7 @@ class Card {
 						if (target.keywordArr.includes(stat.replace(/(|)\W/g, "").at(0).toUpperCase())) {
 							target.addKeyword(stat);
 						} else if (stat.includes("gold")) {
-							target.addGold(Number(stat));
+							target.OWNER.addGold(Number(stat[0]));
 						} else {
 							target.changeStats(stat);
 						}

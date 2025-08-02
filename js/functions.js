@@ -239,6 +239,4 @@ function setupGame(players, gameDiv, displayMode) {
   players[1].disable();
 }
 
-
-
 export { setupGame, display, copy }

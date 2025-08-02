@@ -240,7 +240,10 @@ class Player {
 
   startTurnRoutine() {
     if (this.turn > 0) {
-      this.forEachOnBoard(creature => { creature.sufferVenom(); });
+      this.forEachOnBoard(creature => { 
+        Creature.checkEvent(creature, "every turn", "activate");
+        creature.sufferVenom(); 
+      });
     }
 
     this.adder += 1;
@@ -324,10 +327,7 @@ class Player {
         card.span.onclick = card.tapHandler;
         card.span.style.borderColor = "blue";
 
-        if (card.abilityEvents.includes("when blocking")) {
-          card.currentAbility = card.abilityEvents.indexOf("when blocking");
-          card.findTargets("activate");
-        }
+        Creature.checkEvent(card, "when blocking", "activate");
 
       this.keywordsOnPlay(card); 
       }

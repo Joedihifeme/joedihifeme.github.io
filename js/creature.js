@@ -82,6 +82,14 @@ class Creature extends Card {
 		return this._ability[this.currentAbility];
 	}
 
+	static checkEvent(creature, event, mode) {
+		if (creature.abilityEvents.includes(event)) {
+			creature.currentAbility = creature.abilityEvents.indexOf(event);
+			creature.findTargets(mode);
+			if (mode === "deactivate") creature.currentAbility = 0;
+		}
+	}
+
 	initAbilityEvent() {
 		const abilites = [this.DISPLAYED_ABILITY, this.DISPLAYED_ABILITY2];
 
@@ -274,11 +282,7 @@ class Creature extends Card {
 	}
 
 	tap() {
-		if (this.abilityEvents.includes("when blocking")) {
-			this.currentAbility = this.abilityEvents.indexOf("when blocking");
-			this.findTargets("deactivate");
-			this.currentAbility = 0;
-		}
+		Creature.checkEvent(this, "when blocking", "deactivate");
 
 		this.OWNER.board[0].remove(this);
 		this.OWNER.board[1].push(this);
@@ -297,20 +301,13 @@ class Creature extends Card {
 			return;
 		}
 
-		if (this.abilityEvents.includes("when attacking")) {
-			this.currentAbility = this.abilityEvents.indexOf("when attacking");
-			this.findTargets("activate");
-		}
+		Creature.checkEvent(this, "when attacking", "activate");
 
 		this.setTarget();
 	}
 
 	block() {
-		if (this.abilityEvents.includes("when attacking")) {
-			this.currentAbility = this.abilityEvents.indexOf("when attacking");
-			this.findTargets("deactivate");
-			this.currentAbility = 0;
-		}
+		Creature.checkEvent(this, "when attacking", "deactivate");
 
 		this.OWNER.board[1].remove(this);
 		this.OWNER.board[0].push(this);
@@ -323,10 +320,7 @@ class Creature extends Card {
 		this.span.onclick = this.tapHandler;
 		this.target = null;
 
-		if (this.abilityEvents.includes("when blocking")) {
-			this.currentAbility = this.abilityEvents.indexOf("when blocking");
-			this.findTargets("activate");
-		}
+		Creature.checkEvent(this, "when blocking", "activate");
 	}
 
 	setTarget() {
@@ -601,17 +595,13 @@ class Creature extends Card {
 				}
 			}
 
-			if (this.abilityEvents.includes("upon death")) {
-				this.currentAbility = this.abilityEvents.indexOf("upon death");
-				this.findTargets("activate");
-			}
+			Creature.checkEvent(this, "upon death");
 
 			return true;
 		}
 
-		if (this.abilityEvents.includes("survives whilst blocking") && this.blocking) {
-			this.currentAbility = this.abilityEvents.indexOf("survives whilst blocking");
-			this.findTargets("activate");
+		if (this.blocking) {
+			Creature.checkEvent(this, "survives whilst blocking")
 		}
 		
 		return false;
