@@ -7,7 +7,7 @@ class Creature extends Card {
 	abilityEventsArr = [
 		"once per turn", "when played", "upon death", "when attacking", "survives whilst blocking",
 		"when blocking", "when alive", "when attacked", "when damaged", "every turn", "when drawn",
-		"when a card gains a keyword"
+		"when a card gains a keyword", "when you gain life", "discarded creature", "when you gain gold"
 	];
 	keywordArr = [
 		null, "H", "(H)", "F", "(F)", "R", "(R)", "C", "(C)", "I", "(I)", "T", "(T)", 
@@ -552,7 +552,7 @@ class Creature extends Card {
 					delete this.OWNER.opponent.trampleHandler;
 				}
 
-				this.OWNER.opponent.forEachOnBoard(creature => {
+				this.OWNER.opponent.flatBoard.forEach(creature => {
 					if (creature.trampleHandler) {
 						creature.span.onclick = null;
 						delete creature.trampleHandler;
@@ -576,7 +576,7 @@ class Creature extends Card {
 			}.bind(this);
 			this.OWNER.opponent.div.h2.parentNode.onclick = this.OWNER.opponent.trampleHandler;
 
-			this.OWNER.opponent.forEachOnBoard(creature => {
+			this.OWNER.opponent.flatBoard.forEach(creature => {
 				creature.trampleHandler = function() {
 					if (creature.checkKeyword("W")) {
 						if (this.OWNER.gold < creature.cost) {

@@ -108,20 +108,11 @@ class Player {
   get flatBoard() {
     //change the board to a Set to remove duplicates, then change it back to an Array
     //Arrays have more methods than sets, which is why it's being used instead
-    const arr = Array.from(new Set(this.board.flat()));
-    return arr;
+    return Array.from(new Set(this.board.flat()));
   }
 
   get keywords() {
     return Creature.keywords();
-  }
-
-  forEachOnBoard(func) {
-    this.board.forEach(section => {
-      section.forEach(creature => {
-        func(creature);
-      });
-    });
   }
 
   enable(element="all") {
@@ -223,6 +214,9 @@ class Player {
 
   addGold(num) {
     this.gold += num;
+    this.flatBoard.forEach(creature => {
+      Creature.checkEvent(creature, "when you gain gold", "activate");
+    });
     this.div.update();
   }
 
@@ -238,9 +232,21 @@ class Player {
     this.div.update();
   }
 
+  addHealth(num, extra) {
+    this.health += num;
+    //extra signifies the result of stat.includes("more").
+    if (!extra) {
+      this.flatBoard.forEach(creature => {
+      Creature.checkEvent(creature, "when you gain life", "activate");
+    });
+    }
+    this.div.update();
+
+  }
+
   startTurnRoutine() {
     if (this.turn > 0) {
-      this.forEachOnBoard(creature => { 
+      this.flatBoard.forEach(creature => { 
         Creature.checkEvent(creature, "every turn", "activate");
         creature.sufferVenom(); 
       });
@@ -403,7 +409,7 @@ class Player {
 
         this.disable();
         this.opponent.disable("board");
-        this.opponent.forEachOnBoard(creature => {
+        this.opponent.flatBoard.forEach(creature => {
           if (!creature.checkKeyword("I")) {
             creature.removeHandler = function() {
               creature.OWNER.discard(creature);
@@ -413,7 +419,7 @@ class Player {
                 delete creature.removeHandler;
               }
 
-              creature.OWNER.forEachOnBoard(creature => {
+              creature.OWNER.flatBoard.forEach(creature => {
                 if (creature.removeHandler) {
                   creature.span.onclick = null;
                   delete creature.removeHandler;
@@ -467,6 +473,12 @@ class Player {
       this.div.update();
       this.div.discardModalCardSpace.appendChild(card.span);
     }
+
+    if (card instanceof Creature) {
+      this.flatBoard.forEach(creature => {
+        Creature.checkEvent(creature, "discarded creature", "activate");
+      });
+    }
   }
 
   reviveCard(card, paid=false) {
@@ -502,7 +514,7 @@ class Player {
       }
     }
 
-    this.forEachOnBoard(creature => { 
+    this.flatBoard.forEach(creature => { 
       creature.firstTurn = false;
       creature.currentAbility = 0;
     });

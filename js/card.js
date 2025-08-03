@@ -5,23 +5,20 @@ class Card {
 
 	abilityMap = new Map ([
 		["heal", ["all damage", "+0/+1"]],
-		["gain", ["+1/+0", "+2/+0", "+0/+1", "+0/+2",
-			"+0/+6", "+1/+2", "+2/+4", "+0/-2", "-2/-4", 
-			"-5/-10", "(l)", "(i)", "(t)", "(f)", "(w)2", 
-			"(v)1", "(v)2", "1 gold", "3 gold", "x gold", 
-			"spellproof", "stasis", "1 life", "all keywords"]],
-		["give", ["+1/+0", "+2/+0", "+0/+1", "+0/+2",
-			"+0/+6", "+1/+2", "+2/+4", "+0/-2", "-2/-4", 
-			"-5/-10", "(l)", "(i)", "(t)", "(f)", "(w)2", 
-			"(v)1", "(v)2", "1 gold", "3 gold", "x gold", 
-			"spellproof", "stasis", "1 life", "all keywords"]],
-		["gets", ["+1/+0", "+2/+0", "+0/+1", "+0/+2",
-			"+0/+6", "+1/+2", "+2/+4", "+0/-2", "-2/-4", 
-			"-5/-10", "(l)", "(i)", "(t)", "(f)", "(w)2", 
-			"(v)1", "(v)2", "1 gold", "3 gold", "x gold", 
-			"spellproof", "stasis", "1 life", "all keywords"]],
+		["gain", ["+1/+0", "+2/+0", "+0/+1", "+0/+2", "+0/+6", "+1/+2", 
+			"+2/+4", "+0/-2", "-2/-4", "-5/-10", "(l)", "(i)", "(t)", "(f)", 
+			"(w)2", "(v)1", "(v)2", "1 gold", "3 gold", "x gold", "spellproof", 
+			"stasis", "1 life", "2 more life", "all keywords"]],
+		["give", ["+1/+0", "+2/+0", "+0/+1", "+0/+2", "+0/+6", "+1/+2", 
+			"+2/+4", "+0/-2", "-2/-4", "-5/-10", "(l)", "(i)", "(t)", "(f)", 
+			"(w)2", "(v)1", "(v)2", "1 gold", "3 gold", "x gold", "spellproof", 
+			"stasis", "1 life", "2 more life", "all keywords"]],
+		["gets", ["+1/+0", "+2/+0", "+0/+1", "+0/+2", "+0/+6", "+1/+2", 
+			"+2/+4", "+0/-2", "-2/-4", "-5/-10", "(l)", "(i)", "(t)", "(f)", 
+			"(w)2", "(v)1", "(v)2", "1 gold", "3 gold", "x gold", "spellproof", 
+			"stasis", "1 life", "2 more life", "all keywords"]],
 		["search", ["a creature", "a consumable", "a card", "3 cards"]],
-		["discard", ["x cards", "a card", "2 random cards"]],
+		["discard", ["x cards", "a card", "2 random cards", "2 cards"]],
 		["draw", ["2", "3"]],
 		["deal", ["same damage", "1 damage"]],
 		["lose", "3 health"],
@@ -456,6 +453,8 @@ class Card {
 									target.addKeyword(stat);
 								} else if (stat.includes("gold")) {
 									target.OWNER.addGold(Number(stat[0]));
+								} else if (stat.includes("life")) {
+									this.OWNER.addHealth(Number(stat[0]), stat.includes("more"));
 								} else {
 									target.changeStats(stat);
 								}
