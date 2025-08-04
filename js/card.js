@@ -37,9 +37,9 @@ class Card {
 	targetTypes = [
     "in your hand", "all consumables", "all other consumables", "all your creatures", 
 		"all opposing creatures" ,"freefall","target opponent's creature", "opponent", 
-		"opponent's turn", "your deck","your entire deck", "your hand", "opponent's hand", 
-		"all target creatures", "target creature in discard pile","target creature", 
-		"target structure", "target card", "battlefield", "attacker"
+		"opponent's turn", "your deck","your entire deck", "cards in your hand", "your hand",
+		"opponent's hand", "all target creatures", "target creature in discard pile",
+		"target creature", "target structure", "target card", "battlefield", "attacker"
   ];
 
 	specialConsumables = ["annoy"];
@@ -71,10 +71,8 @@ class Card {
 		this.span.setAttribute("id", `${this.name}`);
 	}
 
-	//This method will be used to compare cards (with their duplicates)
 	get rootName() {
-		let ogName = this.name.replaceAll("I", "");
-		return ogName;
+		return this.name.replaceAll("I", "").toLowerCase();
 	}
 
 	get cost() {
@@ -233,6 +231,14 @@ class Card {
 			});
       
       return true;
+
+    } else if (targets.includes("your hand")) {
+      if (this.OWNER.hand.length < 1) { return false; }
+
+      if (mode === "activate") this.activateAbility(this.OWNER.hand); 
+			else this.deactivateAbility(this.OWNER.hand);
+      
+      return true;
     }
 
     if (targets.includes("all your creatures")) {
@@ -338,15 +344,6 @@ class Card {
       if (mode === "activate") this.activateAbility(this.OWNER.deck); 
 			else this.deactivateAbility(this.OWNER.deck);
       this.OWNER.enable();
-      
-      return true;
-    }
-
-    if (targets.includes("your hand")) {
-      if (this.OWNER.hand.length < 1) { return false; }
-
-      if (mode === "activate") this.activateAbility(this.OWNER.hand); 
-			else this.deactivateAbility(this.OWNER.hand);
       
       return true;
     }
@@ -696,15 +693,32 @@ class Card {
 
 		for (let ability of this.ability) {
 			if (ability instanceof Map) {
-				if (ability.has("gain") || ability.has("give") || ability.has("gets")) {
-					for (let stat of ability.values()) {
-						if (target.keywordArr.includes(stat.substr(0, 3).toUpperCase())) {
-							target.removeKeyword(stat);
-						} else if (stat.includes("gold")) {
-							target.OWNER.spendGold(Number(stat));
-						} else {
-							target.changeStats(stat, true);
-						}
+				const keys = Array.from(ability.keys());
+				for (const key of keys) {
+					switch (key) {
+						case "gain":
+						case "give":
+						case "gets":
+							for (let stat of ability.values()) {
+								if (target.keywordArr.includes(stat.substr(0, 3).toUpperCase())) {
+									target.removeKeyword(stat);
+								} else if (stat.includes("gold")) {
+									target.OWNER.spendGold(Number(stat));
+								} else {
+									target.changeStats(stat, true);
+								}
+							}
+
+							break;
+						case "cost":
+							for (let cost of ability.values()) {
+								if (cost.includes("1 gold less")) {
+									target.alterGold(target._cost.add.bind(target._cost), 1);
+									if (target._cost2) target.alterGold(target._cost2.add.bind(target._cost2), 1);
+								}
+							}
+						default:
+							break;
 					}
 				}
 			}

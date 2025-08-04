@@ -7,7 +7,8 @@ class Creature extends Card {
 	abilityEventsArr = [
 		"once per turn", "when played", "upon death", "when attacking", "survives whilst blocking",
 		"when blocking", "when alive", "when attacked", "when damaged", "every turn", "when drawn",
-		"when a card gains a keyword", "when you gain life", "discarded creature", "when you gain gold"
+		"when a card gains a keyword", "when you gain life", "discarded creature", "when you gain gold",
+		"a hyena card dies", "a hyena card is played"
 	];
 	keywordArr = [
 		null, "H", "(H)", "F", "(F)", "R", "(R)", "C", "(C)", "I", "(I)", "T", "(T)", 
@@ -177,6 +178,13 @@ class Creature extends Card {
 					this.keywords.splice(this.keywords.indexOf(numberedKeyword), 1, keyword);
 				}
 			}
+
+			this.OWNER.flatBoard.forEach(creature => {
+				Creature.checkEvent(creature, "when a card gains a keyword", "activate");
+			});
+			this.OWNER.opponent.flatBoard.forEach(creature => {
+				Creature.checkEvent(creature, "when a card gains a keyword", "activate");
+			});
 		});
 
 		this.updateSpan();
@@ -252,9 +260,12 @@ class Creature extends Card {
 	}
 	
 	play() {
-		if (this.abilityEvents.includes("when played")) {
-			this.currentAbility = this.abilityEvents.indexOf("when played");
-			this.findTargets("activate");
+		Creature.checkEvent(this, "when played", "activate");
+		Creature.checkEvent(this, "when alive", "activate");
+		if (this.rootName.includes("hyena")) {
+			this.OWNER.flatBoard.forEach(creature => {
+				Creature.checkEvent(creature, "a hyena card is played", "activate");
+			});
 		}
 
 		super.play();
