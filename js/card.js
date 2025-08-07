@@ -5,18 +5,16 @@ class Card {
 
 	abilityMap = new Map ([
 		["heal", ["all damage", "+0/+1"]],
-		["gain", ["+1/+0", "+2/+0", "+0/+1", "+0/+2", "+0/+6", "+1/+2", 
-			"+2/+4", "+0/-2", "-2/-4", "-5/-10", "(l)", "(i)", "(t)", "(f)", 
-			"(w)2", "(v)1", "(v)2", "1 gold", "3 gold", "x gold", "spellproof", 
-			"stasis", "1 life", "2 more life", "all keywords"]],
-		["give", ["+1/+0", "+2/+0", "+0/+1", "+0/+2", "+0/+6", "+1/+2", 
-			"+2/+4", "+0/-2", "-2/-4", "-5/-10", "(l)", "(i)", "(t)", "(f)", 
-			"(w)2", "(v)1", "(v)2", "1 gold", "3 gold", "x gold", "spellproof", 
-			"stasis", "1 life", "2 more life", "all keywords"]],
-		["gets", ["+1/+0", "+2/+0", "+0/+1", "+0/+2", "+0/+6", "+1/+2", 
-			"+2/+4", "+0/-2", "-2/-4", "-5/-10", "(l)", "(i)", "(t)", "(f)", 
-			"(w)2", "(v)1", "(v)2", "1 gold", "3 gold", "x gold", "spellproof", 
-			"stasis", "1 life", "2 more life", "all keywords"]],
+		["count", "in freefall -2"],
+		["gain", ["+1/+0", "+2/+0", "+0/+1", "+0/+2", "+0/+6", "+1/+2", "+2/+4", "+0/-2", "-2/-4", 
+			"-5/-10", "(l)", "(i)", "(t)", "(f)", "(w)2", "(v)1", "(v)2", "1 gold", "3 gold", "x gold",
+			"that much in gold", "spellproof", "stasis", "1 life", "2 more life", "all keywords"]],
+		["give", ["+1/+0", "+2/+0", "+0/+1", "+0/+2", "+0/+6", "+1/+2", "+2/+4", "+0/-2", "-2/-4", 
+			"-5/-10", "(l)", "(i)", "(t)", "(f)", "(w)2", "(v)1", "(v)2", "1 gold", "3 gold", "x gold",
+			"that much in gold", "spellproof", "stasis", "1 life", "2 more life", "all keywords"]],
+		["gets", ["+1/+0", "+2/+0", "+0/+1", "+0/+2", "+0/+6", "+1/+2", "+2/+4", "+0/-2", "-2/-4", 
+			"-5/-10", "(l)", "(i)", "(t)", "(f)", "(w)2", "(v)1", "(v)2", "1 gold", "3 gold", "x gold",
+			"that much in gold", "spellproof", "stasis", "1 life", "2 more life", "all keywords"]],
 		["search", ["a creature", "a consumable", "a card", "3 cards"]],
 		["discard", ["x cards", "a card", "2 random cards", "2 cards"]],
 		["draw", ["2", "3"]],
@@ -29,17 +27,18 @@ class Card {
 		["use", "(c)"],
 		["put", "this"],
 		["retains", "buffs"],
-		["have", "0 atck"]
+		["have", "0 atck"],
+		["double", "amount"]
 	]);
 
 	abilityArr = ["destroy", "clone"];
 
 	targetTypes = [
-    "in your hand", "all consumables", "all other consumables", "all your creatures", 
-		"all opposing creatures" ,"freefall","target opponent's creature", "opponent", 
-		"opponent's turn", "your deck","your entire deck", "cards in your hand", "your hand",
-		"opponent's hand", "all target creatures", "target creature in discard pile",
-		"target creature", "target structure", "target card", "battlefield", "attacker"
+    "all consumables", "all other consumables", "all your creatures", "all opposing creatures", 
+		"creature in freefall", "freefall", "target opponent's creature", "opponent's hand", 
+		"opponent's turn", "opponent", "your deck", "your entire deck", "cards in your hand", 
+		"your hand", "all target creatures", "target creature in discard pile", "target creature", 
+		"target structure", "target card", "battlefield", "attacker"
   ];
 
 	specialConsumables = ["annoy"];
@@ -205,9 +204,9 @@ class Card {
         if (ability.includes("and") || ability.includes("then") || ability.includes(",")) {
           continue;
         } 
-
-        break;
       }
+
+			if (foundTarget) break;
     }
 
 		if ((!foundTarget) && this.cardType === "creature") {
@@ -221,6 +220,7 @@ class Card {
 		const board = this.OWNER.flatBoard
     const creatures = board.filter(creature => { return creature.cardType === "creature"; });
     const targets = this.targets; 
+		console.log(targets);
     if (targets.length < 1) return false;
 
     if (targets.includes("cards in your hand")) {
@@ -405,7 +405,7 @@ class Card {
       return true;
     }
 
-    if (targets.includes("freefall")) {
+    if (targets.includes("creatures in freefall")) {
       const freefall = this.OWNER.discards.filter(card => { return card.cardType === "creature"; });
       if (freefall.length < 1) return false;
       
@@ -415,7 +415,15 @@ class Card {
 			});
       
       return true;
-    }
+
+    } else if (targets.includes("freefall")) {
+			if (this.OWNER.discards < 1) return false;
+
+			if (mode === "activate") this.activateAbility(this.OWNER.discards); 
+			else this.deactivateAbility(this.OWNER.discards);
+      
+      return true;
+		}
 
 		if (targets.includes("attacker")) {
 			if (this.attacker) {
@@ -444,12 +452,21 @@ class Card {
 					switch (key) {
 						case "gain":
 						case "give":
-						case "get":
+						case "gets":
 							for (let stat of ability.values()) {
-								if (target.keywordArr.includes(stat.replace(/(|)\W/g, "").at(0).toUpperCase())) {
+								if (
+									target.keywordArr 
+									&& 
+									target.keywordArr.includes(stat.replace(/(|)\W/g, "").at(0).toUpperCase())
+								) {
 									target.addKeyword(stat);
+									
 								} else if (stat.includes("gold")) {
-									target.OWNER.addGold(Number(stat[0]));
+									if (stat.includes("that much in gold")) {
+										this.OWNER.addGold(this.temp);
+										delete this.temp;
+									} else target.OWNER.addGold(Number(stat[0]));
+
 								} else if (stat.includes("life")) {
 									this.OWNER.addHealth(Number(stat[0]), stat.includes("more"));
 								} else {
@@ -644,6 +661,23 @@ class Card {
 							}
 
 							break;
+						case "count":
+							for (let number of ability.values()) {
+								if (number.includes("freefall -2")) {
+									this.temp = target.length - 2;
+									if (this.temp < 0) this.temp = 0;
+								}
+							}
+
+							break;
+						case "double":
+							for (let number of ability.values()) {
+								if (number.includes("amount")) {
+									target.OWNER.addGold(target.OWNER.gold - target.OWNER.previousGold, true);
+								}
+							}	
+
+							break;
 						default:
 							break;
 					}
@@ -651,10 +685,15 @@ class Card {
 			} else {
 				switch (ability) {
 					case "clone":
-						this.OWNER.opponent.disable();
+						let i = 0;
 
 						target.forEach(card => {
-							if (card.legendary) return;
+							if (card.cardType === "legendary" || card.ATTRIBUTE.includes("cannot be cloned")) { 
+								return; 
+							}
+
+							i++;
+							this.OWNER.disable(); 
 							card.addTargetHandler = () => {
 								target.forEach(c => {
 									if (c.addTargetHandler) {
@@ -662,7 +701,7 @@ class Card {
 										delete c.addTargetHandler
 									}
 								});
-
+												
 								const clone = card.duplicate();
 								clone.clone = true;
 								card.OWNER.hand.push(clone);
@@ -675,7 +714,17 @@ class Card {
 							card.span.onclick = card.addTargetHandler;
 						});
 
-						display(`${this.OWNER.name}, clone a card on the board`);
+						if (i > 0) display(`${this.OWNER.name}, clone a card on the board`);
+						else {
+							display(`${this.OWNER.name}, you cannot use this card right now`);
+							setTimeout(() => {
+								if (this.cardType.includes("consumable")) {
+									this.revive(false);
+									display(`${this.OWNER.name} to move`);
+								}
+							}, 1000);
+						}
+						
 						break;
 					case "destroy":
 						target.OWNER.discard(target);
@@ -700,15 +749,15 @@ class Card {
 						case "give":
 						case "gets":
 							for (let stat of ability.values()) {
-								if (target.keywordArr.includes(stat.substr(0, 3).toUpperCase())) {
-									target.removeKeyword(stat);
-								} else if (stat.includes("gold")) {
-									target.OWNER.spendGold(Number(stat));
-								} else {
-									target.changeStats(stat, true);
+								if (target.cardType === "creature") {
+									if (target.keywordArr.includes(stat.replace(/(|)\W/g, "").at(0).toUpperCase())) {
+										target.removeKeyword(stat);
+									} else {
+										target.changeStats(stat, true);
+									}
 								}
 							}
-
+						
 							break;
 						case "cost":
 							for (let cost of ability.values()) {
@@ -717,6 +766,8 @@ class Card {
 									if (target._cost2) target.alterGold(target._cost2.add.bind(target._cost2), 1);
 								}
 							}
+
+							break;
 						default:
 							break;
 					}

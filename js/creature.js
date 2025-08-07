@@ -85,6 +85,36 @@ class Creature extends Card {
 		return this._ability[this.currentAbility];
 	}
 
+	get dAbility2 () {
+    return this.DISPLAYED_ABILITY2.toLowerCase();
+  }
+
+	get targets() {
+    const temp = [];
+
+		console.log(this._targets);
+    this._targets.forEach(target => {
+      if (this._targets.count(target) > 1) {
+          temp.push(this._targets[0]);
+      }
+			
+      if (this.currentlyChosenAbility === 0) {
+        if (this.dAbility2.includes(target) && !this.dAbility1.includes(target)) {
+          temp.push(target);
+        }
+      } else {
+        if (this.dAbility1.includes(target) && !this.dAbility2.includes(target)) {
+          temp.push(target);
+        } else {
+					temp.push("general");
+				}
+      }
+    });
+		console.log(this._targets);
+
+    return temp;
+  }
+
 	static checkEvent(creature, event, mode) {
 		if (!creature instanceof Creature) return;
 		if (creature.abilityEvents.includes(event)) {
@@ -188,8 +218,6 @@ class Creature extends Card {
 		});
 
 		this.updateSpan();
-
-		console.log(this.keywords, ",", this.previousKeywords);
 	}
 
 	//follows a similar algo to its counterpart
@@ -301,8 +329,6 @@ class Creature extends Card {
 	}
 
 	tap() {
-		Creature.checkEvent(this, "when blocking", "deactivate");
-
 		this.OWNER.board[0].remove(this);
 		this.OWNER.board[1].push(this);
 		this.span.style.borderColor = "red";
@@ -320,14 +346,10 @@ class Creature extends Card {
 			return;
 		}
 
-		Creature.checkEvent(this, "when attacking", "activate");
-
 		this.setTarget();
 	}
 
 	block() {
-		Creature.checkEvent(this, "when attacking", "deactivate");
-
 		this.OWNER.board[1].remove(this);
 		this.OWNER.board[0].push(this);
 		this.span.style.borderColor = "blue";
@@ -338,8 +360,6 @@ class Creature extends Card {
 		this.tapHandler = this.tap.bind(this);
 		this.span.onclick = this.tapHandler;
 		this.target = null;
-
-		Creature.checkEvent(this, "when blocking", "activate");
 	}
 
 	setTarget() {
@@ -416,6 +436,15 @@ class Creature extends Card {
 		throw new Error(`"${keyword}" not in this.keywords`);
 	}
 
+	haste() {
+    if (this.checkKeyword("H") && this.firstTurn) {
+      this.attack *= 2;
+      this.updateSpan();
+      display(`${this.name} is using Haste!`);
+      setTimeout(() => {display(`${this.name} to move`)}, 1500);
+    }
+  }
+
 	lifelink() {
 		if (this.checkKeyword("L")) {
 			display(`${this.name} is using lifelink!`)
@@ -476,6 +505,8 @@ class Creature extends Card {
 			return false;
 		});
 
+		Creature.checkEvent(this, "when attacking", "activate");
+
 		if (defender !== undefined) {
 			if (window.confirm(`
 				${defender.name} has Defender\n
@@ -520,10 +551,17 @@ class Creature extends Card {
 			}
 
 			target.previousHealth = target.health;
+			Creature.checkEvent(target, "when blocking", "activate");
 		}
 
+		this.haste();
 		this.damageTarget(target);
-		if (target instanceof Creature) Creature.checkEvent(target, "when attacked", "activate");
+		Creature.checkEvent(this, "when attacking", "deactivate");
+
+		if (target instanceof Creature) { 
+			Creature.checkEvent(target, "when blocking", "deactivate");
+			Creature.checkEvent(target, "when attacked", "activate"); 
+		}
 
 		if (target.deathCheck() && this.target instanceof Creature) {
 			this.changeTarget();

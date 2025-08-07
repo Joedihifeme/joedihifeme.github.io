@@ -293,8 +293,8 @@
       "gold": "8",
       "type": "n",
       "keywords": "",
-      "ability1": "Upon Death: Discard 2 random cards from your opponent's hand.",
-      "ability2": "",
+      "ability1": "When attacking: Count the number of cards in freefall -2. Gain that much in gold.",
+      "ability2": "Upon Death: Discard 2 random cards from your opponent's hand.",
       "attribute": ""
     },
     {
@@ -447,19 +447,8 @@
       "gold": "9",
       "type": "n",
       "keywords": "",
-      "ability1": "When you gain gold, gain +1/+0.",
-      "ability2": "",
-      "attribute": ""
-    },
-    {
-      "name": "Bee-utiful Bee",
-      "attack": 2,
-      "health": 7,
-      "gold": "15",
-      "type": "l",
-      "keywords": "I",
-      "ability1": "",
-      "ability2": "",
+      "ability1": "When you gain gold, double the amount.",
+      "ability2": "When you gain gold, gain +1/+0.",
       "attribute": ""
     },
     {
@@ -507,7 +496,7 @@
     {
       "name": "Summon",
       "gold": "3",
-      "ability": "Search your deck for a card and put it into your hand. Then, lose 3 health",
+      "ability": "Search your deck for a card. Then, lose 3 health",
       "implemented": true
     },
     {
@@ -599,7 +588,7 @@
       "gold1": "3",
       "ability1": "Draw 3 cards from your deck",
       "gold2": "10",
-      "ability2": "Search your deck for any 3 cards and put them into your hand",
+      "ability2": "Search your deck for any 3 cards.",
       "implemented": true
     },
     {

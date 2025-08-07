@@ -4,7 +4,7 @@ class Legendary extends Creature {
 
   constructor(name, attack, health, cost, type, keywords, ability1, ability2) {
     super(name, attack, health, cost, type, keywords, ability1, ability2);
-    this.legendary = true;
+    this.cardType = "legendary";
   }
 
   updateSpan() {

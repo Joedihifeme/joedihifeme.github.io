@@ -98,7 +98,7 @@ class Gold {
             this.operator = num;
         }
         else if (this.operation === "-")
-            this.operation += num;
+            this.operator += num;
         else {
             this.operator -= num;
             if (this.operator === 0) {

@@ -10,6 +10,7 @@ class Player {
     this.id = undefined;
     this.health = 20;
     this.gold = 0;
+    this.previousGold = 0;
     this.deck = [];
     this.hand = [];
     this.board = [[], []]; //blockers at board[0]; attackers on board[1];
@@ -138,6 +139,7 @@ class Player {
     if (element === "all" || element === "board") {
       if (this.board[0].length > 0) {
         this.board[0].forEach(creature => {
+          if (creature.checkKeyword("S")) return;
           creature.tapHandler = creature.tap.bind(creature)
           creature.span.onclick = creature.tapHandler;
         });
@@ -145,6 +147,7 @@ class Player {
 
       if (this.board[1].length > 0) {
         this.board[1].forEach(creature => {
+          if (creature.checkKeyword("S")) return;
           creature.blockHandler = creature.block.bind(creature);
           creature.span.onclick = creature.blockHandler;
         });
@@ -212,15 +215,19 @@ class Player {
     }
   }
 
-  addGold(num) {
+  addGold(num, extra=false) {
+    this.previousGold = this.gold
     this.gold += num;
-    this.flatBoard.forEach(creature => {
+    if (!extra) {
+      this.flatBoard.forEach(creature => {
       Creature.checkEvent(creature, "when you gain gold", "activate");
-    });
+      });
+    }
     this.div.update();
   }
 
   spendGold(num) {
+    this.previousGold = this.gold;
     this.gold -= num;
     if (this.gold < 2) {
       this.disable("discard button")
@@ -232,13 +239,13 @@ class Player {
     this.div.update();
   }
 
-  addHealth(num, extra) {
+  addHealth(num, extra=false) {
     this.health += num;
     //extra signifies the result of stat.includes("more").
     if (!extra) {
       this.flatBoard.forEach(creature => {
-      Creature.checkEvent(creature, "when you gain life", "activate");
-    });
+        Creature.checkEvent(creature, "when you gain life", "activate");
+      });
     }
     this.div.update();
 
@@ -368,19 +375,8 @@ class Player {
   }
 
   keywordsOnPlay(card) {
-    this.haste(card);
     this.creatureRemovalAndIndestructible(card);
     this.grab(card)
-  }
-
-  //keyword on play
-  haste(card) {
-    if (card.checkKeyword("H") && card.firstTurn) {
-      card.attack *= 2;
-      card.updateSpan();
-      display(`${card.name} is using Haste!`);
-      setTimeout(() => {display(`${this.name} to move`)}, 1500);
-    }
   }
 
   //keyword on play
@@ -453,6 +449,7 @@ class Player {
     this.board.forEach(section => { section.push(card); });
     card.span.style.borderColor = "purple";
     display(`${card.name} is using stamina!`);
+    this.disable();
     setTimeout(() => { card.setTarget(); }, 1500);
   }
 
