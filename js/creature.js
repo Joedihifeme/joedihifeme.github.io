@@ -27,6 +27,7 @@ class Creature extends Card {
 		this.cumulatedHealth = health;
 		this.type = type;
 		this.ATTRIBUTE = attribute;
+		this.attackSet = false;
 
 		if (keywords !== "") {
 			keywords = keywords.split(",");
@@ -61,6 +62,7 @@ class Creature extends Card {
 		this.tapped = false;
 		this.target = null;
 		this.attacker = null;
+		this.attackee = null;
 		this.poison = {damage: 0, player: undefined}; //called poison to differentiate from venom method
 		//the object has a player property in case the poisoned creature has ward
 
@@ -257,7 +259,8 @@ class Creature extends Card {
 
 	changeStats(amount, reverse=false) {
 		if (!amount.includes("/")) {
-			console.log("Error: cannot read stats");
+			console.log(`Error: cannot read stats: ${amount}`);
+			return;
 		}
 
 		this.previousAttack = this.attack;
@@ -331,6 +334,7 @@ class Creature extends Card {
 	tap() {
 		this.OWNER.board[0].remove(this);
 		this.OWNER.board[1].push(this);
+		this.blocking = false;
 		this.span.style.borderColor = "red";
 		if (this.tapHandler) {
 			this.span.onclick = null;
@@ -339,6 +343,7 @@ class Creature extends Card {
 
 		this.blockHandler = this.block.bind(this);
 		this.span.onclick = this.blockHandler;
+		this.tapped = true;
 
 		if (this.checkKeyword("T")) {
 			this.target = this.OWNER.opponent;
@@ -352,6 +357,7 @@ class Creature extends Card {
 	block() {
 		this.OWNER.board[1].remove(this);
 		this.OWNER.board[0].push(this);
+		this.tapped = false;
 		this.span.style.borderColor = "blue";
 		if (this.blockHandler) {
 			this.span.onclick = null;
@@ -360,6 +366,7 @@ class Creature extends Card {
 		this.tapHandler = this.tap.bind(this);
 		this.span.onclick = this.tapHandler;
 		this.target = null;
+		this.blocking = true;
 	}
 
 	setTarget() {
@@ -378,6 +385,18 @@ class Creature extends Card {
 					this.OWNER.enable();
 				}.bind(this);
 				creature.span.onclick = creature.targetHandler;
+			}
+		}
+
+		if (this.ATTRIBUTE.includes("attack your own creatures")) {
+			for (let section of this.OWNER.board) {
+				for (let creature of section) {
+					creature.targetHandler = function () { 
+						this.assignTarget(creature); 
+						this.OWNER.enable();
+					}.bind(this);
+					creature.span.onclick = creature.targetHandler;
+				}
 			}
 		}
 	}
@@ -400,6 +419,17 @@ class Creature extends Card {
 				if (creature.targetHandler) {
 					creature.span.onclick = null;
 					delete creature.targetHandler;
+				}
+			}
+		}
+
+		if (this.ATTRIBUTE.includes("attack your own creatures")) {
+			for (let section of this.OWNER.board) {
+				for (let creature of section) {
+					if (creature.targetHandler) {
+						creature.span.onclick = null;
+						delete creature.targetHandler;
+					}
 				}
 			}
 		}
@@ -505,8 +535,6 @@ class Creature extends Card {
 			return false;
 		});
 
-		Creature.checkEvent(this, "when attacking", "activate");
-
 		if (defender !== undefined) {
 			if (window.confirm(`
 				${defender.name} has Defender\n
@@ -551,6 +579,7 @@ class Creature extends Card {
 			}
 
 			target.previousHealth = target.health;
+			this.attackee = target;
 			Creature.checkEvent(target, "when blocking", "activate");
 		}
 
@@ -559,7 +588,7 @@ class Creature extends Card {
 		Creature.checkEvent(this, "when attacking", "deactivate");
 
 		if (target instanceof Creature) { 
-			Creature.checkEvent(target, "when blocking", "deactivate");
+			if (target.blocking) Creature.checkEvent(target, "when blocking", "deactivate");
 			Creature.checkEvent(target, "when attacked", "activate"); 
 		}
 
@@ -569,6 +598,8 @@ class Creature extends Card {
 	}
 
 	damageTarget(target, trample=false, attack=null) {
+		Creature.checkEvent(this, "when attacking", "activate");
+
 		if (!trample) {
 			target.health -= attack !== null ? attack : this.attack;
 		} else {

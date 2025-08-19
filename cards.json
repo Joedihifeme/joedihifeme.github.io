@@ -40,7 +40,7 @@
       "gold": "6",
       "type": "n",
       "keywords": "R",
-      "ability1": "",
+      "ability1": "Draw a card every turn",
       "ability2": "Upon death: Draw 2 cards",
       "attribute": ""
     },
@@ -447,8 +447,8 @@
       "gold": "9",
       "type": "n",
       "keywords": "",
-      "ability1": "When you gain gold, double the amount.",
-      "ability2": "When you gain gold, gain +1/+0.",
+      "ability1": "When you gain gold, double the amount and gain +1/+0.",
+      "ability2": "",
       "attribute": ""
     },
     {
@@ -458,7 +458,7 @@
       "gold": "9",
       "type": "l",
       "keywords": "I",
-      "ability1": "When this card attacks a creature, it gains all keywords on it.",
+      "ability1": "When attacking: gain all the keywords on the attacked creature.",
       "ability2": "",
       "attribute": "This card can also attack your own creatures."
     },

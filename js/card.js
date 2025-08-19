@@ -8,13 +8,13 @@ class Card {
 		["count", "in freefall -2"],
 		["gain", ["+1/+0", "+2/+0", "+0/+1", "+0/+2", "+0/+6", "+1/+2", "+2/+4", "+0/-2", "-2/-4", 
 			"-5/-10", "(l)", "(i)", "(t)", "(f)", "(w)2", "(v)1", "(v)2", "1 gold", "3 gold", "x gold",
-			"that much in gold", "spellproof", "stasis", "1 life", "2 more life", "all keywords"]],
+			"that much in gold", "spellproof", "stasis", "1 life", "2 more life", "all the keywords"]],
 		["give", ["+1/+0", "+2/+0", "+0/+1", "+0/+2", "+0/+6", "+1/+2", "+2/+4", "+0/-2", "-2/-4", 
 			"-5/-10", "(l)", "(i)", "(t)", "(f)", "(w)2", "(v)1", "(v)2", "1 gold", "3 gold", "x gold",
-			"that much in gold", "spellproof", "stasis", "1 life", "2 more life", "all keywords"]],
+			"that much in gold", "spellproof", "stasis", "1 life", "2 more life", "all the keywords"]],
 		["gets", ["+1/+0", "+2/+0", "+0/+1", "+0/+2", "+0/+6", "+1/+2", "+2/+4", "+0/-2", "-2/-4", 
 			"-5/-10", "(l)", "(i)", "(t)", "(f)", "(w)2", "(v)1", "(v)2", "1 gold", "3 gold", "x gold",
-			"that much in gold", "spellproof", "stasis", "1 life", "2 more life", "all keywords"]],
+			"that much in gold", "spellproof", "stasis", "1 life", "2 more life", "all the keywords"]],
 		["search", ["a creature", "a consumable", "a card", "3 cards"]],
 		["discard", ["x cards", "a card", "2 random cards", "2 cards"]],
 		["draw", ["2", "3"]],
@@ -35,10 +35,11 @@ class Card {
 
 	targetTypes = [
     "all consumables", "all other consumables", "all your creatures", "all opposing creatures", 
-		"creature in freefall", "freefall", "target opponent's creature", "opponent's hand", 
-		"opponent's turn", "opponent", "your deck", "your entire deck", "cards in your hand", 
-		"your hand", "all target creatures", "target creature in discard pile", "target creature", 
-		"target structure", "target card", "battlefield", "attacker"
+		"creature in freefall", "freefall", "target opponent's creature", 
+		"opponent's creature with the highest atck", "opponent's hand", "opponent's turn", "opponent", 
+		"your deck", "your entire deck", "cards in your hand", "your hand", "all target creatures", 
+		"target creature in discard pile", "target creature", "target structure", "target card", 
+		"battlefield", "attacker", "attacked creature"
   ];
 
 	specialConsumables = ["annoy"];
@@ -217,7 +218,7 @@ class Card {
   }
 
 	findTargets(mode) {
-		const board = this.OWNER.flatBoard
+		const board = this.OWNER.flatBoard;
     const creatures = board.filter(creature => { return creature.cardType === "creature"; });
     const targets = this.targets; 
 		console.log(targets);
@@ -322,7 +323,26 @@ class Card {
         return false; 
       } else return true;
 
-    } else if (targets.includes("opponent's hand")) {
+    }
+
+		if (targets.includes("opponent's creature with the highest atck")) {
+			const oppCreatures = this.OWNER.opponent.flatBoard.filter(card => card.cardType === "creature");
+			if (oppCreatures.length < 1) return false;
+
+			if (mode === "activate") { 
+				oppCreatures.sort((c1, c2) => c1.attack - c2.attack);
+				this.activateAbility(oppCreatures.at(-1));
+				oppCreatures.at(-1).attackSet = true;
+			} else { 
+				const creature = oppCreatures.find(c => c.attackSet);
+				if (creature === undefined) return false;
+				this.deactivateAbility(creature);
+			}
+
+			return true;
+		}
+		
+		if (targets.includes("opponent's hand")) {
       if (this.OWNER.opponent.hand.length < 1) { return false; }
 
       if (mode === "activate") this.activateAbility(this.OWNER.opponent.hand); 
@@ -427,8 +447,28 @@ class Card {
 
 		if (targets.includes("attacker")) {
 			if (this.attacker) {
-				if (this.attacker !== null) this.activateAbility(this.attacker);
+				if (this.attacker !== null) {
+					if (mode === "activate") this.activateAbility(this.attacker); 
+					else this.deactivateAbility(this.attacker);
+
+					return true;
+				}
 			}
+
+			return false;
+		}
+
+		if (targets.includes("attacked creature")) {
+			if (this.attackee) {
+				if (this.attackee !== null) {
+					if (mode === "activate") this.activateAbility(this.attackee); 
+					else this.deactivateAbility(this.attackee);
+
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		if (targets.includes("general")) { 
@@ -461,6 +501,8 @@ class Card {
 								) {
 									target.addKeyword(stat);
 									
+								} else if (stat.includes("all the keywords")) {
+									this.addKeyword(...target.keywords);
 								} else if (stat.includes("gold")) {
 									if (stat.includes("that much in gold")) {
 										this.OWNER.addGold(this.temp);
@@ -678,6 +720,16 @@ class Card {
 							}	
 
 							break;
+						case "have":
+							for (let element of ability.values()) {
+								if (element.includes("0 atck")) {
+									target.attack = 0;
+									target.attackSet = true;
+									target.updateSpan();
+								}
+							}
+						
+							break;
 						default:
 							break;
 					}
@@ -759,6 +811,7 @@ class Card {
 							}
 						
 							break;
+
 						case "cost":
 							for (let cost of ability.values()) {
 								if (cost.includes("1 gold less")) {
@@ -767,6 +820,17 @@ class Card {
 								}
 							}
 
+							break;
+
+						case "have":
+							for (let element of ability.values()) {
+								if (element.includes("0 atck")) {
+									target.attack = target.ATTACK;
+									target.attackSet = false;
+									target.updateSpan();
+								}
+							}
+						
 							break;
 						default:
 							break;

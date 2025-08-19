@@ -2,8 +2,8 @@ import Creature from "./creature.js";
 
 class Legendary extends Creature {
 
-  constructor(name, attack, health, cost, type, keywords, ability1, ability2) {
-    super(name, attack, health, cost, type, keywords, ability1, ability2);
+  constructor(name, attack, health, cost, type, keywords, ability1, ability2, attribute) {
+    super(name, attack, health, cost, type, keywords, ability1, ability2, attribute);
     this.cardType = "legendary";
   }
 
