@@ -117,7 +117,7 @@ class Creature extends Card {
     return temp;
   }
 
-	static checkEvent(creature, event, mode) {
+	static checkEvent(creature, event, mode="activate") {
 		if (!creature instanceof Creature) return;
 		if (creature.abilityEvents.includes(event)) {
 			creature.currentAbility = creature.abilityEvents.indexOf(event);

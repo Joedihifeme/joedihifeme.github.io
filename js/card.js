@@ -17,7 +17,7 @@ class Card {
 			"that much in gold", "spellproof", "stasis", "1 life", "2 more life", "all the keywords"]],
 		["search", ["a creature", "a consumable", "a card", "3 cards"]],
 		["discard", ["x cards", "a card", "2 random cards", "2 cards"]],
-		["draw", ["2", "3"]],
+		["draw", ["a card","2", "3"]],
 		["deal", ["same damage", "1 damage"]],
 		["lose", "3 health"],
 		["reset", "haste"],
@@ -34,7 +34,7 @@ class Card {
 	abilityArr = ["destroy", "clone"];
 
 	targetTypes = [
-    "all consumables", "all other consumables", "all your creatures", "all opposing creatures", 
+    	"all consumables", "all other consumables", "all your creatures", "all opposing creatures", 
 		"creature in freefall", "freefall", "target opponent's creature", 
 		"opponent's creature with the highest atck", "opponent's hand", "opponent's turn", "opponent", 
 		"your deck", "your entire deck", "cards in your hand", "your hand", "all target creatures", 
@@ -48,7 +48,7 @@ class Card {
 		this.name = name;
 		this._cost = new Gold(cost);
 		this._targets = [];
-    this.multiplier = cost.includes("x");
+    	this.multiplier = cost.includes("x");
 		this.discarded = false;
 		this.OWNER = undefined;
 		this._ability = null;
@@ -110,6 +110,7 @@ class Card {
 		if (this._ability !== null) dup._ability = copy(dup._ability, true);
 		dup.span = this.span.cloneNode();
 		dup.span.setAttribute("id", `${dup.name}`);
+		console.log("Card.duplicate: returning", dup)
 		return dup;
 	}
 
@@ -188,7 +189,7 @@ class Card {
 		});
 
 		if (!foundAbility) {
-			throw new Error(`Ability not found for ${this.name}`);
+			throw new Error(`Ability not found for ${this.name}: ${ability}`);
 		}
 
 		this._ability.push(arr);
@@ -218,10 +219,11 @@ class Card {
   }
 
 	findTargets(mode) {
-		const board = this.OWNER.flatBoard;
+	const board = this.OWNER.flatBoard;
     const creatures = board.filter(creature => { return creature.cardType === "creature"; });
     const targets = this.targets; 
-		console.log(targets);
+	console.log(targets);
+
     if (targets.length < 1) return false;
 
     if (targets.includes("cards in your hand")) {
@@ -547,6 +549,14 @@ class Card {
 											card.OWNER.discard(card);
 											i++;
 
+											if (card.ATTRIBUTE.includes("counts as")) {
+												let cardsNum = Number(card.ATTRIBUTE.at(-8)) - 1
+												console.log(cardsNum)
+												for (let j = 0; j < cardsNum; j++) {
+													i++
+												}
+											}
+
 											if (i === max) {
 												card.OWNER.enable();
 												display(`${card.OWNER.opponent.name} to move`);
@@ -596,7 +606,13 @@ class Card {
 											card.OWNER.drawSpecificCard(card);
 											i++;
 
-											if (i === max) {
+											if (card.ATTRIBUTE.includes("counts as")) {
+												let cardsNum = Number(card.ATTRIBUTE.at(-8)) - 1
+												console.log(cardsNum)
+												i = i + cardsNum
+											}
+
+											if (i >= max) {
 												target.forEach(c => {
 													if (c.drawHandler) {
 														c.span.onclick = null;
@@ -606,6 +622,7 @@ class Card {
 
 												card.OWNER.div.clearModal();
 												card.OWNER.div.closeModal();
+												display(`${this.OWNER.name} to move.`)
 												resolve();
 											}
 										}
@@ -644,7 +661,10 @@ class Card {
 							break;
 						case "draw":
 							for (let number of ability.values()) {
-								this.OWNER.drawCard(Number(number));
+								console.log("got here");
+								let n;
+								if (number.includes("a")) n = 1; else n = number;
+								this.OWNER.drawCard(Number(n), fromAbility=true);
 								display(`${this.OWNER.name} to move`);
 							}
 

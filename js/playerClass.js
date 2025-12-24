@@ -218,6 +218,7 @@ class Player {
   addGold(num, extra=false) {
     this.previousGold = this.gold
     this.gold += num;
+    console.log(`Player.addGold(): added ${num} to ${this.gold}\n`)
     if (!extra) {
       this.flatBoard.forEach(creature => {
       Creature.checkEvent(creature, "when you gain gold", "activate");
@@ -229,6 +230,7 @@ class Player {
   spendGold(num) {
     this.previousGold = this.gold;
     this.gold -= num;
+    console.log(`Player.spendGold(): spent ${num} out of ${this.gold} gold`);
     if (this.gold < 2) {
       this.disable("discard button")
       if (this.gold < 1) {
@@ -240,6 +242,7 @@ class Player {
   }
 
   addHealth(num, extra=false) {
+    console.log(`Player.Health(): adding ${num} to ${this.health}`)
     this.health += num;
     //extra signifies the result of stat.includes("more").
     if (!extra) {
@@ -268,36 +271,60 @@ class Player {
     this.enable();
   }
 
-  drawCard(num, paid=false) {
+  drawCard(num, paid=false, fromAbility=false) {
+    console.log(`Player.drawCard(): num=${num}, paid=${paid}`);
+    console.log(`Deck: ${this.deck}`)
     try {
       for (let i = 0; i < num; i++) {
         if (this.div.hand.innerHTML === "No cards in hand yet") {
           this.div.hand.innerHTML = "";
         }
-        this.drawSpecificCard(this.deck.randomElement());
+
+        const card = this.deck.randomElement();
+        console.log(`Player.drawCard(): drew ${card.name}`);
+
+        if (card instanceof Creature) {
+          if (card.ATTRIBUTE.includes("counts as") && !paid && fromAbility) {
+            let cardsNum = Number(card.ATTRIBUTE.at(-8)) - 1
+            i = i + cardsNum
+            console.log(`Has the 'counts as' attribute`)
+          }
+        }
+        
+        console.log(`Drawing card`)
+        console.log(`Hand before: ${this.hand}`)
+        this.drawSpecificCard(card);
+        console.log(`Hand after: ${this.hand}`)
       }
+
       if (paid) {
+        console.log(`Player.drawCard(): Paid draw`)
         this.disable("draw button");
         this.spendGold(1);
         this.drawn = true;
       }
+
       if (this.deck.length < 1) {
         this.disable("draw button");
       }
-    }
-    catch(err) {
+
+    } catch(err) {
+      console.log(err)
       display("Draw pile is empty");
       this.disable("draw button");
     }
+    console.log(`Done with Player.drawCard()\n`);
   }
 
   drawSpecificCard(card) {
+    console.log(`Player.drawSpecificCard(): drawing ${card.name}`)
     this.deck.remove(card);
     this.hand.push(card);
     this.div.hand.appendChild(card.span);
     card.playHandler = card.play.bind(card);
     card.span.onclick = card.playHandler;
     this.div.update();
+    console.log(`Player.drawSpecificCard(): done\n`)
   }
 
   playCard(card, clone=undefined) {
@@ -507,6 +534,7 @@ class Player {
 
     for (let creature of this.board[1]) {
       if (creature instanceof Creature) {
+        console.log(`Player.endTurnRoutine(): ${creature.name} is attacking`)
         if (!creature.checkKeyword("T")) {
           creature.goAttack();
         } else {
