@@ -1,4 +1,3 @@
-import Card from "./card.js";
 import Creature from "./creature.js";
 import Legendary from "./legendary.js";
 import Consumable from "./consumables.js";
@@ -10,6 +9,8 @@ const cards = [];
 const players = [];
 const gameDiv = document.getElementById("game");
 var displayMode = "white";
+let goldPerTurn = 4;
+let rampPerTurn = 1;
 
 const savedMode = localStorage.getItem("displayMode");
 if (savedMode === "black") {
@@ -107,6 +108,7 @@ settingsButton.onclick = () => {
   const start = settingsButton.parentNode;
   start.remove();
   const settingsPage = document.createElement("div");
+  settingsPage.setAttribute("id", "settings-page")
   document.body.appendChild(settingsPage);
 
   const screenMode = document.createElement("button");
@@ -114,6 +116,12 @@ settingsButton.onclick = () => {
 
   screenMode.onclick = () => { displayMode === "white" ? darkMode(screenMode) : lightMode(screenMode) };
   settingsPage.appendChild(screenMode);
+
+  const goldModeButon = document.createElement("button");
+  goldModeButon.setAttribute("id", "gold-mode");
+  goldModeButon.innerHTML = "Gold mode";
+  goldModeButon.onclick = changeGoldMode;
+  settingsPage.append(goldModeButon)
 
   const backButton = document.createElement("button");
   backButton.innerHTML = "Back";
@@ -159,9 +167,106 @@ function darkMode(screenMode=undefined) {
   localStorage.setItem("displayMode", displayMode);
 }
 
+function changeGoldMode() {
+  const settingsPage = document.getElementById("settings-page");
+  settingsPage.remove();
+
+  const goldDiv = document.createElement("div");
+  document.body.appendChild(goldDiv);
+
+  const currentSettings = document.createElement("p");
+  currentSettings.innerHTML = `Gold per turn: ${goldPerTurn}; Ramp per turn: ${rampPerTurn}`;
+  goldDiv.appendChild(currentSettings);
+
+  const text = document.createElement("p");
+  text.innerHTML = "Choose what you want to change:";
+  goldDiv.appendChild(text);
+
+  const askingDiv = document.createElement("div");
+
+  const input = document.createElement("input");
+  input.setAttribute("type", "text");
+  input.required = true;
+  askingDiv.appendChild(input);
+
+  const submitButton = document.createElement("button");
+  submitButton.innerHTML = "Submit";
+  askingDiv.appendChild(submitButton);
+
+  const buttonDiv = document.createElement("div");
+  goldDiv.appendChild(buttonDiv);
+
+  const changeGoldButton = document.createElement("button");
+  changeGoldButton.innerHTML = "Change Gold amount earned per turn";
+  buttonDiv.appendChild(changeGoldButton);
+  changeGoldButton.onclick = () => {
+    buttonDiv.remove();
+    goldDiv.appendChild(askingDiv);
+    text.innerHTML = "Enter how much gold will be earned per turn:";
+    let attempted = 0;
+    submitButton.onclick = () => {
+      attempted++;
+      let value = Number(input.value.trim());
+      const warning = document.createElement("p");
+      warning.innerHTML = "Enter a number";
+
+      if (!isNaN(value)) {
+        text.innerHTML = "Choose what you want to change:";
+        input.value = "";
+        goldPerTurn = value;
+        currentSettings.innerHTML = `Gold per turn: ${goldPerTurn}; Ramp per turn: ${rampPerTurn}`;
+        askingDiv.remove();
+        goldDiv.appendChild(buttonDiv);
+      } else {
+        if (attempted === 1) {
+          askingDiv.appendChild(warning);
+        }
+      }
+    }
+  }
+
+  const changeRampButton = document.createElement("button");
+  changeRampButton.innerHTML = "Change ramp amount per turn";
+  buttonDiv.appendChild(changeRampButton);
+  changeRampButton.onclick = () => {
+    buttonDiv.remove();
+    goldDiv.appendChild(askingDiv);
+    text.innerHTML = "Enter how much gold will ramp up per turn:";
+    let attempted = 0;
+    submitButton.onclick = () => {
+      attempted++;
+      let value = Number(input.value.trim());
+      const warning = document.createElement("p");
+      warning.innerHTML = "Enter a number";
+
+      if (!isNaN(value)) {
+        text.innerHTML = "Choose what you want to change:";
+        input.value = "";
+        rampPerTurn = value;
+        currentSettings.innerHTML = `Gold per turn: ${goldPerTurn}; Ramp per turn: ${rampPerTurn}`;
+        askingDiv.remove();
+        goldDiv.appendChild(buttonDiv);
+      } else {
+        if (attempted === 1) {
+          askingDiv.appendChild(warning);
+        }
+      }
+    }
+  }
+
+  const backButton = document.createElement("button");
+  backButton.innerHTML = "Back";
+  backButton.onclick = () => {
+    goldDiv.remove();
+    document.body.appendChild(settingsPage);
+  }
+  buttonDiv.appendChild(backButton);
+
+}
+
 function askForName(inputBox, text, div) {
   if (inputBox.value.trim() !== "") {
-    players.push(new Player(inputBox.value.trim()));
+    players.push(new Player(inputBox.value.trim(), goldPerTurn, rampPerTurn));
     text.innerHTML = "Player 2 name:";
     inputBox.value = "";
   } else {

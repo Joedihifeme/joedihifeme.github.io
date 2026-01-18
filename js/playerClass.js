@@ -5,7 +5,7 @@ import { display } from "./functions.js";
 
 class Player {
 
-  constructor (name) {
+  constructor (name, goldPerTurn, rampPerTurn) {
     this.name = name;
     this.id = undefined;
     this.health = 20;
@@ -17,7 +17,11 @@ class Player {
     this.discards = [];
     this.killed = false;
     this._div = undefined;
-    this.adder = 0;
+    /*Player.adder starts negative because Player.StartTurnRoutine() will add on to the adder no matter what
+      Doing this makes the adder 0 at the start of the game, before continuing as normal*/
+    this.adder = -rampPerTurn;
+    this.goldPerTurn = goldPerTurn;
+    this.rampPerTurn = rampPerTurn;
     this.turn = 0;
     this.drawn = false;
     this.opponent = undefined;
@@ -263,10 +267,10 @@ class Player {
       });
     }
 
-    this.adder += 1;
+    this.adder += this.rampPerTurn;
     this.turn += 1;
     this.drawn = false;
-    this.addGold(3 + this.adder);
+    this.addGold(this.goldPerTurn + this.adder);
     this.drawCard(1);
 
     this.flatBoard.forEach(creature => { 
