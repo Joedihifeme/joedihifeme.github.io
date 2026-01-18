@@ -84,6 +84,7 @@ startButton.onclick = () => {
   document.getElementById("start").remove();
 
   const askingDiv = document.createElement("div");
+  askingDiv.setAttribute("class", "pregame-page");
   gameDiv.appendChild(askingDiv);
 
   const text = document.createElement("p");
@@ -96,6 +97,7 @@ startButton.onclick = () => {
   askingDiv.appendChild(playerInput);
   
   const submitButton = document.createElement("button");
+  submitButton.setAttribute("class", "submit-button");
   submitButton.innerText = "Submit";
   askingDiv.appendChild(submitButton);
 
@@ -108,7 +110,8 @@ settingsButton.onclick = () => {
   const start = settingsButton.parentNode;
   start.remove();
   const settingsPage = document.createElement("div");
-  settingsPage.setAttribute("id", "settings-page")
+  settingsPage.setAttribute("id", "settings-page");
+  settingsPage.setAttribute("class", "pregame-page");
   document.body.appendChild(settingsPage);
 
   const screenMode = document.createElement("button");
@@ -172,6 +175,7 @@ function changeGoldMode() {
   settingsPage.remove();
 
   const goldDiv = document.createElement("div");
+  goldDiv.setAttribute("class", "pregame-page");
   document.body.appendChild(goldDiv);
 
   const currentSettings = document.createElement("p");
@@ -190,6 +194,7 @@ function changeGoldMode() {
   askingDiv.appendChild(input);
 
   const submitButton = document.createElement("button");
+  submitButton.setAttribute("class", "submit-button");
   submitButton.innerHTML = "Submit";
   askingDiv.appendChild(submitButton);
 
@@ -288,6 +293,7 @@ function askForName(inputBox, text, div) {
 function assignCards(players, cards) {
   const div = document.createElement("div");
   div.setAttribute("id", "card-choice-div");
+  div.setAttribute("class", "pregame-page");
   gameDiv.appendChild(div);
   const text = document.createElement("p");
   div.appendChild(text);

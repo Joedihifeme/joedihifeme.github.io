@@ -2,6 +2,13 @@ body {
   font-size: 100%;
 }
 
+button {
+  font-size: 1em;
+  cursor: pointer;
+  padding: 3px;
+  margin-right: 5px;
+}
+
 .card-display {
   display: inline-block;
   border-style: solid;
@@ -14,9 +21,25 @@ body {
   cursor: pointer;
 }
 
+#card-choice-div {
+  padding: 0%;
+}
+
 #card-choice-div > .card-display {
-  font-size: 1em;
+  font-size: 0.8em;
   padding: 7.5px;
   margin: 10px;
   width: 222px;
+  text-align: left;
+}
+
+.pregame-page {
+  padding: 15%;
+  margin: auto;
+  text-align: center;
+  font-size: 1.5em;
+}
+
+.submit-button {
+  margin: 3px;
 }
