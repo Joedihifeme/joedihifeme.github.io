@@ -7,6 +7,7 @@ class doubleConsumable extends Consumable {
   constructor(name, cost1, ability1, cost2, ability2) {
     super(name, cost1, ability1);
     this._cost2 = new Gold(cost2);
+    this.previousCost2 = new Gold(this._cost2.value);
     this.initialiseAbility(ability2.toLowerCase());
     this.initialiseTargets(ability2.toLowerCase());
     this.DISPLAYED_ABILITY2 = ability2;

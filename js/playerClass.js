@@ -85,9 +85,10 @@ class Player {
     }
 
     this._div.clearModal = function() {
-      for (let element of this.modalSpace.childNodes) {
-        this.modalSpace.removeChild(element);
+      while (this.modalSpace.hasChildNodes()) {
+        this.modalSpace.removeChild(this.modalSpace.firstChild);
       }
+
       this.modalText.innerHTML = "";
     }
 
@@ -267,6 +268,12 @@ class Player {
     this.drawn = false;
     this.addGold(3 + this.adder);
     this.drawCard(1);
+
+    this.flatBoard.forEach(creature => { 
+        Creature.checkEvent(creature, "when alive", "deactivate");
+        Creature.checkEvent(creature, "when alive", "activate");
+    });
+
     display(`${this.name} to move`);
     this.enable();
   }
@@ -296,6 +303,11 @@ class Player {
         this.drawSpecificCard(card);
         console.log(`Hand after: ${this.hand}`)
       }
+
+      this.flatBoard.forEach(creature => { 
+        Creature.checkEvent(creature, "when alive", "deactivate");
+        Creature.checkEvent(creature, "when alive", "activate");
+      });
 
       if (paid) {
         console.log(`Player.drawCard(): Paid draw`)

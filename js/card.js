@@ -47,6 +47,7 @@ class Card {
 	constructor(name, cost, ability, cardType, targets=false) {
 		this.name = name;
 		this._cost = new Gold(cost);
+		this.previousCost = new Gold(this._cost.value);
 		this._targets = [];
     	this.multiplier = cost.includes("x");
 		this.discarded = false;
@@ -92,6 +93,7 @@ class Card {
   }
 
 	alterGold(callback, amount) {
+		this.previousCost = new Gold(this._cost.value);
 		callback(amount);
 		this.updateSpan();
 	}
@@ -106,7 +108,13 @@ class Card {
 			}
 		} else dup.name += " I";
 		dup._cost = new Gold(dup._cost.value);
-		if (dup._cost2) dup._cost2 = new Gold(dup._cost2.value);
+		dup.previousCost = new Gold(dup._cost.value);
+
+		if (dup._cost2) {
+			dup._cost2 = new Gold(dup._cost2.value);
+			dup.previousCost2 = new Gold(dup._cost2.value);
+		} 
+
 		if (this._ability !== null) dup._ability = copy(dup._ability, true);
 		dup.span = this.span.cloneNode();
 		dup.span.setAttribute("id", `${dup.name}`);
@@ -496,23 +504,32 @@ class Card {
 						case "give":
 						case "gets":
 							for (let stat of ability.values()) {
-								if (
-									target.keywordArr 
-									&& 
-									target.keywordArr.includes(stat.replace(/(|)\W/g, "").at(0).toUpperCase())
-								) {
+								let addKeywordCondition;
+
+								if (target.keywordArr) {
+									addKeywordCondition = target.keywordArr.includes(stat.replace(/(|)\W/g, "").at(0).toUpperCase());
+								} else {
+									addKeywordCondition = false;
+								}
+
+								if (addKeywordCondition) {
 									target.addKeyword(stat);
-									
+
 								} else if (stat.includes("all the keywords")) {
 									this.addKeyword(...target.keywords);
+
 								} else if (stat.includes("gold")) {
 									if (stat.includes("that much in gold")) {
+										console.log(`gaining this much: ${this.temp}`)
 										this.OWNER.addGold(this.temp);
 										delete this.temp;
-									} else target.OWNER.addGold(Number(stat[0]));
+									} else {
+										target.OWNER.addGold(Number(stat[0]));
+									}
 
 								} else if (stat.includes("life")) {
 									this.OWNER.addHealth(Number(stat[0]), stat.includes("more"));
+
 								} else {
 									target.changeStats(stat);
 								}
@@ -581,7 +598,8 @@ class Card {
 									max += 1;
 
 									if (number.includes("creature") || number.includes("consumable")) {
-										cards = target.filter(card => { 
+										cards = target.filter(card => {
+											console.log(number.slice(2))
 											return card.cardType.includes(number.slice(2));
 										});
 									}
@@ -606,11 +624,13 @@ class Card {
 											card.OWNER.drawSpecificCard(card);
 											i++;
 
-											if (card.ATTRIBUTE.includes("counts as")) {
-												let cardsNum = Number(card.ATTRIBUTE.at(-8)) - 1
-												console.log(cardsNum)
-												i = i + cardsNum
+											if (card.cardType.includes("creature")) {
+												if (card.ATTRIBUTE.includes("counts as")) {
+													let cardsNum = Number(card.ATTRIBUTE.at(-8)) - 1
+													i = i + cardsNum
+												}
 											}
+											
 
 											if (i >= max) {
 												target.forEach(c => {
@@ -664,7 +684,7 @@ class Card {
 								console.log("got here");
 								let n;
 								if (number.includes("a")) n = 1; else n = number;
-								this.OWNER.drawCard(Number(n), fromAbility=true);
+								this.OWNER.drawCard(Number(n), false, true);
 								display(`${this.OWNER.name} to move`);
 							}
 
@@ -728,6 +748,7 @@ class Card {
 								if (number.includes("freefall -2")) {
 									this.temp = target.length - 2;
 									if (this.temp < 0) this.temp = 0;
+									console.log(`case count: ${this.temp}`)
 								}
 							}
 
@@ -835,8 +856,8 @@ class Card {
 						case "cost":
 							for (let cost of ability.values()) {
 								if (cost.includes("1 gold less")) {
-									target.alterGold(target._cost.add.bind(target._cost), 1);
-									if (target._cost2) target.alterGold(target._cost2.add.bind(target._cost2), 1);
+									target._cost = target.previousCost;
+									if (target._cost2) target._cost2 = target.previousCost2;
 								}
 							}
 

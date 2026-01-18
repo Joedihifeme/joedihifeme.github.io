@@ -229,7 +229,10 @@ function display(text) {
 
 //note: this function can't be used in Card.duplicate() due to the existence of DOM objects
 function copy(obj, notJSON=false) { 
-  if (!notJSON) return JSON.parse(JSON.stringify(obj)); 
+  /*notJSON is true when the object being copied does not include anything that cannot be put into
+    JSON format (Maps, functions, etc.)
+  */
+  if (!notJSON) return JSON.parse(JSON.stringify(obj));
   else {
     const objet = Object.create(obj);
     console.log(`copy() returned `, objet)
