@@ -104,7 +104,7 @@ class Gold {
       this.algebraic = true;
       this.operation = "-";
       this.operator = num;
-    } else if (this.operation === "-") this.operation += num;
+    } else if (this.operation === "-") this.operator += num;
       else {
         this.operator -= num;
 

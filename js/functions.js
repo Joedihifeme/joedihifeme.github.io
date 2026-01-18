@@ -1,7 +1,9 @@
 Array.prototype.remove = function(item) { 
   let index = this.indexOf(item);
 
-  this.splice(index, 1); 
+  const element = this.splice(index, 1); 
+  console.log(`Array.remove() returned ${element}\n`);
+  return element
 };
 
 Array.prototype.clear = function() { this.splice(0, this.length); };
@@ -11,7 +13,14 @@ Array.prototype.count = function(item) {
   
   this.forEach(element => {if (item === element) i++; });
   
+  console.log(`Array.count() on ${this} returned ${i}\n`);
   return i;
+}
+
+Array.prototype.randomElement = function() {
+  const element = this[Math.floor(Math.random() * this.length)];
+  console.log(`Array.randomElement() returned ${element}\n`);
+  return element;
 }
 
 let keywordsText = 
@@ -213,8 +222,23 @@ function buildInterface(players, gameDiv, displayMode) {
   players[1].div = p2Div;
 }
 
-function display(text) {
-  document.getElementById("text").innerHTML = text;
+function display(text) { 
+  console.log(`display(): ${text}\n`);
+  document.getElementById("text").innerHTML = text; 
+}
+
+//note: this function can't be used in Card.duplicate() due to the existence of DOM objects
+function copy(obj, notJSON=false) { 
+  /*notJSON is true when the object being copied does not include anything that cannot be put into
+    JSON format (Maps, functions, etc.)
+  */
+  if (!notJSON) return JSON.parse(JSON.stringify(obj));
+  else {
+    const objet = Object.create(obj);
+    console.log(`copy() returned `, objet)
+
+    return objet   
+  }
 }
 
 function setupGame(players, gameDiv, displayMode) {
@@ -222,8 +246,8 @@ function setupGame(players, gameDiv, displayMode) {
 
   //players draw a starting 6
   players.forEach(player => {
-    display(`${player.name} is drawing a starting 6`);
-    player.drawCard(6);
+    display(`${player.name} is drawing a starting 5`);
+    player.drawCard(5);
   });
 
   display(`${players[0].name} to move`);
@@ -231,4 +255,4 @@ function setupGame(players, gameDiv, displayMode) {
   players[1].disable();
 }
 
-export { setupGame, display }
+export { setupGame, display, copy }

@@ -1,24 +1,35 @@
 import Card from "./card.js";
 import Player from "./playerClass.js";
-import { display } from "./functions.js";
+import { display, copy } from "./functions.js";
 
 class Creature extends Card {
 
+	abilityEventsArr = [
+		"once per turn", "when played", "upon death", "when attacking", "survives whilst blocking",
+		"when blocking", "when alive", "when attacked", "when damaged", "every turn", "when drawn",
+		"when a card gains a keyword", "when you gain life", "discarded creature", "when you gain gold",
+		"a hyena card dies", "a hyena card is played"
+	];
 	keywordArr = [
 		null, "H", "(H)", "F", "(F)", "R", "(R)", "C", "(C)", "I", "(I)", "T", "(T)", 
 		"L", "(L)", "W", "(W)", "V", "(V)", "D", "(D)", "S", "(S)", "G", "(G)"
 	];
 	numberedKeywords = ["L", "W", "V", "G"];
 
-	constructor(name, attack, health, cost, type, keywords=null) {
-		super(name, cost);
+	constructor(name, attack, health, cost, type, keywords, ability1, ability2, attribute) {
+		super(name, cost, ability1, "creature", true);
 		this.ATTACK = attack;
 		this.attack = attack;
 		this.HEALTH = health;
 		this.health = health;
+		this.previousAttack = 0
+		this.previousHealth = 0;
+		this.cumulatedHealth = health;
 		this.type = type;
+		this.ATTRIBUTE = attribute;
+		this.attackSet = false;
 
-		if (keywords !== null && keywords !== "") {
+		if (keywords !== "") {
 			keywords = keywords.split(",");
 			this.keywords = [];
 			for (let keyword of keywords) {
@@ -32,12 +43,26 @@ class Creature extends Card {
 			this.keywords = null;
 		}
 
-		this.KEYWORDS = this.keywords;
+		this.KEYWORDS = copy(this.keywords);
+		this.previousKeywords = copy(this.keywords);
+
+		if (ability2 !== "") { 
+			if (this._ability === null) this._ability = [];
+			super.initialiseAbility(ability2.toLowerCase());
+			super.initialiseTargets(ability2.toLowerCase());
+		}
+
+		this.DISPLAYED_ABILITY2 = ability2;
+		this.abilityEvents = [];
+		this.initAbilityEvent();
+		this.currentAbility = 0;
 
 		this.firstTurn = true;
 		this.blocking = false;
 		this.tapped = false;
 		this.target = null;
+		this.attacker = null;
+		this.attackee = null;
 		this.poison = {damage: 0, player: undefined}; //called poison to differentiate from venom method
 		//the object has a player property in case the poisoned creature has ward
 
@@ -47,7 +72,7 @@ class Creature extends Card {
 	get keywordsHTML() {
 		let text = "";
 		if (this.keywords === null) {
-			return "None";
+			return "";
 		}
 
 		this.keywords.forEach(element => {
@@ -58,15 +83,87 @@ class Creature extends Card {
 		return text
 	}
 
+	get ability() {
+		return this._ability[this.currentAbility];
+	}
+
+	get dAbility2 () {
+    return this.DISPLAYED_ABILITY2.toLowerCase();
+  }
+
+	get targets() {
+    const temp = [];
+
+		console.log(this._targets);
+    this._targets.forEach(target => {
+      if (this._targets.count(target) > 1) {
+          temp.push(this._targets[0]);
+      }
+			
+      if (this.currentlyChosenAbility === 0) {
+        if (this.dAbility2.includes(target) && !this.dAbility1.includes(target)) {
+          temp.push(target);
+        }
+      } else {
+        if (this.dAbility1.includes(target) && !this.dAbility2.includes(target)) {
+          temp.push(target);
+        } else {
+					temp.push("general");
+				}
+      }
+    });
+		console.log(this._targets);
+
+    return temp;
+  }
+
+	static checkEvent(creature, event, mode="activate") {
+		if (!creature instanceof Creature) return;
+		if (creature.abilityEvents.includes(event)) {
+			creature.currentAbility = creature.abilityEvents.indexOf(event);
+			creature.findTargets(mode);
+			if (mode === "deactivate") creature.currentAbility = 0;
+		}
+	}
+
+	initAbilityEvent() {
+		const abilites = [this.DISPLAYED_ABILITY, this.DISPLAYED_ABILITY2];
+
+		abilites.forEach(ability => {
+			if (ability === "") return;
+
+			let found = false;
+
+			this.abilityEventsArr.forEach(ev => {
+				if (ability.toLowerCase().includes(ev)) {
+					this.abilityEvents.push(ev);
+					found = true;
+				}
+				
+				if (found) return;
+			});
+
+			if (!found) {
+				this.abilityEvents.push("general");
+			}
+		});
+	}
+
 	updateSpan() {
-		this.span.innerHTML = `
+		let text = `
 			Card Type: Creature <br>
 			Name: ${this.name} <br>
 			Attack: ${this.attack} <br>
 			Health: ${this.health > 0 ? this.health : 0} <br>
-			Price: ${this.cost} gold <br>
-			Keywords: ${(this.keywordsHTML)} <br>
-			`;
+			Price: ${this.cost} gold <hr>
+		`;
+
+		if (this.DISPLAYED_ABILITY !== "") text += `-${this.DISPLAYED_ABILITY}<br>`;
+		if (this.DISPLAYED_ABILITY2 !== "") text += `-${this.DISPLAYED_ABILITY2}<br>`;
+		if (this.ATTRIBUTE !== "") text += `-${this.ATTRIBUTE}<br>`;
+		if (this.keywords !== null) text += `${(this.keywordsHTML)}<br>`;
+
+		this.span.innerHTML = text;
 	}
 
 	duplicate() {
@@ -84,63 +181,102 @@ class Creature extends Card {
 	addKeyword(...keywords) {
 		if (this.keywords === null) {
 			this.keywords = [];
-		}
+		} 
+
+		this.previousKeywords = copy(this.keywords);
 
 		keywords.forEach(element => {
-			let keyword = element.substr(1, 1).toUpperCase();
-			if (this.numberedKeywords.includes(keyword)) {
-				keyword += element.at(-1);
+			let keyword = element.replace(/(|)\W/g, "").toUpperCase();
+			let numbered = false;;
+			if (this.numberedKeywords.includes(keyword[0])) {
+				numbered = true;
 			}
 
-			if (this.keywords.find(value => { return keyword[1] === value[1]; }) === undefined) {
-				//for non-numbered keywords and identical numbered keywords
-				this.keywords.push(keyword);
-			} else {
-				//for (unidentical) numbered keywords
-				let numberedKeyword = this.keywords.find(value => { return value[1] === keyword[1] });
-
-				if (numberedKeyword === undefined || Number(keyword[1] === NaN)) return;
-				
-				if (Number(numberedKeyword[1]) < Number(keyword[1])) {
-					this.keywords.remove(numberedKeyword);
+			if (!numbered) {
+				//for non-numbered keywords
+				if (!this.keywords.includes(keyword)) {
 					this.keywords.push(keyword);
 				}
+
+			} else /*for numbered keywords*/ {
+				let numberedKeyword = this.keywords.find(value => { return keyword[0] == value[0] });
+				
+				//for numbered keywords that are not included yet (adding L2 to a creature with W2) 
+				if (numberedKeyword === undefined) {
+					this.keywords.push(keyword);
+
+				} else if (Number(numberedKeyword[1]) < Number(keyword[1]))  {
+					//for numbered keywords that are inclued but different in value (V1 and V2)
+					this.keywords.splice(this.keywords.indexOf(numberedKeyword), 1, keyword);
+				}
 			}
-			
+
+			this.OWNER.flatBoard.forEach(creature => {
+				Creature.checkEvent(creature, "when a card gains a keyword", "activate");
+			});
+			this.OWNER.opponent.flatBoard.forEach(creature => {
+				Creature.checkEvent(creature, "when a card gains a keyword", "activate");
+			});
 		});
 
 		this.updateSpan();
 	}
 
+	//follows a similar algo to its counterpart
 	removeKeyword(...keywords) {
-		if (this.keywords !== null) {
-			keywords.forEach(keyword => {
-				if (this.numberedKeywords.includes(keyword)) {
-					this.keywords.remove(keyword + this.getKeywordX(keyword).toString());
-				} else {
+		this.previousKeywords = copy(this.keywords);
+
+		keywords.forEach(element => {
+			let keyword = element.replace(/(|)\W/g, "").toUpperCase();
+			let numbered = false;;
+			if (this.numberedKeywords.includes(keyword[0])) {
+				numbered = true;
+			}
+
+			if (!numbered) {
+				if (this.keywords.includes(keyword)) {
 					this.keywords.remove(keyword);
 				}
-			});
+			} else {
+				let numberedKeyword = this.keywords.find(value => { return keyword == value });
+				let ogNumberedKeyword;
+				if (this.KEYWORDS !== null) {
+					 ogNumberedKeyword = this.KEYWORDS.find(value => { return keyword[0] == value[0] });
+				} else ogNumberedKeyword = undefined;
 
-			if (this.keywords.length < 1) {
-				this.keywords = null;
+				if (numberedKeyword === undefined) {
+					return;
+				}
+
+				if (ogNumberedKeyword === undefined) this.keywords.remove(numberedKeyword);
+				else this.keywords.splice(this.keywords.indexOf(numberedKeyword), 1, ogNumberedKeyword);
 			}
-		}
+
+		});
 
 		this.updateSpan();
 	}
 
-	changeStats(stat, amount) {
-		if (stat === "both") {
-			let stats = amount.split("/");
+	changeStats(amount, reverse=false) {
+		if (!amount.includes("/")) {
+			console.log(`Error: cannot read stats: ${amount}`);
+			return;
+		}
+
+		this.previousAttack = this.attack;
+		this.previousHealth = this.health;
+
+		let stats = amount.split("/");
+		if (reverse) {
+			this.attack += -Number(stats[0]);
+			this.health += -Number(stats[1]);
+			this.cumulatedHealth += -Number(stats[1]);
+
+			Creature.checkEvent(this, "when damaged", "activate");
+		} else {
 			this.attack += Number(stats[0]);
 			this.health += Number(stats[1]);
-		} else if (stat === "attack") {
-			this.attack += Number(amount);
-		} else if (stat === "health") {
-			this.health += Number(amount);
-		} else {
-			throw new Error("Stat not defined");
+			this.cumulatedHealth += Number(stats[1]);
 		}
 
 		if (this.attack < 0) {
@@ -153,11 +289,39 @@ class Creature extends Card {
 
 		this.updateSpan();
 	}
+	
+	play() {
+		Creature.checkEvent(this, "when played", "activate");
+		Creature.checkEvent(this, "when alive", "activate");
+		if (this.rootName.includes("hyena")) {
+			this.OWNER.flatBoard.forEach(creature => {
+				Creature.checkEvent(creature, "a hyena card is played", "activate");
+			});
+		}
+
+		super.play();
+	}
 
 	discard() {
 		super.discard();
+		this.previousAttack = this.attack;
 		this.attack = this.ATTACK;
 		this.health = this.HEALTH;
+
+		const temp = [];
+
+		if (this.KEYWORDS !== null) {
+			this.keywords.forEach(keyword => {
+			if (!this.KEYWORDS.includes(keyword)) {
+				temp.push(keyword);
+			}
+		});
+		this.removeKeyword(...temp);
+		} else {
+			this.previousKeywords = copy(this.keywords);
+			this.keywords = null; 
+		}
+
 		this.updateSpan();
 
 		if (this.tapHandler) {
@@ -170,6 +334,7 @@ class Creature extends Card {
 	tap() {
 		this.OWNER.board[0].remove(this);
 		this.OWNER.board[1].push(this);
+		this.blocking = false;
 		this.span.style.borderColor = "red";
 		if (this.tapHandler) {
 			this.span.onclick = null;
@@ -178,6 +343,7 @@ class Creature extends Card {
 
 		this.blockHandler = this.block.bind(this);
 		this.span.onclick = this.blockHandler;
+		this.tapped = true;
 
 		if (this.checkKeyword("T")) {
 			this.target = this.OWNER.opponent;
@@ -191,6 +357,7 @@ class Creature extends Card {
 	block() {
 		this.OWNER.board[1].remove(this);
 		this.OWNER.board[0].push(this);
+		this.tapped = false;
 		this.span.style.borderColor = "blue";
 		if (this.blockHandler) {
 			this.span.onclick = null;
@@ -199,6 +366,7 @@ class Creature extends Card {
 		this.tapHandler = this.tap.bind(this);
 		this.span.onclick = this.tapHandler;
 		this.target = null;
+		this.blocking = true;
 	}
 
 	setTarget() {
@@ -217,6 +385,18 @@ class Creature extends Card {
 					this.OWNER.enable();
 				}.bind(this);
 				creature.span.onclick = creature.targetHandler;
+			}
+		}
+
+		if (this.ATTRIBUTE.includes("attack your own creatures")) {
+			for (let section of this.OWNER.board) {
+				for (let creature of section) {
+					creature.targetHandler = function () { 
+						this.assignTarget(creature); 
+						this.OWNER.enable();
+					}.bind(this);
+					creature.span.onclick = creature.targetHandler;
+				}
 			}
 		}
 	}
@@ -239,6 +419,17 @@ class Creature extends Card {
 				if (creature.targetHandler) {
 					creature.span.onclick = null;
 					delete creature.targetHandler;
+				}
+			}
+		}
+
+		if (this.ATTRIBUTE.includes("attack your own creatures")) {
+			for (let section of this.OWNER.board) {
+				for (let creature of section) {
+					if (creature.targetHandler) {
+						creature.span.onclick = null;
+						delete creature.targetHandler;
+					}
 				}
 			}
 		}
@@ -274,6 +465,15 @@ class Creature extends Card {
 
 		throw new Error(`"${keyword}" not in this.keywords`);
 	}
+
+	haste() {
+    if (this.checkKeyword("H") && this.firstTurn) {
+      this.attack *= 2;
+      this.updateSpan();
+      display(`${this.name} is using Haste!`);
+      setTimeout(() => {display(`${this.name} to move`)}, 1500);
+    }
+  }
 
 	lifelink() {
 		if (this.checkKeyword("L")) {
@@ -377,19 +577,31 @@ class Creature extends Card {
 				default:
 					break;
 			}
+
+			target.previousHealth = target.health;
+			this.attackee = target;
+			Creature.checkEvent(target, "when blocking", "activate");
 		}
 
+		this.haste();
 		this.damageTarget(target);
+		Creature.checkEvent(this, "when attacking", "deactivate");
 
-		let result = target.deathCheck();
-		if ((this.target instanceof Creature) && result) {
+		if (target instanceof Creature) { 
+			if (target.blocking) Creature.checkEvent(target, "when blocking", "deactivate");
+			Creature.checkEvent(target, "when attacked", "activate"); 
+		}
+
+		if (target.deathCheck() && this.target instanceof Creature) {
 			this.changeTarget();
 		}
 	}
 
-	damageTarget(target, trample=false) {
+	damageTarget(target, trample=false, attack=null) {
+		Creature.checkEvent(this, "when attacking", "activate");
+
 		if (!trample) {
-			target.health -= this.attack;
+			target.health -= attack !== null ? attack : this.attack;
 		} else {
 			target.health -= 1;
 			this.attack -= 1;
@@ -400,6 +612,8 @@ class Creature extends Card {
 			target.updateSpan();
 			this.lifelink();
 			this.venom(target);
+			target.attacker = this;
+			Creature.checkEvent(target, "when damaged", "activate");
 		} else if (target instanceof Player) {
 			target.div.update();
 		}
@@ -418,7 +632,7 @@ class Creature extends Card {
 					delete this.OWNER.opponent.trampleHandler;
 				}
 
-				this.OWNER.opponent.forEachOnBoard(creature => {
+				this.OWNER.opponent.flatBoard.forEach(creature => {
 					if (creature.trampleHandler) {
 						creature.span.onclick = null;
 						delete creature.trampleHandler;
@@ -442,7 +656,7 @@ class Creature extends Card {
 			}.bind(this);
 			this.OWNER.opponent.div.h2.parentNode.onclick = this.OWNER.opponent.trampleHandler;
 
-			this.OWNER.opponent.forEachOnBoard(creature => {
+			this.OWNER.opponent.flatBoard.forEach(creature => {
 				creature.trampleHandler = function() {
 					if (creature.checkKeyword("W")) {
 						if (this.OWNER.gold < creature.cost) {
@@ -471,7 +685,13 @@ class Creature extends Card {
 				}
 			}
 
+			Creature.checkEvent(this, "upon death");
+
 			return true;
+		}
+
+		if (this.blocking) {
+			Creature.checkEvent(this, "survives whilst blocking", "activate");
 		}
 		
 		return false;

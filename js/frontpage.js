@@ -1,4 +1,6 @@
-import Creature from "./creature.js"
+import Card from "./card.js";
+import Creature from "./creature.js";
+import Legendary from "./legendary.js";
 import Consumable from "./consumables.js";
 import doubleConsumable from "./doubleconsumables.js";
 import Player from "./playerClass.js"
@@ -26,23 +28,47 @@ fetch('./cards.json')
   })
   .then(data => {
     data.creatures.forEach(creature => {
-      cards.push(new Creature(
-        creature.name, creature.attack, creature.health, 
-        creature.gold, creature.type, creature.keywords
-      ));
+      try {
+        if (creature.type === "n") {
+          cards.push(new Creature(
+            creature.name, creature.attack, creature.health, creature.gold, 
+            creature.type, creature.keywords, creature.ability1, creature.ability2,
+            creature.attribute
+          ));
+        } else {
+          cards.push(new Legendary(
+            creature.name, creature.attack, creature.health, creature.gold, 
+            creature.type, creature.keywords, creature.ability1, creature.ability2,
+            creature.attribute
+          ));
+        }
+      } catch (error) {
+        console.log(`There was a problem with loading in ${creature.name}:\n ${error}`)
+      }
+      
+      
     });
 
     data.consumables.forEach(consumable => {
-      if (consumable.implemented) {
-        cards.push(new Consumable(consumable.name, consumable.gold, consumable.ability));
+      try {
+        if (consumable.implemented) {
+          cards.push(new Consumable(consumable.name, consumable.gold, consumable.ability));
+        }
+      } catch (error) {
+        console.log(`There was a problem with loading in ${consumable.name}:\n ${error}`)
       }
+      
     });
 
     data.doubleConsumables.forEach(dc => {
-      if (dc.implemented) {
-        cards.push(new doubleConsumable(
-          dc.name, dc.gold1, dc.ability1, dc.gold2, dc.ability2
-        ));
+      try {
+        if (dc.implemented) {
+          cards.push(new doubleConsumable(
+            dc.name, dc.gold1, dc.ability1, dc.gold2, dc.ability2
+          ));
+        }
+      } catch (error) {
+        console.log(`There was a problem with loading in ${dc.name}:\n ${error}`)
       }
     });
   })
