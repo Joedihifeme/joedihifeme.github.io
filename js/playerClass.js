@@ -385,6 +385,11 @@ class Player {
       this.keywordsOnPlay(card); 
       }
 
+      this.opponent.flatBoard.forEach(creature => { 
+        Creature.checkEvent(creature, "when alive", "deactivate");
+        Creature.checkEvent(creature, "when alive", "activate");
+      });
+
     } else if (card instanceof Consumable) {
       let ableToUse = card.playConsumable();
 
