@@ -66,7 +66,6 @@ function buildInterface(players, gameDiv, displayMode) {
   generalModal.style.display = "none";
   const generalModalContent = document.createElement("div");
   generalModalContent.setAttribute("class", "modal-content");
-  generalModalContent.style.backgroundColor = displayMode;
   generalModal.appendChild(generalModalContent);
   const generalModalText = document.createElement("p");
   generalModalContent.appendChild(generalModalText);

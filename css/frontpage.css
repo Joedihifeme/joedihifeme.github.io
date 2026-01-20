@@ -1,22 +1,52 @@
+:root {
+  --background-colour: #ffffff;
+  --opposing-colour: #000000;
+}
+
 body {
   font-size: 100%;
+  font-family: papyrus, fantasy, sans-serif;
+  font-weight: bold;
+  background-color: var(--background-colour);
+  color: var(--opposing-colour);
+  border-color: var(--opposing-colour);
 }
 
 button {
+  font-family: papyrus, fantasy, sans-serif;
   font-size: 1em;
+  font-weight: bold;
   cursor: pointer;
-  padding: 3px;
+  padding: 10px;
   margin-right: 5px;
+  border: var(--opposing-colour) solid;
+  border-radius: 40%;
+  color: var(--opposing-colour);
+  background-color: var(--background-colour);
+}
+
+input[type="text"] {
+  font-family: papyrus, fantasy, sans-serif;
+  font-size: 1em;
+  font-weight: bold;
+  padding: 5px;
+  margin: 5px;
+  border: var(--opposing-colour) solid;
+  border-radius: 15%;
+  color: var(--opposing-colour);
+  background-color: var(--background-colour);
 }
 
 .card-display {
   display: inline-block;
   border-style: solid;
   border-radius: 10px;
+  border-color: var(--opposing-colour);
   margin: 0.5em;
   width: 150px;
   padding: 5px;
   font-family: "Lucida Console", monospace;
+  font-weight: normal;
   font-size: 0.6875em;
   cursor: pointer;
 }
@@ -42,4 +72,10 @@ button {
 
 .submit-button {
   margin: 3px;
+}
+
+button:hover {
+  background-color: var(--opposing-colour);
+  color: var(--background-colour);
+  transition-duration: 470ms;
 }

@@ -133,11 +133,9 @@ settingsButton.onclick = () => {
 };
 
 function lightMode(screenMode=undefined) {
-  document.body.style.backgroundColor = "white";
-  document.body.style.color = "black";
-  cards.forEach(card => {
-    card.span.style.borderColor = "black";
-  });
+  const root = document.querySelector(":root");
+  root.style.setProperty("--background-colour", "white");
+  root.style.setProperty("--opposing-colour", "black");
 
   document.querySelectorAll('.modal-content').forEach(modal => {
     modal.style.backgroundColor = "white";
@@ -152,11 +150,9 @@ function lightMode(screenMode=undefined) {
 }
 
 function darkMode(screenMode=undefined) {
-  document.body.style.backgroundColor = "black";
-  document.body.style.color = "#FAEBD7";
-  cards.forEach(card => {
-    card.span.style.borderColor = "#FAEBD7";
-  });
+  const root = document.querySelector(":root");
+  root.style.setProperty("--background-colour", "black");
+  root.style.setProperty("--opposing-colour", "#FAEBD7");
 
   document.querySelectorAll('.modal-content').forEach(modal => {
     modal.style.backgroundColor = "black";
