@@ -80,6 +80,9 @@ fetch('./cards.json')
 
 const startButton = document.getElementById("start-button");
 const settingsButton = document.getElementById("settings-button");
+const howToPlayButton = document.getElementById("how-to-play-button");
+const creditsButton = document.getElementById("credits-button");
+const start = settingsButton.parentNode;
 
 startButton.onclick = () => {
   document.getElementById("start").remove();
@@ -108,7 +111,6 @@ startButton.onclick = () => {
 };
 
 settingsButton.onclick = () => {
-  const start = settingsButton.parentNode;
   start.remove();
   const settingsPage = document.createElement("div");
   settingsPage.setAttribute("id", "settings-page");
@@ -142,6 +144,70 @@ settingsButton.onclick = () => {
   backButton.onclick = () => { settingsPage.remove(); document.body.appendChild(start); }
   settingsPage.appendChild(backButton);
 };
+
+howToPlayButton.onclick = () => {
+  start.remove();
+
+  const tutorialDiv = document.createElement("div");
+  document.body.appendChild(tutorialDiv);
+
+  const tutorialHeading = document.createElement("h1");
+  tutorialHeading.innerHTML = "How To Play";
+  tutorialDiv.appendChild(tutorialHeading);
+
+  const tutorialText = document.createElement("p");
+  tutorialText.setAttribute("id", "tutorial-text");
+  tutorialText.innerHTML = 
+  `The aim of the game is to be the last one standing. In order to do so, you can pick from 5 different card types:
+
+    Creatures (& Legendaries): These cards can either be tapped to send attacks (red border) or made to block attacks (blue border). Some creatures may have special abilities in the form of keywords (such as (H) for haste) and abilities. Each keyword's definition can be found during the game.
+    Consumables: These can be played on a player's turn to the player's advantage or the opponent's misfourtune. They are immediately discarded after use, however.
+    Double consumables: These function the same as regular consumables, however have two options, of which one of them can only be picked upon use.
+    Structures (coming soon): These can be placed on the board to protect your creatures and the player.
+    Tools (coming soon): These can be attatched to creatures already on the board to give them certain keywords or abilites. These stay on the board as a +0/+2 (Attack/Health) when not attatched to a creature.
+
+  Each player starts with 20 lives and picks 10 cards at the start of the game, receiving 2 copies of that card. Each player also starts with 6 cards in their hand and draws a card per turn. An extra card can be drawn per turn at the cost of 1 gold.
+  If a creature is killed, a consumable used, a structure fallen or a tool knocked off the board, they go into the player's discard pile. They can be put back into one's hand at the cost of 2 gold.
+  
+  Good luck out there, and may the best player win!
+  `;
+  tutorialDiv.appendChild(tutorialText);
+
+  const backButton = document.createElement("button");
+  backButton.innerHTML = "Back";
+  tutorialDiv.appendChild(backButton);
+  backButton.onclick = () => {
+    tutorialDiv.remove();
+    document.body.appendChild(start);
+  }
+}
+
+creditsButton.onclick = () => {
+  start.remove();
+
+  const creditsDiv = document.createElement("div");
+  creditsDiv.setAttribute("class", "pregame-page");
+  document.body.appendChild(creditsDiv);
+
+  const creditsText = document.createElement("p");
+  creditsText.innerHTML = 
+  `This card game is actually made by a friend of mine.<br>`;
+  const hyperlink = document.createElement("a");
+  hyperlink.target = "_blank";
+  hyperlink.title = "My GitHub page";
+  hyperlink.href = "https://github.com/Joedihifeme";
+  hyperlink.innerHTML = "Programming was done by joedihifeme<br><br>";
+  creditsDiv.appendChild(creditsText);
+  creditsDiv.appendChild(hyperlink);
+
+  const backButton = document.createElement("button");
+  backButton.innerHTML = "Back";
+  backButton.onclick = () => {
+    creditsDiv.remove();
+    document.body.append(start);
+  }
+  creditsDiv.append(backButton);
+}
 
 function lightMode(screenMode=undefined) {
   const root = document.querySelector(":root");

@@ -81,7 +81,6 @@ function buildInterface(players, gameDiv, displayMode) {
   modalContent.style.backgroundColor = displayMode;
   keywordsModal.appendChild(modalContent);
   const modalText = document.createElement("p");
-  modalText.style.fontFamily = "Lucida Console, monospace";
   modalText.innerHTML = keywordsText;
   modalContent.appendChild(modalText);
   keywordsButton.onclick = () => {
@@ -250,8 +249,8 @@ function setupGame(players, gameDiv, displayMode) {
   });
 
   display(`${players[0].name} to move`);
-  players[0].startTurnRoutine();
   players[1].disable();
+  players[0].startTurnRoutine();
 }
 
 export { setupGame, display, copy }
