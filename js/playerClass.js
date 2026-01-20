@@ -5,10 +5,10 @@ import { display } from "./functions.js";
 
 class Player {
 
-  constructor (name, goldPerTurn, rampPerTurn) {
+  constructor (name, goldPerTurn, rampPerTurn, health) {
     this.name = name;
     this.id = undefined;
-    this.health = 20;
+    this.health = health;
     this.gold = 0;
     this.previousGold = 0;
     this.deck = [];

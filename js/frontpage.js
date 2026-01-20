@@ -11,6 +11,7 @@ const gameDiv = document.getElementById("game");
 var displayMode = "white";
 let goldPerTurn = 4;
 let rampPerTurn = 1;
+let startingHealth = 20;
 
 const savedMode = localStorage.getItem("displayMode");
 if (savedMode === "black") {
@@ -114,8 +115,12 @@ settingsButton.onclick = () => {
   settingsPage.setAttribute("class", "pregame-page");
   document.body.appendChild(settingsPage);
 
+  const settingsTitle = document.createElement("h1");
+  settingsTitle.innerHTML = "Settings";
+  settingsPage.appendChild(settingsTitle);
+
   const screenMode = document.createElement("button");
-  screenMode.innerHTML = "Dark mode";
+  screenMode.innerHTML = displayMode === "white" ? "Dark mode" : "Light mode";
 
   screenMode.onclick = () => { displayMode === "white" ? darkMode(screenMode) : lightMode(screenMode) };
   settingsPage.appendChild(screenMode);
@@ -124,7 +129,13 @@ settingsButton.onclick = () => {
   goldModeButon.setAttribute("id", "gold-mode");
   goldModeButon.innerHTML = "Gold mode";
   goldModeButon.onclick = changeGoldMode;
-  settingsPage.append(goldModeButon)
+  settingsPage.appendChild(goldModeButon);
+
+  const healthButton = document.createElement("button");
+  healthButton.setAttribute("id", "health-button");
+  healthButton.innerHTML = "Change starting health";
+  healthButton.onclick = changeStartingHealth;
+  settingsPage.appendChild(healthButton);
 
   const backButton = document.createElement("button");
   backButton.innerHTML = "Back";
@@ -199,7 +210,6 @@ function changeGoldMode() {
 
   const changeGoldButton = document.createElement("button");
   changeGoldButton.innerHTML = "Change Gold amount earned per turn";
-  buttonDiv.appendChild(changeGoldButton);
   changeGoldButton.onclick = () => {
     buttonDiv.remove();
     goldDiv.appendChild(askingDiv);
@@ -225,10 +235,10 @@ function changeGoldMode() {
       }
     }
   }
+  buttonDiv.appendChild(changeGoldButton);
 
   const changeRampButton = document.createElement("button");
   changeRampButton.innerHTML = "Change ramp amount per turn";
-  buttonDiv.appendChild(changeRampButton);
   changeRampButton.onclick = () => {
     buttonDiv.remove();
     goldDiv.appendChild(askingDiv);
@@ -254,6 +264,7 @@ function changeGoldMode() {
       }
     }
   }
+  buttonDiv.appendChild(changeRampButton);
 
   const backButton = document.createElement("button");
   backButton.innerHTML = "Back";
@@ -265,9 +276,50 @@ function changeGoldMode() {
 
 }
 
+function changeStartingHealth() {
+  const settingsPage = document.getElementById("settings-page");
+  settingsPage.remove();
+
+  const healthDiv = document.createElement("div");
+  healthDiv.setAttribute("class", "pregame-page");
+  document.body.appendChild(healthDiv);
+
+  const text = document.createElement("p");
+  text.innerHTML = "Choose the amount of lives both players will start with:";
+  healthDiv.appendChild(text);
+
+  const input = document.createElement("input");
+  input.setAttribute("type", "text");
+  input.required = true;
+  healthDiv.appendChild(input);
+
+  const submitButton = document.createElement("button");
+  submitButton.innerHTML = "Submit";
+  let attempted = 0;
+  submitButton.onclick = () => {
+    attempted++;
+    let value = Number(input.value.trim());
+
+    if (!isNaN(value)) {
+      input.value = "";
+      startingHealth = value;
+      healthDiv.remove();
+      document.body.appendChild(settingsPage);
+    } else {
+      if (attempted === 1) {
+        const warning = document.createElement("p");
+        warning.innerHTML = "Enter a number";
+        healthDiv.appendChild(warning);
+      }
+    }
+  }
+  healthDiv.appendChild(submitButton);
+
+}
+
 function askForName(inputBox, text, div) {
   if (inputBox.value.trim() !== "") {
-    players.push(new Player(inputBox.value.trim(), goldPerTurn, rampPerTurn));
+    players.push(new Player(inputBox.value.trim(), goldPerTurn, rampPerTurn, startingHealth));
     text.innerHTML = "Player 2 name:";
     inputBox.value = "";
   } else {
