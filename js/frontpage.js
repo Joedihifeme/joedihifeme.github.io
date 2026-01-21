@@ -127,11 +127,11 @@ settingsButton.onclick = () => {
   screenMode.onclick = () => { displayMode === "white" ? darkMode(screenMode) : lightMode(screenMode) };
   settingsPage.appendChild(screenMode);
 
-  const goldModeButon = document.createElement("button");
-  goldModeButon.setAttribute("id", "gold-mode");
-  goldModeButon.innerHTML = "Gold mode";
-  goldModeButon.onclick = changeGoldMode;
-  settingsPage.appendChild(goldModeButon);
+  const goldSettingButon = document.createElement("button");
+  goldSettingButon.setAttribute("id", "gold-mode");
+  goldSettingButon.innerHTML = "Gold setting";
+  goldSettingButon.onclick = changegoldSetting;
+  settingsPage.appendChild(goldSettingButon);
 
   const healthButton = document.createElement("button");
   healthButton.setAttribute("id", "health-button");
@@ -243,7 +243,7 @@ function darkMode(screenMode=undefined) {
   localStorage.setItem("displayMode", displayMode);
 }
 
-function changeGoldMode() {
+function changegoldSetting() {
   const settingsPage = document.getElementById("settings-page");
   settingsPage.remove();
 
