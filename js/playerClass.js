@@ -523,7 +523,7 @@ class Player {
       Creature.checkEvent(card, "when alive", "deactivate");
       this.flatBoard.forEach(creature => {
         Creature.checkEvent(creature, "discarded creature", "activate");
-        if (card.rootName.includes("hyena")) {
+        if (card.rootName().includes("hyena")) {
           Creature.checkEvent(creature, "a hyena card dies", "activate");
         }
       });

@@ -63,17 +63,13 @@ class Card {
 		} else this._ability = null;
 		this.DISPLAYED_ABILITY = ability;
 
-		this.special = this.specialConsumables.includes(this.rootName.toLowerCase()) ? true : false;
+		this.special = this.specialConsumables.includes(this.rootName()) ? true : false;
 
 		if (targets && !this.special) this.initialiseTargets(ability.toLowerCase());
 
 		this.span = document.createElement("span");
 		this.span.setAttribute("class", "card-display");
 		this.span.setAttribute("id", `${this.name}`);
-	}
-
-	get rootName() {
-		return this.name.replaceAll("I", "").toLowerCase();
 	}
 
 	get cost() {
@@ -92,6 +88,12 @@ class Card {
     return this._targets;
   }
 
+  	rootName(lowercase=true) {
+		let root = this.name.replaceAll("I", "");
+		if (lowercase) root = root.toLowerCase();
+		return root;
+	}
+
 	alterGold(callback, amount) {
 		this.previousCost = new Gold(this._cost.value);
 		callback(amount);
@@ -102,8 +104,10 @@ class Card {
 		const dup = Object.create(this);
 		this.copyCounter++;
 		if (this.copyCounter > 2) {
-			dup.name = dup.rootName;
+			dup.name = dup.rootName(false) + " ";
+			dup.name = dup.name[0].toUpperCase() + dup.name.slice(1);
 			for (let i = 0; i < this.copyCounter; i++) {
+				if (this.copyCounter % 2 == 0 && this.copyCounter - i == 1) continue;
 				dup.name += "I"
 			}
 		} else dup.name += " I";

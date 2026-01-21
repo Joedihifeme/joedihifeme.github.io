@@ -417,34 +417,55 @@ function assignCards(players, cards) {
 
   text.innerHTML = `${players[playerIndex].name}, choose ${cardCount} cards by clicking on them.`;
 
-  cards.forEach(card => {
-    const cardSpan = card.span;
-    cardSpan.onclick = function chooseCard() {
-      if (cardCount > 0) {
-        div.removeChild(cardSpan);
-        removedSpans.push(cardSpan);
-        card.OWNER = players[playerIndex];
-        players[playerIndex].deck.push(card.duplicate(), card.copyCard()); 
-        cardCount--;
-        text.innerHTML = `${players[playerIndex].name}, choose ${cardCount} cards by clicking on them.`;
+  const randomCardButton = document.createElement("button");
+  randomCardButton.style.marginLeft = "25px"
+  randomCardButton.innerHTML = "Random card";
+  randomCardButton.onclick = () => {
+    let success = false;
 
-        if (cardCount === 0) {
-          playerIndex++;
-          
-          if (playerIndex < players.length) {
-            removedSpans.forEach(span => {div.appendChild(span)});
-            cardCount = 10;
-            text.innerHTML = `${players[playerIndex].name}, choose ${cardCount} cards by clicking on them.`;
-          } else {
-            div.remove();
-            cards.forEach(card => { card.span.removeEventListener("click", chooseCard); });
-            setupGame(players, gameDiv, displayMode);
-          };
-        }
+    while(!success) {
+      const randomCard = cards.randomElement();
+      if (!removedSpans.includes(randomCard.span)) {
+        success = true;
+        chooseCard(randomCard);
       }
-    };
-    div.appendChild(cardSpan);
+    }
+    
+  }
+
+  text.appendChild(randomCardButton);
+
+  cards.forEach(card => {
+    card.span.onclick = () => { chooseCard(card); }
+    div.appendChild(card.span);
   });
+
+  function chooseCard(card) {
+    if (cardCount > 0) {
+      div.removeChild(card.span);
+      removedSpans.push(card.span);
+      card.OWNER = players[playerIndex];
+      players[playerIndex].deck.push(card.duplicate(), card.copyCard()); 
+      cardCount--;
+      text.innerHTML = `${players[playerIndex].name}, choose ${cardCount} cards by clicking on them.`;
+      text.appendChild(randomCardButton);
+
+      if (cardCount === 0) {
+        playerIndex++;
+        
+        if (playerIndex < players.length) {
+          removedSpans.forEach(span => {div.appendChild(span)});
+          cardCount = 10;
+          text.innerHTML = `${players[playerIndex].name}, choose ${cardCount} cards by clicking on them.`;
+          text.appendChild(randomCardButton);
+        } else {
+          div.remove();
+          cards.forEach(card => { card.span.removeEventListener("click", chooseCard); });
+          setupGame(players, gameDiv, displayMode);
+        };
+      }
+    }
+  };
 }
 
 export { displayMode }
