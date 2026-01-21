@@ -89,7 +89,7 @@ class Card {
   }
 
   	rootName(lowercase=true) {
-		let root = this.name.replaceAll("I", "");
+		let root = this.name.replaceAll(/\BI/g, "");
 		if (lowercase) root = root.toLowerCase();
 		return root;
 	}
@@ -101,16 +101,22 @@ class Card {
 	}
 
 	duplicate() {
-		const dup = Object.create(this);
+		const dup = copy(this, true);
 		this.copyCounter++;
 		if (this.copyCounter > 2) {
 			dup.name = dup.rootName(false) + " ";
 			dup.name = dup.name[0].toUpperCase() + dup.name.slice(1);
-			for (let i = 0; i < this.copyCounter; i++) {
-				if (this.copyCounter % 2 == 0 && this.copyCounter - i == 1) continue;
-				dup.name += "I"
+
+			if (this.copyCounter == 4) {
+				dup.name += "IV";
+			} else {
+				for (let i = 0; i < this.copyCounter; i++) {
+					dup.name += "I"
+				}
 			}
+
 		} else dup.name += " I";
+		
 		dup._cost = new Gold(dup._cost.value);
 		dup.previousCost = new Gold(dup._cost.value);
 
@@ -129,7 +135,7 @@ class Card {
 	//only used before start of game
 	copyCard() {
 		const copy = this.duplicate();
-		copy.name += "I";
+		if (this.copyCounter != 4) copy.name += "I";
 		copy.span = this.span.cloneNode();
 		copy.span.setAttribute("id", `${copy.name}`);
 		return copy;

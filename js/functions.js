@@ -242,6 +242,12 @@ function copy(obj, notJSON=false) {
 function setupGame(players, gameDiv, displayMode) {
   buildInterface(players, gameDiv, displayMode);
 
+  players.forEach(player => {
+    player.deck.forEach(card => {
+      card.OWNER = player;
+    });
+  });
+
   //players draw a starting 6
   players.forEach(player => {
     display(`${player.name} is drawing a starting 5`);

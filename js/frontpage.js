@@ -442,12 +442,12 @@ function assignCards(players, cards) {
 
   function chooseCard(card) {
     if (cardCount > 0) {
+      const currentPlayer = players[playerIndex];
       div.removeChild(card.span);
       removedSpans.push(card.span);
-      card.OWNER = players[playerIndex];
-      players[playerIndex].deck.push(card.duplicate(), card.copyCard()); 
+      currentPlayer.deck.push(card.duplicate(), card.copyCard());
       cardCount--;
-      text.innerHTML = `${players[playerIndex].name}, choose ${cardCount} cards by clicking on them.`;
+      text.innerHTML = `${currentPlayer.name}, choose ${cardCount} cards by clicking on them.`;
       text.appendChild(randomCardButton);
 
       if (cardCount === 0) {

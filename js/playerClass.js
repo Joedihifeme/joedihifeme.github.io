@@ -283,7 +283,7 @@ class Player {
   }
 
   drawCard(num, paid=false, fromAbility=false) {
-    console.log(`Player.drawCard(): num=${num}, paid=${paid}`);
+    console.log(`Player.drawCard(): ${this.name} num=${num}, paid=${paid}`);
     console.log(`Deck: ${this.deck}`)
     try {
       for (let i = 0; i < num; i++) {
@@ -292,20 +292,20 @@ class Player {
         }
 
         const card = this.deck.randomElement();
-        console.log(`Player.drawCard(): drew ${card.name}`);
+        console.log(`Player.drawCard(): ${this.name} drew ${card.name}`);
 
         if (card instanceof Creature) {
           if (card.ATTRIBUTE.includes("counts as") && !paid && fromAbility) {
-            let cardsNum = Number(card.ATTRIBUTE.at(-8)) - 1
-            i = i + cardsNum
+            let cardsNum = Number(card.ATTRIBUTE.at(-8)) - 1;
+            i = i + cardsNum;
             console.log(`Has the 'counts as' attribute`)
           }
         }
         
-        console.log(`Drawing card`)
-        console.log(`Hand before: ${this.hand}`)
+        console.log(`Drawing card`);
+        console.log(`Hand before: ${this.hand}`);
         this.drawSpecificCard(card);
-        console.log(`Hand after: ${this.hand}`)
+        console.log(`Hand after: ${this.hand}`);
       }
 
       this.flatBoard.forEach(creature => { 
@@ -314,7 +314,7 @@ class Player {
       });
 
       if (paid) {
-        console.log(`Player.drawCard(): Paid draw`)
+        console.log(`Player.drawCard(): ${this.name} Paid draw`);
         this.disable("draw button");
         this.spendGold(1);
         this.drawn = true;
@@ -333,7 +333,7 @@ class Player {
   }
 
   drawSpecificCard(card) {
-    console.log(`Player.drawSpecificCard(): drawing ${card.name}`)
+    console.log(`Player.drawSpecificCard(): ${this.name} drawing ${card.name}`)
     this.deck.remove(card);
     this.hand.push(card);
     this.div.hand.appendChild(card.span);
