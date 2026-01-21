@@ -66,7 +66,6 @@ function buildInterface(players, gameDiv, displayMode) {
   generalModal.style.display = "none";
   const generalModalContent = document.createElement("div");
   generalModalContent.setAttribute("class", "modal-content");
-  generalModalContent.style.backgroundColor = displayMode;
   generalModal.appendChild(generalModalContent);
   const generalModalText = document.createElement("p");
   generalModalContent.appendChild(generalModalText);
@@ -82,7 +81,6 @@ function buildInterface(players, gameDiv, displayMode) {
   modalContent.style.backgroundColor = displayMode;
   keywordsModal.appendChild(modalContent);
   const modalText = document.createElement("p");
-  modalText.style.fontFamily = "Lucida Console, monospace";
   modalText.innerHTML = keywordsText;
   modalContent.appendChild(modalText);
   keywordsButton.onclick = () => {
@@ -244,6 +242,12 @@ function copy(obj, notJSON=false) {
 function setupGame(players, gameDiv, displayMode) {
   buildInterface(players, gameDiv, displayMode);
 
+  players.forEach(player => {
+    player.deck.forEach(card => {
+      card.OWNER = player;
+    });
+  });
+
   //players draw a starting 6
   players.forEach(player => {
     display(`${player.name} is drawing a starting 5`);
@@ -251,8 +255,8 @@ function setupGame(players, gameDiv, displayMode) {
   });
 
   display(`${players[0].name} to move`);
-  players[0].startTurnRoutine();
   players[1].disable();
+  players[0].startTurnRoutine();
 }
 
 export { setupGame, display, copy }

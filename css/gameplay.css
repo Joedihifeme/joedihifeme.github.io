@@ -56,6 +56,7 @@ span {
   padding: 20px;
   border: 1px solid #888;
   width: 80%;
+  color: var(--opposing-colour)
 }
 
 .player-board {
@@ -73,12 +74,10 @@ span {
 }
 
 #player1 > .player-stats {
-  border-bottom: solid;
   width: 100%;
 }
 
 #player2 > .player-stats {
-  border-top: solid;
   width: 100%;
 }
 

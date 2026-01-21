@@ -1,22 +1,104 @@
+:root {
+  --background-colour: #ffffff;
+  --opposing-colour: #000000;
+}
+
 body {
   font-size: 100%;
+  font-family: papyrus, fantasy, sans-serif;
+  font-weight: bold;
+  background-color: var(--background-colour);
+  color: var(--opposing-colour);
+  border-color: var(--opposing-colour);
+}
+
+a {
+  color: var(--opposing-colour);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  font-family: papyrus, fantasy, sans-serif;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 10px;
+  margin-right: 5px;
+  border: var(--opposing-colour) solid;
+  border-radius: 40%;
+  color: var(--opposing-colour);
+  background-color: var(--background-colour);
+}
+
+button:hover {
+  background-color: var(--opposing-colour);
+  color: var(--background-colour);
+  transition-duration: 470ms;
+}
+
+button:disabled {
+  background-color: grey;
+  color: lightgrey;
+  border-color: lightgrey;
+  cursor: not-allowed;
+}
+
+input[type="text"] {
+  font-family: papyrus, fantasy, sans-serif;
+  font-size: 1em;
+  font-weight: bold;
+  padding: 5px;
+  margin: 5px;
+  border: var(--opposing-colour) solid;
+  border-radius: 15%;
+  color: var(--opposing-colour);
+  background-color: var(--background-colour);
 }
 
 .card-display {
   display: inline-block;
   border-style: solid;
   border-radius: 10px;
+  border-color: var(--opposing-colour);
   margin: 0.5em;
   width: 150px;
   padding: 5px;
   font-family: "Lucida Console", monospace;
+  font-weight: normal;
   font-size: 0.6875em;
   cursor: pointer;
 }
 
+#card-choice-div {
+  padding: 0%;
+}
+
+#tutorial-text {
+  font-family: papyrus, fantasy, sans-serif;
+  font-weight: normal;
+  font-size: 1.5em;
+  white-space: pre-wrap;
+}
+
 #card-choice-div > .card-display {
-  font-size: 1em;
+  font-size: 0.8em;
   padding: 7.5px;
   margin: 10px;
-  width: 222px;
+  width: 269px;
+  text-align: left;
+}
+
+.pregame-page {
+  padding: 15%;
+  margin: auto;
+  text-align: center;
+  font-size: 1.5em;
+}
+
+.submit-button {
+  margin: 3px;
 }

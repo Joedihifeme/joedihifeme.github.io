@@ -5,10 +5,10 @@ import { display } from "./functions.js";
 
 class Player {
 
-  constructor (name) {
+  constructor (name, goldPerTurn, rampPerTurn, health) {
     this.name = name;
     this.id = undefined;
-    this.health = 20;
+    this.health = health;
     this.gold = 0;
     this.previousGold = 0;
     this.deck = [];
@@ -17,7 +17,11 @@ class Player {
     this.discards = [];
     this.killed = false;
     this._div = undefined;
-    this.adder = 0;
+    /*Player.adder starts negative because Player.StartTurnRoutine() will add on to the adder no matter what
+      Doing this makes the adder 0 at the start of the game, before continuing as normal*/
+    this.adder = -rampPerTurn;
+    this.goldPerTurn = goldPerTurn;
+    this.rampPerTurn = rampPerTurn;
     this.turn = 0;
     this.drawn = false;
     this.opponent = undefined;
@@ -263,10 +267,10 @@ class Player {
       });
     }
 
-    this.adder += 1;
+    this.adder += this.rampPerTurn;
     this.turn += 1;
     this.drawn = false;
-    this.addGold(3 + this.adder);
+    this.addGold(this.goldPerTurn + this.adder);
     this.drawCard(1);
 
     this.flatBoard.forEach(creature => { 
@@ -279,7 +283,7 @@ class Player {
   }
 
   drawCard(num, paid=false, fromAbility=false) {
-    console.log(`Player.drawCard(): num=${num}, paid=${paid}`);
+    console.log(`Player.drawCard(): ${this.name} num=${num}, paid=${paid}`);
     console.log(`Deck: ${this.deck}`)
     try {
       for (let i = 0; i < num; i++) {
@@ -288,20 +292,20 @@ class Player {
         }
 
         const card = this.deck.randomElement();
-        console.log(`Player.drawCard(): drew ${card.name}`);
+        console.log(`Player.drawCard(): ${this.name} drew ${card.name}`);
 
         if (card instanceof Creature) {
           if (card.ATTRIBUTE.includes("counts as") && !paid && fromAbility) {
-            let cardsNum = Number(card.ATTRIBUTE.at(-8)) - 1
-            i = i + cardsNum
+            let cardsNum = Number(card.ATTRIBUTE.at(-8)) - 1;
+            i = i + cardsNum;
             console.log(`Has the 'counts as' attribute`)
           }
         }
         
-        console.log(`Drawing card`)
-        console.log(`Hand before: ${this.hand}`)
+        console.log(`Drawing card`);
+        console.log(`Hand before: ${this.hand}`);
         this.drawSpecificCard(card);
-        console.log(`Hand after: ${this.hand}`)
+        console.log(`Hand after: ${this.hand}`);
       }
 
       this.flatBoard.forEach(creature => { 
@@ -310,7 +314,7 @@ class Player {
       });
 
       if (paid) {
-        console.log(`Player.drawCard(): Paid draw`)
+        console.log(`Player.drawCard(): ${this.name} Paid draw`);
         this.disable("draw button");
         this.spendGold(1);
         this.drawn = true;
@@ -329,7 +333,7 @@ class Player {
   }
 
   drawSpecificCard(card) {
-    console.log(`Player.drawSpecificCard(): drawing ${card.name}`)
+    console.log(`Player.drawSpecificCard(): ${this.name} drawing ${card.name}`)
     this.deck.remove(card);
     this.hand.push(card);
     this.div.hand.appendChild(card.span);
@@ -519,7 +523,7 @@ class Player {
       Creature.checkEvent(card, "when alive", "deactivate");
       this.flatBoard.forEach(creature => {
         Creature.checkEvent(creature, "discarded creature", "activate");
-        if (card.rootName.includes("hyena")) {
+        if (card.rootName().includes("hyena")) {
           Creature.checkEvent(creature, "a hyena card dies", "activate");
         }
       });
