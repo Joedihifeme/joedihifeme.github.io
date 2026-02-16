@@ -633,7 +633,7 @@
       "name": "Hyena Pool",
       "health": 7,
       "gold": "6",
-      "ability1": "Your hero gains 10 health. When this card is destroyed, your hero loses 10 health.",
+      "ability1": "When played: Your hero gains 10 health.",
       "ability2": "",
       "keywords": "",
       "implemented": true
@@ -660,7 +660,7 @@
       "name": "Strength of the Weak",
       "health": 4,
       "gold": "4",
-      "ability1": "Creatures with a combined stat of 5 or less can attack twice",
+      "ability1": "When alive: creatures with a combined stat of 5 or less can attack twice",
       "ability2": "",
       "keywords": "",
       "implemented": false
@@ -678,7 +678,7 @@
       "name": "Tribal Arena",
       "health": 4,
       "gold": "5",
-      "ability1": "Each turn, draw one more card and lose 1 health",
+      "ability1": "Every turn, draw one more card and lose 1 health",
       "ability2": "",
       "keywords": "",
       "implemented": true
