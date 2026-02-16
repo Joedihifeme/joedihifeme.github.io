@@ -6,6 +6,9 @@ class Structure extends Creature {
     constructor(name, health, cost, ability1, ability2, keywords, ) {
         super(name, 0, health, cost, "n", keywords, ability1, ability2, "");
         this.cardType = "structure"
+        this.blocking = true;
+        delete this.tapped;
+        delete this.tap;
     }
 
     updateSpan() {
@@ -21,6 +24,18 @@ class Structure extends Creature {
 		if (this.keywords !== null) text += `${(this.keywordsHTML)}<br>`;
 
 		this.span.innerHTML = text;
+    }
+
+    provoke() {
+
+    }
+
+    discard() {
+        super.discard();
+
+        if (this.provokeHandler) {
+            delete this.provokeHandler;
+        }
     }
 
 }
