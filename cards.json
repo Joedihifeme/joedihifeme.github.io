@@ -474,6 +474,7 @@
       "attribute": ""
     }
   ],
+
   "consumables": [
     {
       "name": "Blood Moon",
@@ -542,6 +543,7 @@
       "implemented": true
     }
   ],
+
   "doubleConsumables": [
     {
       "name": "Protect",
@@ -614,6 +616,99 @@
       "gold2" : "3",
       "ability2" : "Give +0/+6 to target creature",
       "implemented": true
+    }
+  ],
+
+  "structures": [
+    {
+      "name": "Tax Office",
+      "health": 5,
+      "gold": 6,
+      "ability1": "When an opponent draws a card, they will pay you 1 gold.",
+      "ability2": "",
+      "keywords": "",
+      "implemented": true
+    },
+    {
+      "name": "Hyena Pool",
+      "health": 7,
+      "gold": 8,
+      "ability1": "Your hero gains 10 health. When this card is destroyed, your hero loses 10 health.",
+      "ability2": "",
+      "keywords": "",
+      "implemented": true
+    },
+    {
+      "name": "Haunted House",
+      "health": 5,
+      "gold": 4,
+      "ability1": "When a creature is played, gain 1 health",
+      "ability2": "",
+      "keywords": "",
+      "implemented": true
+    },
+    {
+      "name": "Library Archives",
+      "health": 5,
+      "gold": 6,
+      "ability1": "When you draw a card, draw 1 more",
+      "ability2": "",
+      "keywords": "",
+      "implemented": true
+    },
+    {
+      "name": "Strength of the Weak",
+      "health": 4,
+      "gold": 4,
+      "ability1": "Creatures with a combined stat of 5 or less can attack twice",
+      "ability2": "",
+      "keywords": "",
+      "implemented": false
+    },
+    {
+      "name": "Seer's Tower",
+      "health": 5,
+      "gold": 6,
+      "ability1": "Every turn, look at three cards from your deck, and put one in your hand.",
+      "ability2": "",
+      "keywords": "",
+      "implemented": false
+    },
+    {
+      "name": "Tribal Arena",
+      "health": 4,
+      "gold": 5,
+      "ability1": "Each turn, draw one more card and lose 1 health",
+      "ability2": "",
+      "keywords": "",
+      "implemented": true
+    },
+    {
+      "name": "Wall",
+      "health": 6,
+      "gold": 5,
+      "ability1": "Pay 2 gold: all structures gain (W)+1",
+      "ability2": "",
+      "keywords": "W1",
+      "implemented": true
+    },
+    {
+      "name": "Poison Falls",
+      "health": 5,
+      "gold": 8,
+      "ability1": "All creatures with (V) get (V)+1",
+      "ability2": "",
+      "keywords": "",
+      "implemented": false
+    },
+    {
+      "name": "Buffalo Treausre",
+      "health": 4,
+      "gold": 6,
+      "ability1": "When a card gets discarded, gain 1 gold",
+      "ability2": "",
+      "keywords": "",
+      "implemented": false
     }
   ]
 }
