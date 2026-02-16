@@ -8,6 +8,21 @@ class Structure extends Creature {
         this.cardType = "structure"
     }
 
+    updateSpan() {
+        let text = `
+			Card Type: Structure <br>
+			Name: ${this.name} <br>
+			Health: ${this.health > 0 ? this.health : 0} <br>
+			Price: ${this.cost} gold <hr>
+		`;
+
+		if (this.DISPLAYED_ABILITY !== "") text += `-${this.DISPLAYED_ABILITY}<br>`;
+		if (this.DISPLAYED_ABILITY2 !== "") text += `-${this.DISPLAYED_ABILITY2}<br>`;
+		if (this.keywords !== null) text += `${(this.keywordsHTML)}<br>`;
+
+		this.span.innerHTML = text;
+    }
+
 }
 
 export default Structure;
