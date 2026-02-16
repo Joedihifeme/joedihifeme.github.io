@@ -632,7 +632,7 @@
     {
       "name": "Hyena Pool",
       "health": 7,
-      "gold": "*",
+      "gold": "6",
       "ability1": "Your hero gains 10 health. When this card is destroyed, your hero loses 10 health.",
       "ability2": "",
       "keywords": "",
