@@ -373,20 +373,29 @@ class Player {
     if (card instanceof Creature) {
       this.div.board.appendChild(card.span);
 
-      if (card.checkKeyword("S")) {
-        this.stamina(card);
-        card.tapped, card.blocking = true;
-      } else {
+      if (card.cardType == "structure") {
         this.board[0].push(card);
-        card.blocking = true;
-
-        card.tapHandler = card.tap.bind(card);
-        card.span.onclick = card.tapHandler;
         card.span.style.borderColor = "blue";
+        card.provokeHandler = card.provoke.bind(card);
+        card.span.onclick = card.provokeHandler;
+        
+      } else {
+        if (card.checkKeyword("S")) {
+          this.stamina(card);
+          card.tapped, card.blocking = true;
 
-        Creature.checkEvent(card, "when blocking", "activate");
+        } else {
+          this.board[0].push(card);
+          card.blocking = true;
 
-      this.keywordsOnPlay(card); 
+          card.tapHandler = card.tap.bind(card);
+          card.span.onclick = card.tapHandler;
+          card.span.style.borderColor = "blue";
+
+          Creature.checkEvent(card, "when blocking", "activate");
+
+          this.keywordsOnPlay(card); 
+        }
       }
 
       this.opponent.flatBoard.forEach(creature => { 
