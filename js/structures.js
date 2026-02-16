@@ -1,5 +1,4 @@
 import Creature from "./creature.js";
-import { display } from "./functions.js";
 
 class Structure extends Creature {
 

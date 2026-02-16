@@ -252,7 +252,7 @@ class Player {
     //extra signifies the result of stat.includes("more").
     if (!extra) {
       this.flatBoard.forEach(creature => {
-        Creature.checkEvent(creature, "when you gain life", "activate");
+        Creature.checkEvent(creature, "when you gain health", "activate");
       });
     }
     this.div.update();
@@ -378,7 +378,7 @@ class Player {
         card.span.style.borderColor = "blue";
         card.provokeHandler = card.provoke.bind(card);
         card.span.onclick = card.provokeHandler;
-        
+
       } else {
         if (card.checkKeyword("S")) {
           this.stamina(card);

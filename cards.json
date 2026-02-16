@@ -84,7 +84,7 @@
       "gold": "6",
       "type": "n",
       "keywords": "",
-      "ability1": "Gain 1 life for each discarded creature.",
+      "ability1": "Gain 1 health for each discarded creature.",
       "ability2": "",
       "attribute": ""
     },
@@ -370,7 +370,7 @@
       "gold": "5",
       "type": "n",
       "keywords": "",
-      "ability1": "When you gain life, gain 2 more life.",
+      "ability1": "When you gain health, gain 2 more health.",
       "ability2": "",
       "attribute": "This card cannot be cloned"
     },
@@ -633,7 +633,7 @@
       "name": "Hyena Pool",
       "health": 7,
       "gold": "6",
-      "ability1": "When played: Your hero gains 10 health.",
+      "ability1": "When played: gain 10 health.",
       "ability2": "",
       "keywords": "",
       "implemented": true
@@ -642,7 +642,7 @@
       "name": "Haunted House",
       "health": 5,
       "gold": "4",
-      "ability1": "When a creature is played, gain 1 health",
+      "ability1": "When a creature is played, gain 1 health.",
       "ability2": "",
       "keywords": "",
       "implemented": true

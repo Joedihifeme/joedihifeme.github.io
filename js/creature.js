@@ -7,9 +7,9 @@ class Creature extends Card {
 	abilityEventsArr = [
 		"once per turn", "when played", "upon death", "when attacking", "survives whilst blocking",
 		"when blocking", "when alive", "when attacked", "when damaged", "every turn", "when drawn",
-		"when a card gains a keyword", "when you gain life", "discarded creature", "when you gain gold",
+		"when a card gains a keyword", "when you gain health", "discarded creature", "when you gain gold",
 		"a hyena card dies", "a hyena card is played", "opponent draws a card", "draw a card", "pay",
-		"a creature is played",
+		"a creature is played", "all structures"
 	];
 	keywordArr = [
 		null, "H", "(H)", "F", "(F)", "R", "(R)", "C", "(C)", "I", "(I)", "T", "(T)", 
