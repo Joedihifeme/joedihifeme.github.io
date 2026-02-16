@@ -2,6 +2,7 @@ import Creature from "./creature.js";
 import Legendary from "./legendary.js";
 import Consumable from "./consumables.js";
 import doubleConsumable from "./doubleconsumables.js";
+import Structure from "./structures.js";
 import Player from "./playerClass.js"
 import { setupGame } from "./functions.js";
 
@@ -47,9 +48,8 @@ fetch('./cards.json')
       } catch (error) {
         console.log(`There was a problem with loading in ${creature.name}:\n ${error}`)
       }
-      
-      
     });
+
 
     data.consumables.forEach(consumable => {
       try {
@@ -57,10 +57,10 @@ fetch('./cards.json')
           cards.push(new Consumable(consumable.name, consumable.gold, consumable.ability));
         }
       } catch (error) {
-        console.log(`There was a problem with loading in ${consumable.name}:\n ${error}`)
+        console.log(`There was a problem with loading in ${consumable.name}:\n ${error}`);
       }
-      
     });
+
 
     data.doubleConsumables.forEach(dc => {
       try {
@@ -70,7 +70,21 @@ fetch('./cards.json')
           ));
         }
       } catch (error) {
-        console.log(`There was a problem with loading in ${dc.name}:\n ${error}`)
+        console.log(`There was a problem with loading in ${dc.name}:\n ${error}`);
+      }
+    });
+
+
+    data.structures.forEach(structure => {
+      try {
+        if (structure.implemented) {
+          cards.push(new Structure(
+            structure.name, structure.health, structure.gold, 
+            structure.ability1, structure.ability2, structure.keywords
+          ));
+        }
+      } catch(error) {
+        console.log(`There was a problem with loading in ${structure.name}:\n ${error}`);
       }
     });
   })
