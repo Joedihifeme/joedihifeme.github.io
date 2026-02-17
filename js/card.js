@@ -542,7 +542,7 @@ class Card {
 									}
 
 								} else if (stat.includes("health")) {
-									this.OWNER.addHealth(Number(stat[0]), stat.includes("more"));
+									this.OWNER.changeHealth(Number(stat.split(" ")[0]), stat.includes("more"));
 
 								} else {
 									target.changeStats(stat);
@@ -885,6 +885,11 @@ class Card {
 										target.removeKeyword(stat);
 									} else {
 										target.changeStats(stat, true);
+									}
+
+								} else {
+									if (stat.includes("health")) {
+										this.OWNER.changeHealth(-(stat.split(" ")[0]));
 									}
 								}
 							}

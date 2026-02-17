@@ -633,7 +633,7 @@
       "name": "Hyena Pool",
       "health": 7,
       "gold": "6",
-      "ability1": "When played: gain 10 health.",
+      "ability1": "When alive: gain 10 health.",
       "ability2": "",
       "keywords": "",
       "implemented": true

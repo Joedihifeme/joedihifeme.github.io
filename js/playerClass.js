@@ -149,7 +149,7 @@ class Player {
           if (card.cardType == "structure") {
             card.provokeHandler = card.provoke.bind(card);
             card.span.onclick = card.provokeHandler;
-            
+
           } else {
             card.tapHandler = card.tap.bind(card)
             card.span.onclick = card.tapHandler;
@@ -256,17 +256,27 @@ class Player {
     this.div.update();
   }
 
-  addHealth(num, extra = false) {
+  changeHealth(num, extra = false) {
     console.log(`Player.Health(): adding ${num} to ${this.health}`)
     this.health += num;
+
+    if (num < 0) {
+      this.deathCheck();
+
+      if (this.killed) {
+        display(`${this.opponent.name} has won!<br>Reload the page to play again.`);
+        return;
+      }
+    }
+
     //extra signifies the result of stat.includes("more").
     if (!extra) {
       this.flatBoard.forEach(creature => {
         Creature.checkEvent(creature, "when you gain health", "activate");
       });
     }
-    this.div.update();
 
+    this.div.update();
   }
 
   startTurnRoutine() {
@@ -594,7 +604,7 @@ class Player {
       creature.currentAbility = 0;
     });
 
-    if (this.opponent.killed) {
+    if (this.killed) {
       display(`${this.opponent.name} has won!<br>Reload the page to play again.`);
       return;
     }
