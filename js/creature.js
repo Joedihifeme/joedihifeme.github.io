@@ -294,11 +294,13 @@ class Creature extends Card {
 	play() {
 		Creature.checkEvent(this, "when played", "activate");
 		Creature.checkEvent(this, "when alive", "activate");
-		if (this.rootName().includes("hyena")) {
-			this.OWNER.flatBoard.forEach(creature => {
+
+		this.OWNER.flatBoard.forEach(creature => {
+			if (this.rootName().includes("hyena"))
 				Creature.checkEvent(creature, "a hyena card is played", "activate");
-			});
-		}
+
+			Creature.checkEvent(creature, "a creature is played", "activate");
+		});
 
 		super.play();
 	}
