@@ -705,10 +705,10 @@
       "name": "Buffalo Treausre",
       "health": 4,
       "gold": "6",
-      "ability1": "When a card gets discarded, gain 1 gold",
+      "ability1": "For each discarded creature, gain 1 gold",
       "ability2": "",
       "keywords": "",
-      "implemented": false
+      "implemented": true
     }
   ]
 }
