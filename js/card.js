@@ -22,7 +22,7 @@ class Card {
 		["discard", ["x cards", "a card", "2 random cards", "2 cards"]],
 		["draw", ["a card", "2", "3"]],
 		["deal", ["same damage", "1 damage"]],
-		["lose", "1 health", "3 health"],
+		["lose", ["1 health", "3 health"]],
 		["reset", "haste"],
 		["arrange", "in any way"],
 		["pay", "same gold cost"],
@@ -684,15 +684,8 @@ class Card {
 
 						case "lose":
 							for (let number of ability.values()) {
-								if (number.includes("3 health")) {
-									this.OWNER.health -= 3;
-									this.OWNER.deathCheck();
-									this.OWNER.div.update();
-
-									if (this.OWNER.killed) {
-										display(`${this.opponent.name} has won!<br>Reload the page to play again.`);
-										return;
-									}
+								if (number.includes("health")) {
+									this.OWNER.changeHealth(-Number(number.split(" ")[0]));
 								}
 							}
 
