@@ -624,7 +624,7 @@
       "name": "Tax Office",
       "health": 5,
       "gold": "6",
-      "ability1": "When an opponent draws a card, they will pay you 1 gold.",
+      "ability1": "When your opponent draws a card, tax them 1 gold ",
       "ability2": "",
       "keywords": "",
       "implemented": true

@@ -188,7 +188,7 @@ class Creature extends Card {
 
 		keywords.forEach(element => {
 			let keyword = element.replace(/(|)\W/g, "").toUpperCase();
-			let numbered = false;;
+			let numbered = false;
 			if (this.numberedKeywords.includes(keyword[0])) {
 				numbered = true;
 			}

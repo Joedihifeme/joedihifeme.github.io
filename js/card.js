@@ -7,15 +7,15 @@ class Card {
 		["heal", ["all damage", "+0/+1"]],
 		["count", "in freefall -2"],
 		["gain", ["+1/+0", "+2/+0", "+0/+1", "+0/+2", "+0/+6", "+1/+2", "+2/+4", "+0/-2", "-2/-4",
-			"-5/-10", "(l)", "(i)", "(t)", "(f)", "(w)2", "(v)1", "(v)2", "(w)+1", "1 gold", "3 gold", 
+			"-5/-10", "(l)", "(i)", "(t)", "(f)", "(w)2", "(v)1", "(v)2", "(w)+1", "1 gold", "3 gold",
 			"x gold", "that much in gold", "spellproof", "stasis", "1 health", "2 more health", "10 health",
 			"all the keywords",]],
 		["give", ["+1/+0", "+2/+0", "+0/+1", "+0/+2", "+0/+6", "+1/+2", "+2/+4", "+0/-2", "-2/-4",
-			"-5/-10", "(l)", "(i)", "(t)", "(f)", "(w)2", "(v)1", "(v)2", "(w)+1", "1 gold", "3 gold", 
+			"-5/-10", "(l)", "(i)", "(t)", "(f)", "(w)2", "(v)1", "(v)2", "(w)+1", "1 gold", "3 gold",
 			"x gold", "that much in gold", "spellproof", "stasis", "1 health", "2 more health", "10 health",
 			"all the keywords",]],
 		["gets", ["+1/+0", "+2/+0", "+0/+1", "+0/+2", "+0/+6", "+1/+2", "+2/+4", "+0/-2", "-2/-4",
-			"-5/-10", "(l)", "(i)", "(t)", "(f)", "(w)2", "(v)1", "(v)2", "(w)+1", "1 gold", "3 gold", 
+			"-5/-10", "(l)", "(i)", "(t)", "(f)", "(w)2", "(v)1", "(v)2", "(w)+1", "1 gold", "3 gold",
 			"x gold", "that much in gold", "spellproof", "stasis", "1 health", "2 more health", "10 health",
 			"all the keywords",]],
 		["search", ["a creature", "a consumable", "a card", "3 cards"]],
@@ -31,7 +31,8 @@ class Card {
 		["put", "this"],
 		["retains", "buffs"],
 		["have", "0 atck"],
-		["double", "amount"]
+		["double", "amount"],
+		["tax", "1 gold"]
 	]);
 
 	abilityArr = ["destroy", "clone"];
@@ -42,7 +43,7 @@ class Card {
 		"opponent's creature with the highest atck", "opponent's hand", "opponent's turn", "opponent",
 		"your deck", "your entire deck", "cards in your hand", "your hand", "all target creatures",
 		"target creature in discard pile", "target creature", "target structure", "target card",
-		"battlefield", "attacker", "attacked creature"
+		"battlefield", "attacker", "attacked creature", "you"
 	];
 
 	specialConsumables = ["annoy"];
@@ -549,6 +550,7 @@ class Card {
 							}
 
 							break;
+
 						case "discard":
 							for (let number of ability.values()) {
 								let max = 0;
@@ -601,6 +603,7 @@ class Card {
 							}
 
 							break;
+
 						case "search":
 							let max = 0;
 							let i = 0;
@@ -668,6 +671,7 @@ class Card {
 							await useModal();
 
 							break;
+
 						case "cost":
 							for (let cost of ability.values()) {
 								if (cost.includes("1 gold less")) {
@@ -677,6 +681,7 @@ class Card {
 							}
 
 							break;
+
 						case "lose":
 							for (let number of ability.values()) {
 								if (number.includes("3 health")) {
@@ -692,9 +697,9 @@ class Card {
 							}
 
 							break;
+
 						case "draw":
 							for (let number of ability.values()) {
-								console.log("got here");
 								let n;
 								if (number.includes("a")) n = 1; else n = number;
 								this.OWNER.drawCard(Number(n), false, true);
@@ -702,6 +707,7 @@ class Card {
 							}
 
 							break;
+
 						case "heal":
 							if (target.health >= target.cumulatedHealth) return;
 
@@ -713,6 +719,7 @@ class Card {
 							}
 
 							break;
+
 						case "use":
 							for (let item of ability.values()) {
 								if (item.includes("(c)")) {
@@ -723,6 +730,7 @@ class Card {
 							}
 
 							break;
+
 						case "put":
 							for (let element of ability.values()) {
 								if (element.includes("this")) {
@@ -731,6 +739,7 @@ class Card {
 							}
 
 							break;
+
 						case "retains":
 							for (let element of ability.values()) {
 								if (element.includes("buffs")) {
@@ -742,6 +751,7 @@ class Card {
 							}
 
 							break;
+
 						case "deal":
 							for (let number of ability.values()) {
 								let damage;
@@ -756,6 +766,7 @@ class Card {
 							}
 
 							break;
+
 						case "count":
 							for (let number of ability.values()) {
 								if (number.includes("freefall -2")) {
@@ -766,6 +777,7 @@ class Card {
 							}
 
 							break;
+
 						case "double":
 							for (let number of ability.values()) {
 								if (number.includes("amount")) {
@@ -774,6 +786,7 @@ class Card {
 							}
 
 							break;
+
 						case "have":
 							for (let element of ability.values()) {
 								if (element.includes("0 atck")) {
@@ -784,6 +797,16 @@ class Card {
 							}
 
 							break;
+
+						case "tax":
+							for (let amount of ability.values()) {
+								amount = Number(amount[0]);
+								this.OWNER.opponent.spendGold(amount);
+								this.OWNER.addGold(amount);
+							}
+
+							break;
+
 						default:
 							break;
 					}
@@ -832,10 +855,12 @@ class Card {
 						}
 
 						break;
+
 					case "destroy":
 						target.OWNER.discard(target);
 
 						break;
+
 					default:
 						break;
 				}

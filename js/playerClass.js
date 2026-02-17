@@ -5,7 +5,7 @@ import { display } from "./functions.js";
 
 class Player {
 
-  constructor (name, goldPerTurn, rampPerTurn, health) {
+  constructor(name, goldPerTurn, rampPerTurn, health) {
     this.name = name;
     this.id = undefined;
     this.health = health;
@@ -47,9 +47,9 @@ class Player {
         generalModal: document.getElementById("general-modal"),
         modalText: document.getElementById("general-modal").firstChild.firstChild,
         modalSpace: document.getElementById("general-modal").firstChild.lastChild
-        }
-      } else {
-        this._div = {
+      }
+    } else {
+      this._div = {
         h2: pDiv.lastChild.lastChild,
         health: pDiv.lastChild.firstChild,
         gold: pDiv.lastChild.childNodes[1],
@@ -66,29 +66,29 @@ class Player {
         generalModal: document.getElementById("general-modal"),
         modalText: document.getElementById("general-modal").firstChild.firstChild,
         modalSpace: document.getElementById("general-modal").firstChild.lastChild
-        }
       }
-    
+    }
+
     this._div.player = this;
-    this._div.update = function() {
-      this.health.innerHTML = `Health: ${this.player.health > 0 ? this.player.health:0}`;
-      this.gold.innerHTML =  `Gold: ${this.player.gold}`;
+    this._div.update = function () {
+      this.health.innerHTML = `Health: ${this.player.health > 0 ? this.player.health : 0}`;
+      this.gold.innerHTML = `Gold: ${this.player.gold}`;
       this.drawDivText.innerHTML = `Cards left: ${this.player.deck.length}`;
-      this.discardText.innerHTML = 
+      this.discardText.innerHTML =
         `Number of discarded cards: ${this.player.discards.length}`;
-      this.discardModalText.innerHTML = this.player.discards.length < 1 ? 
+      this.discardModalText.innerHTML = this.player.discards.length < 1 ?
         "No discarded cards" : "Click on the card to bring back (for 2 gold)";
     }
-    this._div.openModal = function() { this.generalModal.style.display = "block"; };
-    this._div.closeModal = function() { this.generalModal.style.display = "none"; };
+    this._div.openModal = function () { this.generalModal.style.display = "block"; };
+    this._div.closeModal = function () { this.generalModal.style.display = "none"; };
 
-    this._div.populateModal = function(arr) {
+    this._div.populateModal = function (arr) {
       arr.forEach(card => {
         this.modalSpace.appendChild(card.span);
       });
     }
 
-    this._div.clearModal = function() {
+    this._div.clearModal = function () {
       while (this.modalSpace.hasChildNodes()) {
         this.modalSpace.removeChild(this.modalSpace.firstChild);
       }
@@ -121,7 +121,7 @@ class Player {
     return Creature.keywords();
   }
 
-  enable(element="all") {
+  enable(element = "all") {
     if (element === "all" || element === "end turn") {
       this.div.endTurn.disabled = false;
     }
@@ -143,10 +143,17 @@ class Player {
 
     if (element === "all" || element === "board") {
       if (this.board[0].length > 0) {
-        this.board[0].forEach(creature => {
-          if (creature.checkKeyword("S")) return;
-          creature.tapHandler = creature.tap.bind(creature)
-          creature.span.onclick = creature.tapHandler;
+        this.board[0].forEach(card => {
+          if (card.checkKeyword("S")) return;
+
+          if (card.cardType == "structure") {
+            card.provokeHandler = card.provoke.bind(card);
+            card.span.onclick = card.provokeHandler;
+            
+          } else {
+            card.tapHandler = card.tap.bind(card)
+            card.span.onclick = card.tapHandler;
+          }
         });
       }
 
@@ -171,7 +178,7 @@ class Player {
     }
   }
 
-  disable(element="all") {
+  disable(element = "all") {
     if (element === "all" || element === "end turn") {
       this.div.endTurn.disabled = true;
     }
@@ -193,10 +200,13 @@ class Player {
 
     if (element === "all" || element === "board") {
       if (this.board[0].length > 0) {
-        this.board[0].forEach(creature => {
-          if (creature.tapHandler) {
-            creature.span.onclick = null;
-            delete creature.tapHandler;
+        this.board[0].forEach(card => {
+          if (card.tapHandler) {
+            card.span.onclick = null;
+            delete card.tapHandler;
+          } else if (card.provokeHandler) {
+            card.span.onclick = null;
+            delete card.provokeHandler;
           }
         });
       }
@@ -210,7 +220,7 @@ class Player {
         });
       }
     }
-    
+
     if (element === "all" || element === "discard button") {
       this.div.discardButton.disabled = true;
     }
@@ -220,13 +230,13 @@ class Player {
     }
   }
 
-  addGold(num, extra=false) {
+  addGold(num, extra = false) {
     this.previousGold = this.gold
     this.gold += num;
     console.log(`Player.addGold(): added ${num} to ${this.gold}\n`)
     if (!extra) {
       this.flatBoard.forEach(creature => {
-      Creature.checkEvent(creature, "when you gain gold", "activate");
+        Creature.checkEvent(creature, "when you gain gold", "activate");
       });
     }
     this.div.update();
@@ -239,14 +249,14 @@ class Player {
     if (this.gold < 2) {
       this.disable("discard button")
       if (this.gold < 1) {
-      this.disable("draw button");
+        this.disable("draw button");
       }
     }
-    
+
     this.div.update();
   }
 
-  addHealth(num, extra=false) {
+  addHealth(num, extra = false) {
     console.log(`Player.Health(): adding ${num} to ${this.health}`)
     this.health += num;
     //extra signifies the result of stat.includes("more").
@@ -261,9 +271,9 @@ class Player {
 
   startTurnRoutine() {
     if (this.turn > 0) {
-      this.flatBoard.forEach(creature => { 
+      this.flatBoard.forEach(creature => {
         Creature.checkEvent(creature, "every turn", "activate");
-        creature.sufferVenom(); 
+        creature.sufferVenom();
       });
     }
 
@@ -273,16 +283,16 @@ class Player {
     this.addGold(this.goldPerTurn + this.adder);
     this.drawCard(1);
 
-    this.flatBoard.forEach(creature => { 
-        Creature.checkEvent(creature, "when alive", "deactivate");
-        Creature.checkEvent(creature, "when alive", "activate");
+    this.flatBoard.forEach(creature => {
+      Creature.checkEvent(creature, "when alive", "deactivate");
+      Creature.checkEvent(creature, "when alive", "activate");
     });
 
     display(`${this.name} to move`);
     this.enable();
   }
 
-  drawCard(num, paid=false, fromAbility=false) {
+  drawCard(num, paid = false, fromAbility = false) {
     console.log(`Player.drawCard(): ${this.name} num=${num}, paid=${paid}`);
     console.log(`Deck: ${this.deck}`)
     try {
@@ -301,16 +311,20 @@ class Player {
             console.log(`Has the 'counts as' attribute`)
           }
         }
-        
+
         console.log(`Drawing card`);
         console.log(`Hand before: ${this.hand}`);
         this.drawSpecificCard(card);
         console.log(`Hand after: ${this.hand}`);
       }
 
-      this.flatBoard.forEach(creature => { 
+      this.flatBoard.forEach(creature => {
         Creature.checkEvent(creature, "when alive", "deactivate");
         Creature.checkEvent(creature, "when alive", "activate");
+      });
+
+      this.opponent.flatBoard.forEach(card => {
+        Creature.checkEvent(card, "opponent draws a card", "activate");
       });
 
       if (paid) {
@@ -324,8 +338,8 @@ class Player {
         this.disable("draw button");
       }
 
-    } catch(err) {
-      console.log(err)
+    } catch (err) {
+      console.log(err);
       display("Draw pile is empty");
       this.disable("draw button");
     }
@@ -343,7 +357,7 @@ class Player {
     console.log(`Player.drawSpecificCard(): done\n`)
   }
 
-  playCard(card, clone=undefined) {
+  playCard(card, clone = undefined) {
     if (this.gold < card.cost && !(card instanceof doubleConsumable)) {
       console.log(`Player: ${this.gold}, card: ${card._cost.numeric}`);
       display("Not enough gold to play this card");
@@ -355,10 +369,10 @@ class Player {
       this.div.board.innerHTML = "";
     }
 
-    if (!(card instanceof doubleConsumable)) { 
-      if (!card.multiplier) { 
+    if (!(card instanceof doubleConsumable)) {
+      if (!card.multiplier) {
         if (card.clone) this.spendGold(clone._cost.x(card._cost.x()));
-        else this.spendGold(card._cost.x()); 
+        else this.spendGold(card._cost.x());
       }
     }
 
@@ -394,11 +408,11 @@ class Player {
 
           Creature.checkEvent(card, "when blocking", "activate");
 
-          this.keywordsOnPlay(card); 
+          this.keywordsOnPlay(card);
         }
       }
 
-      this.opponent.flatBoard.forEach(creature => { 
+      this.opponent.flatBoard.forEach(creature => {
         Creature.checkEvent(creature, "when alive", "deactivate");
         Creature.checkEvent(creature, "when alive", "activate");
       });
@@ -408,21 +422,21 @@ class Player {
 
       if (!ableToUse) {
         display(`${this.name}, you cannot use ${card.name} right now`);
-        setTimeout(() => { 
-          display(`${this.name} to move`); 
+        setTimeout(() => {
+          display(`${this.name} to move`);
           card.playHandler = card.play.bind(card);
-          card.span.onclick = card.playHandler; 
+          card.span.onclick = card.playHandler;
         }, 1000);
-        
+
         this.hand.push(card);
         this.div.hand.appendChild(card.span);
         card.span.style.borderColor = card.span.style.color;
 
         if (card instanceof doubleConsumable) {
-          if (card.currentlyChosenAbility === 1) { 
-            this.addGold(card._cost.previousValue); 
-          } else { 
-            this.addGold(card._cost2.previousValue); 
+          if (card.currentlyChosenAbility === 1) {
+            this.addGold(card._cost.previousValue);
+          } else {
+            this.addGold(card._cost2.previousValue);
           }
 
           card.currentlyChosenAbility = 0;
@@ -437,7 +451,7 @@ class Player {
   }
 
   //keyword on play
-  creatureRemovalAndIndestructible(card, outsideTurn=false) {
+  creatureRemovalAndIndestructible(card, outsideTurn = false) {
     const enemyBoard = this.opponent.flatBoard;
 
     if (card.checkKeyword("C")) {
@@ -446,25 +460,27 @@ class Player {
           display(
             `${card.name} is using Creature Removal but all enemy creatures are Indestructible!`
           )
-          setTimeout(() => { display(`${this.name } to move`);}, 1500);
+          setTimeout(() => { display(`${this.name} to move`); }, 1500);
           return;
         }
-        
+
         display(
           `${card.name} is using Creature Removal! ${this.name}, choose a creature to remove.`
         );
         if (outsideTurn) {
-          setTimeout(() => { display(
-            `${card.name} is using Creature Removal! ${this.name}, choose a creature to remove.`
-          ); this.disable(); }, 1001);
+          setTimeout(() => {
+            display(
+              `${card.name} is using Creature Removal! ${this.name}, choose a creature to remove.`
+            ); this.disable();
+          }, 1001);
         }
-        
+
 
         this.disable();
         this.opponent.disable("board");
         this.opponent.flatBoard.forEach(creature => {
           if (!creature.checkKeyword("I")) {
-            creature.removeHandler = function() {
+            creature.removeHandler = function () {
               creature.OWNER.discard(creature);
 
               if (creature.removeHandler) {
@@ -519,8 +535,8 @@ class Player {
 
     //this block is outside of the loop as a stamina creature will appear in each section of the board
     if (card.clone) {
-      card.span.remove(); 
-      card.vanish(); 
+      card.span.remove();
+      card.vanish();
     } else {
       this.discards.push(card);
       card.discard();
@@ -539,7 +555,7 @@ class Player {
     }
   }
 
-  reviveCard(card, paid=false) {
+  reviveCard(card, paid = false) {
     this.discards.remove(card);
     this.hand.push(card);
     this.div.hand.appendChild(card.span);
@@ -573,16 +589,16 @@ class Player {
       }
     }
 
-    this.flatBoard.forEach(creature => { 
+    this.flatBoard.forEach(creature => {
       creature.firstTurn = false;
       creature.currentAbility = 0;
     });
 
-    if (this.opponent.killed) { 
+    if (this.opponent.killed) {
       display(`${this.opponent.name} has won!<br>Reload the page to play again.`);
       return;
     }
-    
+
     setTimeout(() => { this.opponent.startTurnRoutine() }, 1000);
   }
 }
