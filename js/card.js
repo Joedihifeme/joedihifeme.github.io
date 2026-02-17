@@ -20,7 +20,7 @@ class Card {
 			"all the keywords",]],
 		["search", ["a creature", "a consumable", "a card", "3 cards"]],
 		["discard", ["x cards", "a card", "2 random cards", "2 cards"]],
-		["draw", ["a card", "2", "3"]],
+		["draw", ["a card", "1 more", "2", "3"]],
 		["deal", ["same damage", "1 damage"]],
 		["lose", ["1 health", "3 health"]],
 		["reset", "haste"],
@@ -43,7 +43,7 @@ class Card {
 		"opponent's creature with the highest atck", "opponent's hand", "opponent's turn", "opponent",
 		"your deck", "your entire deck", "cards in your hand", "your hand", "all target creatures",
 		"target creature in discard pile", "target creature", "target structure", "target card",
-		"battlefield", "attacker", "attacked creature", "you"
+		"battlefield", "attacker", "attacked creature"
 	];
 
 	specialConsumables = ["annoy"];
@@ -694,8 +694,11 @@ class Card {
 						case "draw":
 							for (let number of ability.values()) {
 								let n;
-								if (number.includes("a")) n = 1; else n = number;
-								this.OWNER.drawCard(Number(n), false, true);
+								let extra = false;
+
+								if (number.includes("more")) extra = true;
+								if (number.includes("a")) n = 1; else n = number[0];
+								this.OWNER.drawCard(Number(n), false, true, extra);
 								display(`${this.OWNER.name} to move`);
 							}
 

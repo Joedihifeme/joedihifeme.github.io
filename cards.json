@@ -651,7 +651,7 @@
       "name": "Library Archives",
       "health": 5,
       "gold": "6",
-      "ability1": "When you draw a card, draw 1 more",
+      "ability1": "Whenever you draw cards, draw 1 more",
       "ability2": "",
       "keywords": "",
       "implemented": true

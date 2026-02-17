@@ -302,7 +302,7 @@ class Player {
     this.enable();
   }
 
-  drawCard(num, paid = false, fromAbility = false) {
+  drawCard(num, paid = false, fromAbility = false, extra = false) {
     console.log(`Player.drawCard(): ${this.name} num=${num}, paid=${paid}`);
     console.log(`Deck: ${this.deck}`)
     try {
@@ -331,6 +331,8 @@ class Player {
       this.flatBoard.forEach(creature => {
         Creature.checkEvent(creature, "when alive", "deactivate");
         Creature.checkEvent(creature, "when alive", "activate");
+        
+        if (!extra) Creature.checkEvent(creature, "draw cards", "activate");
       });
 
       this.opponent.flatBoard.forEach(card => {

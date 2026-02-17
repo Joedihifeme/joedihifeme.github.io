@@ -8,7 +8,7 @@ class Creature extends Card {
 		"once per turn", "when played", "upon death", "when attacking", "survives whilst blocking",
 		"when blocking", "when alive", "when attacked", "when damaged", "every turn", "when drawn",
 		"when a card gains a keyword", "when you gain health", "discarded creature", "when you gain gold",
-		"a hyena card dies", "a hyena card is played", "opponent draws a card", "draw a card", "pay",
+		"a hyena card dies", "a hyena card is played", "opponent draws a card", "draw cards", "pay",
 		"a creature is played", "all structures"
 	];
 	keywordArr = [
