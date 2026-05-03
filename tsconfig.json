@@ -5,7 +5,8 @@
   "compilerOptions": {
     "target": "es2016",
     "module": "esnext",
-    "outDir": "./js",                          
+    "outDir": "./js",
+    "rootDir": "./ts",                          
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true
