@@ -39,11 +39,11 @@ class Card {
 
 	targetTypes = [
 		"all consumables", "all other consumables", "all your creatures", "all opposing creatures",
-		"creature in freefall", "freefall", "target opponent's creature",
+		"creature in freefall", "freefall", "target opponent's creature", "target opponent's structure",
 		"opponent's creature with the highest atck", "opponent's hand", "opponent's turn", "opponent",
 		"your deck", "your entire deck", "cards in your hand", "your hand", "all target creatures",
-		"target creature in discard pile", "target creature", "target structure", "target card",
-		"battlefield", "attacker", "attacked creature"
+		"target creature in discard pile", "target creature", "target card", "battlefield", "attacker", 
+		"attacked creature"
 	];
 
 	specialConsumables = ["annoy"];
@@ -243,6 +243,7 @@ class Card {
 	findTargets(mode) {
 		const board = this.OWNER.flatBoard;
 		const creatures = board.filter(creature => { return creature.cardType === "creature"; });
+		const structures = board.filter(structure => { return structure.cardType === "structure"; });
 		const targets = this.targets;
 		console.log(targets);
 
@@ -310,7 +311,7 @@ class Card {
 			this.OWNER.disable();
 			this.OWNER.opponent.disable("board");
 			this.OWNER.opponent.flatBoard.forEach(creature => {
-				if (!creature.cardType === "creature") { return; }
+				if (!(creature.cardType === "creature")) { return; }
 				if (this.name.toLowerCase().includes("destruction")) {
 					if (creature.checkKeyword("I")) return;
 				}
@@ -338,6 +339,51 @@ class Card {
 				}
 
 				creature.span.onclick = creature.addTargetHandler;
+				display(`${this.OWNER.name}, click on the card that will be affected by ${this.name}`);
+			});
+
+			if (i < 1) {
+				this.OWNER.enable();
+				this.OWNER.opponent.enable();
+				return false;
+			} else return true;
+
+		}
+
+		if (targets.includes("target opponent's structure")) {
+			let i = 0;
+			this.OWNER.disable();
+			this.OWNER.opponent.disable("board");
+			this.OWNER.opponent.flatBoard.forEach(structure => {
+				if (!(structure.cardType === "structure")) { return; }
+				if (this.name.toLowerCase().includes("destruction")) {
+					if (structure.checkKeyword("I")) return;
+				}
+
+				i++;
+				structure.addTargetHandler = () => {
+					if (mode === "activate") this.activateAbility(structure); else this.deactivateAbility(structure);
+
+					if (structure.addTargetHandler) {
+						structure.span.onclick = null;
+						delete structure.addTargetHandler;
+					}
+					//TODO
+
+					structures.forEach(s => {
+						if (s.addTargetHandler) {
+							s.span.onclick = null;
+							delete s.addTargetHandler;
+						}
+					});
+
+
+					this.OWNER.enable();
+					this.OWNER.opponent.enable("board");
+					display(`${this.OWNER.name} to move`);
+				}
+
+				structure.span.onclick = structure.addTargetHandler;
 				display(`${this.OWNER.name}, click on the card that will be affected by ${this.name}`);
 			});
 

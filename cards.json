@@ -535,12 +535,6 @@
       "gold": "6",
       "ability": "All target creatures gain (I)",
       "implemented": true
-    },
-    {
-      "name": "Destruction",
-      "gold": "3",
-      "ability": "Destroy target opponent's creature",
-      "implemented": true
     }
   ],
 
@@ -572,10 +566,10 @@
     {
       "name": "Destruction",
       "gold1": "3",
-      "ability1": "Destroy target creature",
+      "ability1": "Destroy target opponent's creature",
       "gold2": "5",
-      "ability2": "Destroy target structure",
-      "implemented": false
+      "ability2": "Destroy target opponent's structure",
+      "implemented": true
     },
     {
       "name": "Squish",
